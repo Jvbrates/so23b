@@ -38,7 +38,7 @@ node_t *llist_get_next(node_t *node){
     return NULL;
 }
 
-node_t *llist_get_previous(node_t*){
+node_t *llist_get_previous(node_t*node){
     if(node)
       return node->previous;
     return NULL;
@@ -48,8 +48,6 @@ void *llist_get_packet(node_t *node){
     if (node)
       return node->packet;
 }
-
-void *llist_node_search(node_t *first, unsigned int PID);
 
 int llist_add_node_next(node_t *self, node_t *next){
 
@@ -84,16 +82,85 @@ int llist_node_unlink(node_t *node){
     return 0;
 }
 
-node_t *llist_add_node(node_t **node_holder, node_t *node);
+node_t *llist_add_node(node_t **node_holder, node_t *node){
+    if(!(*node_holder))
+      *node_holder = node;
 
-node_t *llist_delete_node(node_t **node_holder, unsigned int key);
+    llist_add_node_next((*node_holder), node);
+
+    return node;
+}
 
 
-void delete_node(node_t *node){
+typedef void * (*func)(node_t *, void *arg);
+node_t *llist_iterate_nodes(node_t *start, func callback, void *arg){
+    void *ret = callback(start, arg);
+
+    if(ret)
+      return ret;
+
+    for (node_t *i = start->next; i != NULL && i!=start; i = i->next) {
+      ret = callback(i, arg);
+      if(ret)
+        return ret;
+    }
+
+    return NULL;
+}
+
+void *llist_callback_search_key(node_t*node, void *arg){
+    if(node->key == (unsigned  int) arg)
+      return node;
+    else
+      return NULL;
+}
+
+void *llist_node_search(node_t *first, unsigned int key){
+    return llist_iterate_nodes(first,
+                               llist_callback_search_key,
+                               (void *)key);
+}
+
+node_t *llist_remove_node(node_t **node_holder, unsigned int key){
+    node_t *s = llist_iterate_nodes(*node_holder, llist_callback_search_key, (void *)key);
+
+    if(!s)
+      return NULL;
+    if(*node_holder == s) // Case the holder pointer to node that will be removed
+      if(s->next == s)
+        *node_holder = NULL;
+      else
+         *node_holder = s->next;
+    llist_node_unlink(s);
+
+    return s; // Note that this function no deference the node, just remove it
+    // from string
+}
+
+// Deference all the list, at end node_holder will pointer to unallocated memory
+void llist_destruct(node_t **node_holder){
+    node_t *next = (*node_holder)->next;
+
+    free(*node_holder);
+
+    while (next != *node_holder && next != NULL){
+      node_t *aux = next->next;
+      free(next);
+      next = aux;
+    }
+
+
+}
+
+
+void llist_delete_node(node_t *node){
   if (node)
     free(node);
 }
 
+
+
+/*
 
 node_t *addnext_to(node_t *A, void * packet, unsigned int key){
   node_t *B = newNode(packet, key);
@@ -128,21 +195,39 @@ void remove_node(node_t *A){
 
 }
 
+*/
 
 
 int main(){
 
-  node_t *A = newNode((void *)65, 1);
+  node_t *A = llist_create_node_round((void *)65, 1);
   A->next = A;
   A->previous = A;
 
-  node_t * salva_last = addnext_to(A, (void *)66, 2);
-  addback_to(salva_last, (void *)67, 3);
+  node_t *salva_last = llist_create_node_round((void *)(52), 2);
+  llist_add_node_next(A, salva_last);
+//node_t * salva_last = addnext_to(A, (void *)66, 2);
+  salva_last = llist_create_node_round((void *)(52), 0);
+  llist_add_node_previous(A, salva_last);
 
   printf("%d,%d,%d,%d\n", A->key, A->next->key, A->next->next->key, A->next->next->next->key);
 
-  remove_node(salva_last);
+  llist_remove_node(&A, 1);
   printf("%d,%d,%d,%d\n", A->key, A->next->key, A->next->next->key, A->next->next->next->key);
+  llist_remove_node(&A, 2);
+  printf("%d,%d,%d,%d\n", A->key, A->next->key, A->next->next->key, A->next->next->next->key);
+  llist_remove_node(&A, 0);
+  printf("pointer %p\n", A);
+  printf("%d,%d,%d,%d\n", A->key, A->next->key, A->next->next->key, A->next->next->next->key);
+  // remove_node(salva_last);
+  // llist_delete_node(&A, A);
+
+  //Teste search | funcionando
+  // node_t *s = llist_iterate_nodes(A, callback_search_key, (void *)1);
+
+
+
+  //printf("%d,%d,%d,%d\n", A->key, A->next->key, A->next->next->key, A->next->next->next->key);
 
   return 0;
 }

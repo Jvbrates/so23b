@@ -16,7 +16,7 @@ node_t *llist_get_previous(node_t*);
 
 void *llist_get_packet(node_t *);
 
-void *llist_node_search(node_t *first, unsigned int PID);
+void *llist_node_search(node_t *first, unsigned int key);
 
 int llist_add_node_next(node_t *next);
 
@@ -27,5 +27,9 @@ int llist_node_unlink(node_t *node);
 node_t *llist_add_node(node_t **node_holder, node_t *node);
 
 node_t *llist_delete_node(node_t **node_holder, unsigned int key);
+
+void delete_node(node_t *node);
+
+void llist_destruct(node_t **node_holder);
 
 #endif // T1_LINKED_LIST_C_H
