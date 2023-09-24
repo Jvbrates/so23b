@@ -1,6 +1,8 @@
 #include "so.h"
 #include "irq.h"
 #include "programa.h"
+#include "process_mng.h"
+#include "scheduller_interface.h"
 
 #include <stdlib.h>
 #include <stdbool.h>
@@ -13,6 +15,8 @@ struct so_t {
   mem_t *mem;
   console_t *console;
   relogio_t *relogio;
+  process_table_t * processTable;
+  scheduller_t * scheduller;
 };
 
 
@@ -297,4 +301,33 @@ static bool copia_str_da_mem(int tam, char str[tam], mem_t *mem, int ender)
   }
   // estourou o tamanho de str
   return false;
+}
+
+
+//-----------------------------------------------------------------------------|
+
+/*
+ * TODO:
+ * cpu_info_t == void* e struct cpu_info_t_so está confuso...Resolva isto
+ * */
+struct cpu_info_t_so {
+  int PC;
+  int X;
+  int A;
+  // estado interno da CPU
+  int complemento;
+  cpu_modo_t modo;
+};
+
+int process_save(so_t *self){
+
+  struct cpu_info_t_so  *cpuInfo = calloc(1, sizeof(cpu_info_t));
+
+  mem_le(self->mem, IRQ_END_A, &(cpuInfo->A));
+  mem_le(self->mem, IRQ_END_X, &(cpuInfo->X));
+  mem_le(self->mem, IRQ_END_complemento, &(cpuInfo->complemento));
+  mem_le(self->mem, IRQ_END_PC, &(cpuInfo->PC));
+  mem_le(self->mem, IRQ_END_modo, &(cpuInfo->modo));
+
+
 }

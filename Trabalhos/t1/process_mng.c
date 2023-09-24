@@ -11,30 +11,26 @@ struct process_table_t  {
   node_t *first;
 };
 
-struct cpu_info_t {
-  int PC;
-  int X;
-  int A;
-  // estado interno da CPU
-  int complemento;
-  cpu_modo_t modo;
-};
 
 struct process_t {
   unsigned int PID;
-  cpu_info_t cpuInfo;
+  unsigned int start_address;
+  void *cpuInfo;
   process_state_t processState;
 };
 
 
-process_t *proc_create(cpu_info_t cpuInfo, unsigned int PID){
+process_t *proc_create(cpu_info_t cpuInfo,
+                       unsigned int PID,
+                       unsigned int start_address){
   process_t  *p = calloc(1, sizeof(process_t));
   if(!p)
     return NULL;
 
   p->cpuInfo = cpuInfo;
   p->PID = PID;
-  p->processState = blocked; //Todo processo criado inicia bloqueado
+  p->start_address = start_address;
+  p->processState = blocked; //Tod0 processo criado inicia bloqueado
 
   return p;
 }
@@ -50,9 +46,10 @@ process_table_t *ptable_create(){
 void *ptable_destruct_proc(node_t *node, void * arg){
   process_t *p = (process_t *)llist_get_packet(node);
 
-  if(p)
+  if(p) {
+    free(p->cpuInfo);
     free(p);
-
+  }
   return NULL;
 }
 
@@ -69,8 +66,9 @@ void ptable_destruct(process_table_t *self){
 
 }
 
-int ptable_add_proc(process_table_t *self, cpu_info_t cpuInfo, unsigned int PID){
-    process_t * p  = proc_create(cpuInfo, PID);
+int ptable_add_proc(process_table_t *self, cpu_info_t cpuInfo, unsigned int PID,
+                    unsigned int start_address){
+    process_t * p  = proc_create(cpuInfo, PID, start_address);
 
     if(!p)
       return -1;
@@ -112,6 +110,10 @@ process_state_t proc_get_state(process_t* self){
 
 unsigned int proc_get_PID(process_t* self){
     return self->PID;
+}
+
+unsigned int proc_get_start_address(process_t* self){
+    return self->start_address;
 }
 
 int proc_set_cpuinfo(process_t *self, cpu_info_t cpuInfo){
