@@ -1,6 +1,6 @@
-#include <stdlib.h>
+#include "linked_list.h"
 #include <stdio.h>
-
+#include <stdlib.h>
 typedef struct node_t node_t;
 
 struct node_t {
@@ -127,7 +127,7 @@ node_t *llist_remove_node(node_t **node_holder, unsigned int key){
     if(!s)
       return NULL;
     if(*node_holder == s) // Case the holder pointer to node that will be removed
-      if(s->next == s)
+      if(s->next == s) // Case has one node in round list
         *node_holder = NULL;
       else
          *node_holder = s->next;
@@ -159,44 +159,7 @@ void llist_delete_node(node_t *node){
 }
 
 
-
 /*
-
-node_t *addnext_to(node_t *A, void * packet, unsigned int key){
-  node_t *B = newNode(packet, key);
-  node_t *C  = A->next;
-  A->next = B;
-  B->previous = A;
-  if(C){
-    C->previous = B;
-    B->next = C;
-  }
-  return B;
-}
-
-node_t *addback_to(node_t *A, void* packet, unsigned int key){
-  node_t *B = newNode(packet, key);
-  node_t *C  = A->previous;
-  A->previous = B;
-  B->next = A;
-  if(C){
-    C->next = B;
-    B->previous = C;
-  }
-  return B;
-}
-
-void remove_node(node_t *A){
-
-  if(A->next)
-    A->next->previous = A->previous;
-  if(A->previous)
-    A->previous->next = A->next;
-
-}
-
-*/
-
 
 int main(){
 
@@ -231,3 +194,4 @@ int main(){
 
   return 0;
 }
+ */
