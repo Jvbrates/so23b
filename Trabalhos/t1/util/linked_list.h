@@ -32,4 +32,10 @@ void llist_delete_node(node_t *node);
 
 void llist_destruct(node_t **node_holder);
 
+typedef void * (*func)(node_t *, void *arg);
+
+node_t *llist_iterate_nodes(node_t *start, func callback, void *arg);
+
+
+
 #endif // T1_LINKED_LIST_C_H

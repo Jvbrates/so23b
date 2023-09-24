@@ -92,7 +92,7 @@ node_t *llist_add_node(node_t **node_holder, node_t *node){
 }
 
 
-typedef void * (*func)(node_t *, void *arg);
+
 node_t *llist_iterate_nodes(node_t *start, func callback, void *arg){
     void *ret = callback(start, arg);
 

@@ -17,10 +17,26 @@ typedef enum { undefined=0, blocked, running, waiting, dead } process_state_t;
 //proc <-> process_t
 
 process_table_t *ptable_create();
-void ptable_destruct_process_table(process_table_t *processTable);
+
+//Destroi os processos internos a tabela
+void ptable_destruct(process_table_t *processTable);
 
 //Registra um processo na process_table, o valor do PID é responsabilidade
 // do so.c
 int ptable_add_proc(process_table_t *self, cpu_info_t cpuInfo, unsigned int PID);
 
+int ptable_add_proc(process_table_t *self, cpu_info_t cpuInfo, unsigned int PID);
+
+process_t *ptable_search(process_table_t *self, unsigned int PID);
+
+int proc_delete(process_table_t *self, unsigned int PID);
+
+//Setters
+int proc_set_cpuinfo(process_t *self, cpu_info_t cpuInfo);
+
+// Getters
+cpu_info_t proc_get_cpuinfo(process_t* self);
+process_state_t proc_get_state(process_t* self);
+unsigned int proc_get_PID(process_t* self);
+int proc_set_state(process_t *self, process_state_t processState);
 #endif // SO23B_PROCESS_MNG_H

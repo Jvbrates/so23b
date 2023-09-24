@@ -44,11 +44,29 @@ process_table_t *ptable_create(){
   process_table_t *p = calloc(1, sizeof(process_table_t));
   if(!p)
     return NULL;
+  return p;
 }
 
-void ptable_destruct(process_table_t *processTable){
-    if(processTable)
-      free(processTable);
+void *ptable_destruct_proc(node_t *node, void * arg){
+  process_t *p = (process_t *)llist_get_packet(node);
+
+  if(p)
+    free(p);
+
+  return NULL;
+}
+
+void ptable_destruct(process_table_t *self){
+
+  //Destrói processos
+  llist_iterate_nodes(self->first, ptable_destruct_proc, NULL);
+
+  //Destrói estrutura linked_list
+  llist_destruct(self->first);
+
+  if(self)
+      free(self);
+
 }
 
 int ptable_add_proc(process_table_t *self, cpu_info_t cpuInfo, unsigned int PID){
