@@ -17,6 +17,7 @@ struct so_t {
   relogio_t *relogio;
   process_table_t * processTable;
   scheduller_t * scheduller;
+  unsigned int runningP;
 };
 
 
@@ -319,7 +320,8 @@ struct cpu_info_t_so {
   cpu_modo_t modo;
 };
 
-int process_save(so_t *self){
+//Salva o estado da CPU para o processo PID;
+int process_save(so_t *self, unsigned int PID){
 
   struct cpu_info_t_so  *cpuInfo = calloc(1, sizeof(cpu_info_t));
 
@@ -329,5 +331,23 @@ int process_save(so_t *self){
   mem_le(self->mem, IRQ_END_PC, &(cpuInfo->PC));
   mem_le(self->mem, IRQ_END_modo, &(cpuInfo->modo));
 
+  process_t  *p = ptable_search(self->processTable, PID);
+  proc_set_cpuinfo(p, cpuInfo);
+  
+}//Restaura o estado da CPU do processo PID;
+int process_recover(so_t *self, unsigned int PID){
+
+  process_t  *p = ptable_search(self->processTable, PID);
+  struct cpu_info_t_so  *cpuInfo = proc_get_cpuinfo(p);
+
+  mem_escreve(self->mem, IRQ_END_A, (cpuInfo->A));
+  mem_escreve(self->mem, IRQ_END_X, (cpuInfo->X));
+  mem_escreve(self->mem, IRQ_END_complemento, (cpuInfo->complemento));
+  mem_escreve(self->mem, IRQ_END_PC, (cpuInfo->PC));
+  mem_escreve(self->mem, IRQ_END_modo, (cpuInfo->modo));
+
+  // Escrever na memória é suficiente, a instrução RETI carrega para o cpu
+
+  self->cpu.
 
 }
