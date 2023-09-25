@@ -25,7 +25,7 @@ void ptable_destruct(process_table_t *processTable);
 // do so.c
 
 
-int ptable_add_proc(process_table_t *self, cpu_info_t cpuInfo,
+void *ptable_add_proc(process_table_t *self, cpu_info_t cpuInfo,
                     unsigned int PID, unsigned int start_address);
 
 process_t *ptable_search(process_table_t *self, unsigned int PID);

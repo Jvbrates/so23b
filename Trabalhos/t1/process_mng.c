@@ -66,20 +66,20 @@ void ptable_destruct(process_table_t *self){
 
 }
 
-int ptable_add_proc(process_table_t *self, cpu_info_t cpuInfo, unsigned int PID,
+void * ptable_add_proc(process_table_t *self, cpu_info_t cpuInfo, unsigned int PID,
                     unsigned int start_address){
     process_t * p  = proc_create(cpuInfo, PID, start_address);
 
     if(!p)
-      return -1;
+      return NULL;
 
     node_t *nd = llist_create_node(p, p->PID);
     if(!nd)
-      return -1;
+      return NULL;
 
     llist_add_node(&(self->first), nd);
 
-    return 0;
+    return p;
 }
 
 process_t *ptable_search(process_table_t *self, unsigned int PID){

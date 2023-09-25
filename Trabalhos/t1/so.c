@@ -9,7 +9,7 @@
 
 // intervalo entre interrupções do relógio
 #define INTERVALO_INTERRUPCAO 50   // em instruções executadas
-
+#define QUANTUM 10
 struct so_t {
   cpu_t *cpu;
   mem_t *mem;
@@ -21,13 +21,15 @@ struct so_t {
 };
 
 
+static unsigned int PID;
+
 // função de tratamento de interrupção (entrada no SO)
 static err_t so_trata_interrupcao(void *argC, int reg_A);
 
 // funções auxiliares
 static int so_carrega_programa(so_t *self, char *nome_do_executavel);
 static bool copia_str_da_mem(int tam, char str[tam], mem_t *mem, int ender);
-
+static int so_registra_proc(so_t *self, unsigned int address);
 
 
 so_t *so_cria(cpu_t *cpu, mem_t *mem, console_t *console, relogio_t *relogio)
@@ -304,7 +306,6 @@ static bool copia_str_da_mem(int tam, char str[tam], mem_t *mem, int ender)
   return false;
 }
 
-
 //-----------------------------------------------------------------------------|
 
 /*
@@ -333,8 +334,10 @@ int process_save(so_t *self, unsigned int PID){
 
   process_t  *p = ptable_search(self->processTable, PID);
   proc_set_cpuinfo(p, cpuInfo);
-  
-}//Restaura o estado da CPU do processo PID;
+
+  return 0;
+}
+//Restaura o estado da CPU do processo PID;
 int process_recover(so_t *self, unsigned int PID){
 
   process_t  *p = ptable_search(self->processTable, PID);
@@ -348,6 +351,27 @@ int process_recover(so_t *self, unsigned int PID){
 
   // Escrever na memória é suficiente, a instrução RETI carrega para o cpu
 
-  self->cpu.
+  return 0;
+
+}
+
+// Registra processos criados na CPU
+static int so_registra_proc(so_t *self, unsigned int address){
+  struct cpu_info_t_so  *cpuInfo = calloc(1, sizeof(cpu_info_t));
+  cpuInfo->modo = usuario;
+  cpuInfo->PC = address;
+  cpuInfo->complemento = 0;
+  cpuInfo->X = 0;
+  // cpu.A: Herdado do processo que cria ou do lixo que estiver na memória
+  mem_le(self->mem, IRQ_END_A, &(cpuInfo->A));
+  void *p =  ptable_add_proc(self->processTable, cpuInfo, PID++, address);
+  if (!p) {
+    (console_print_status(self->console, "ptable: Erro ao registrar processo"));
+    return -1;
+  }
+  if(sched_add(self->scheduller, p, PID, QUANTUM) != 0)
+    console_printf(self->console, "sched: Erro ao adicionar processo");
+
+  return 0;
 
 }
