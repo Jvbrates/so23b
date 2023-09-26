@@ -21,6 +21,21 @@ struct so_t {
 };
 
 
+/*
+ * TODO:
+ * cpu_info_t == void* e struct cpu_info_t_so está confuso...Resolva isto
+ * */
+typedef struct cpu_info_t_so {
+  int PC;
+  int X;
+  int A;
+  // estado interno da CPU
+  int complemento;
+  cpu_modo_t modo;
+}cpu_info_t_so;
+
+
+
 static unsigned int PID;
 
 // função de tratamento de interrupção (entrada no SO)
@@ -30,7 +45,8 @@ static err_t so_trata_interrupcao(void *argC, int reg_A);
 static int so_carrega_programa(so_t *self, char *nome_do_executavel);
 static bool copia_str_da_mem(int tam, char str[tam], mem_t *mem, int ender);
 static int so_registra_proc(so_t *self, unsigned int address);
-
+static int so_mata_proc(so_t *self, unsigned int PID);
+int so_start_ptable_sched(so_t *self, int process_zer0_addr);
 
 so_t *so_cria(cpu_t *cpu, mem_t *mem, console_t *console, relogio_t *relogio)
 {
@@ -106,12 +122,23 @@ static err_t so_trata_interrupcao(void *argC, int reg_A)
 
 static err_t so_trata_irq_reset(so_t *self)
 {
+  //Reset ptable e sched;
+  if(self->processTable)
+      ptable_destruct(self->processTable);
+
+  if(self->scheduller)
+      sched_destruct(self->scheduller);
+
   // coloca um programa na memória
   int ender = so_carrega_programa(self, "init.maq");
   if (ender != 100) {
     console_printf(self->console, "SO: problema na carga do programa inicial");
     return ERR_CPU_PARADA;
   }
+
+  //Quando o scheduler não tiver nada para escalonar ele vai chamar init.maq
+  so_start_ptable_sched(self, ender);
+
   // altera o PC para o endereço de carga (deve ter sido 100)
   mem_escreve(self->mem, IRQ_END_PC, ender);
   // passa o processador para modo usuário
@@ -227,6 +254,7 @@ static void so_chamada_escr(so_t *self)
   mem_escreve(self->mem, IRQ_END_A, 0);
 }
 
+//TODO: Proximos a implementar...
 static void so_chamada_cria_proc(so_t *self)
 {
   // ainda sem suporte a processos, carrega programa e passa a executar ele
@@ -239,19 +267,51 @@ static void so_chamada_cria_proc(so_t *self)
     if (copia_str_da_mem(100, nome, self->mem, ender_proc)) {
       int ender_carga = so_carrega_programa(self, nome);
       if (ender_carga > 0) {
-        mem_escreve(self->mem, IRQ_END_PC, ender_carga);
-        return;
+        so_registra_proc(self, ender_carga);
+      } else {
+        console_print_status(self->console, "mem: Erro ao carregar processo, "
+                                            "não registrado");
       }
     }
 
   }
-  mem_escreve(self->mem, IRQ_END_A, -1);
+  mem_escreve(self->mem, IRQ_END_A, -1); //Todo remover este -1
 }
 
 static void so_chamada_mata_proc(so_t *self)
 {
   // ainda sem suporte a processos, retorna erro -1
   console_printf(self->console, "SO: SO_MATA_PROC não implementada");
+  unsigned int ID_kill;
+  if (mem_le(self->mem, IRQ_END_X, &ID_kill) == ERR_OK) {
+    if(!ID_kill){
+      console_print_status(self->console, "SO(kill): tentativa de matar init.asm!");
+    } else {
+      process_t  *p = ptable_search(self->processTable, ID_kill);
+      if(!p) {
+        console_print_status(self->console, "SO(kill): Processo inesitente");
+        mem_escreve(self->mem, IRQ_END_A, -1);
+        return ;
+      }
+      process_state_t  processState = proc_get_state(p);
+
+      if(processState == running ||
+         processState == waiting ||
+         processState == blocked_dev ||
+         processState == blocked_proc) {
+
+        so_mata_proc(self, ID_kill);
+
+      } else {
+        console_print_status(self->console, "SO(kill): Processo inexistente");
+        mem_escreve(self->mem, IRQ_END_A, -1);
+        return ;
+      }
+    }
+  } else {
+    console_print_status(self->console, "mem: erro ao ler da memoria");
+  }
+
   mem_escreve(self->mem, IRQ_END_A, -1);
 }
 
@@ -308,18 +368,7 @@ static bool copia_str_da_mem(int tam, char str[tam], mem_t *mem, int ender)
 
 //-----------------------------------------------------------------------------|
 
-/*
- * TODO:
- * cpu_info_t == void* e struct cpu_info_t_so está confuso...Resolva isto
- * */
-struct cpu_info_t_so {
-  int PC;
-  int X;
-  int A;
-  // estado interno da CPU
-  int complemento;
-  cpu_modo_t modo;
-};
+
 
 //Salva o estado da CPU para o processo PID;
 int process_save(so_t *self, unsigned int PID){
@@ -355,7 +404,31 @@ int process_recover(so_t *self, unsigned int PID){
 
 }
 
-// Registra processos criados na CPU
+int so_start_ptable_sched(so_t *self, int process_zer0_addr){
+  self->processTable = ptable_create();
+
+  struct cpu_info_t_so  *cpuInfo = calloc(1, sizeof(cpu_info_t));
+  cpuInfo->modo = usuario;
+  cpuInfo->PC = process_zer0_addr;
+  cpuInfo->complemento = 0;
+  cpuInfo->X = 0;
+  cpuInfo->A = 0;
+
+  void *pzer0 =  ptable_add_proc(self->processTable,
+                            cpuInfo, PID++,
+                            process_zer0_addr);
+
+  if (!pzer0) {
+    (console_print_status(self->console, "ptable: Erro ao registrar processo 0"));
+    return -1;
+  }
+
+  self->scheduller = sched_create(pzer0, self->relogio);
+
+  return 0;
+}
+
+// Registra processos criados na CPU !! Não é usado no processo zer0
 static int so_registra_proc(so_t *self, unsigned int address){
   struct cpu_info_t_so  *cpuInfo = calloc(1, sizeof(cpu_info_t));
   cpuInfo->modo = usuario;
@@ -373,5 +446,15 @@ static int so_registra_proc(so_t *self, unsigned int address){
     console_printf(self->console, "sched: Erro ao adicionar processo");
 
   return 0;
+
+}
+
+//Mata um processo, não faz verificações.
+// Na prática: Remove da lista scheduller(necessário) e remove da lista de
+// processos
+static int so_mata_proc(so_t *self, unsigned int PID){
+
+  sched_remove(self->scheduller, PID);
+  return proc_delete(self->processTable, PID);
 
 }

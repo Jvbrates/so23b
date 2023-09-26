@@ -11,7 +11,13 @@ typedef struct process_t process_t;
 
 typedef void * cpu_info_t;
 
-typedef enum { undefined=0, blocked, running, waiting, dead } process_state_t;
+typedef enum { undefined=0,
+               blocked_dev, // Waiting until process
+               blocked_proc, // Blocked until device
+               running,
+               waiting,
+               dead
+} process_state_t;
 
 //ptable <-> process_table_t
 //proc <-> process_t

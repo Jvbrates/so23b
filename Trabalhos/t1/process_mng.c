@@ -17,6 +17,7 @@ struct process_t {
   unsigned int start_address;
   void *cpuInfo;
   process_state_t processState;
+  unsigned int blocked_id;
 };
 
 
@@ -30,7 +31,7 @@ process_t *proc_create(cpu_info_t cpuInfo,
   p->cpuInfo = cpuInfo;
   p->PID = PID;
   p->start_address = start_address;
-  p->processState = blocked; //Tod0 processo criado inicia bloqueado
+  p->processState = waiting; //Tod0 processo criado inicia esperando
 
   return p;
 }

@@ -11,6 +11,8 @@ typedef struct scheduller_t scheduller_t;
 
 scheduller_t *sched_create(process_t *proc_zer0, relogio_t *rel);
 
+//scheduller_destruct não deve destruir os pprocesso (packet), isto é funcao da
+// ptable
 void sched_destruct(scheduller_t *self);
 
 int sched_add(scheduller_t *self,
