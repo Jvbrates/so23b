@@ -4,20 +4,26 @@
 
 #include "process_mng.h"
 #include "util/linked_list.h"
-#include "cpu.h"
 #include "stdlib.h"
 
 struct process_table_t  {
   node_t *first;
 };
 
+typedef union {
+  unsigned int PID;
+  void *disp
+} waiting_id;
+
 
 struct process_t {
+
   unsigned int PID;
   unsigned int start_address;
   void *cpuInfo;
   process_state_t processState;
-  unsigned int blocked_id;
+  waiting_id id;
+
 };
 
 
@@ -66,6 +72,64 @@ void ptable_destruct(process_table_t *self){
       free(self);
 
 }
+
+
+typedef struct {
+  waiting_id w_id;
+  scheduller_t *sched;
+  unsigned int quantum;
+} wakeup_struct;
+
+
+void *callback_wakeup_proc_pid(node_t *node, void *argument){
+  process_t *p = llist_get_packet(node);
+
+  wakeup_struct *wakeupStruct = (wakeup_struct *)argument;
+
+  if(p->processState == blocked_proc &&
+      p->id.PID == (unsigned int)wakeupStruct->w_id.PID) {
+      p->processState = waiting;
+      sched_add(wakeupStruct->sched, p, p->PID, wakeupStruct->quantum);
+  }
+  return NULL;
+}
+
+void *callback_wakeup_proc_dev(node_t *node, void *argument){
+  process_t *p = llist_get_packet(node);
+
+  wakeup_struct *wakeupStruct = (wakeup_struct *)argument;
+
+  if(p->processState == blocked_proc &&
+      p->id.disp == (unsigned int)wakeupStruct->w_id.disp) {
+      p->processState = waiting;
+      sched_add(wakeupStruct->sched, p, p->PID, wakeupStruct->quantum);
+  }
+  return NULL;
+}
+
+int ptable_wakeup_PID(process_table_t *self, unsigned int PID,
+                      scheduller_t *scheduller, unsigned int quantum){
+
+  wakeup_struct wakeupStruct = {0, scheduller, quantum};
+  wakeupStruct.w_id.PID = PID;
+
+  llist_iterate_nodes(self->first,
+                      callback_wakeup_proc_pid, (void * )&wakeupStruct);
+  return 0;
+}
+
+int ptable_wakeup_dev(process_table_t *self, void *disp,
+                      scheduller_t *scheduller, unsigned int quantum){
+  llist_iterate_nodes(self->first, callback_wakeup_proc_dev, disp);
+
+  wakeup_struct wakeupStruct = {0, scheduller, quantum};
+  wakeupStruct.w_id.disp = disp;
+
+  llist_iterate_nodes(self->first,
+                      callback_wakeup_proc_pid, (void * )&wakeupStruct);
+  return 0;
+}
+
 
 void * ptable_add_proc(process_table_t *self, cpu_info_t cpuInfo, unsigned int PID,
                     unsigned int start_address){
@@ -124,3 +188,20 @@ int proc_set_cpuinfo(process_t *self, cpu_info_t cpuInfo){
 int proc_set_state(process_t *self, process_state_t processState){
     self->processState = processState;
 }
+
+unsigned  int proc_get_waiting_PID(process_t *p){
+    return p->id.PID;
+}
+
+void * proc_get_waiting_disp(process_t *p){
+    return p->id.disp;
+}
+
+int proc_set_waiting_PID(process_t *p, unsigned int PID){
+    p->id.PID = PID;
+}
+
+int proc_set_waiting_disp(process_t *p, void *disp){
+    p->id.disp = disp;
+}
+

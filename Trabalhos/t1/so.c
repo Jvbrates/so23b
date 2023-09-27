@@ -47,7 +47,6 @@ static bool copia_str_da_mem(int tam, char str[tam], mem_t *mem, int ender);
 static int so_registra_proc(so_t *self, unsigned int address);
 static int so_mata_proc(so_t *self, unsigned int PID);
 int so_start_ptable_sched(so_t *self, int process_zer0_addr);
-
 so_t *so_cria(cpu_t *cpu, mem_t *mem, console_t *console, relogio_t *relogio)
 {
   so_t *self = malloc(sizeof(*self));
@@ -71,6 +70,15 @@ so_t *so_cria(cpu_t *cpu, mem_t *mem, console_t *console, relogio_t *relogio)
 
   return self;
 }
+static int so_device_busy(so_t *self, void *disp);
+static int so_wait_proc(so_t *self, void *disp, unsigned int PID);
+static int  so_broadcast_procs_block_PID(so_t *self, unsigned int PID);
+// funções auxiliares para tratar cada tipo de interrupção
+
+//Salva e Recover
+static process_t *process_save(so_t *self, unsigned int PID);
+static int process_recover(so_t *self, unsigned int PID);
+
 
 void so_destroi(so_t *self)
 {
@@ -78,10 +86,7 @@ void so_destroi(so_t *self)
   free(self);
 }
 
-
 // Tratamento de interrupção
-
-// funções auxiliares para tratar cada tipo de interrupção
 static err_t so_trata_irq_reset(so_t *self);
 static err_t so_trata_irq_err_cpu(so_t *self);
 static err_t so_trata_irq_relogio(so_t *self);
@@ -101,6 +106,19 @@ static err_t so_trata_interrupcao(void *argC, int reg_A)
   irq_t irq = reg_A;
   err_t err;
   console_printf(self->console, "SO: recebi IRQ %d (%s)", irq, irq_nome(irq));
+
+  process_t  *p = process_save(self, self->runningP);
+  proc_set_state(p, waiting);
+
+  /*TODO: No caso de um processo fazer uma requisição a um device ocupado, seu
+   * PC deve ser PC-1 para quando o dispositivo estiver pronto ele fazer essa
+   * requisição novamente?
+   *
+   * TODO: Na funcao mata proc, devo debloquear qualquer processo que esteja
+   * esperando por ela e adicionar ao escalonador. Isto vai exigir uma estrutura
+   * struct {proc_state_t tipo_bloq, int ID_dev_or_p, scheduller *}
+   * */
+
   switch (irq) {
     case IRQ_RESET:
       err = so_trata_irq_reset(self);
@@ -117,6 +135,15 @@ static err_t so_trata_interrupcao(void *argC, int reg_A)
     default:
       err = so_trata_irq_desconhecida(self, irq);
   }
+
+
+
+  process_t  *to_run = sched_get_update(self->scheduller);
+
+  self->runningP = proc_get_PID(p);
+
+  process_recover(self, self->runningP);
+
   return err;
 }
 
@@ -180,7 +207,6 @@ static err_t so_trata_irq_desconhecida(so_t *self, int irq)
 }
 
 // Chamadas de sistema
-
 static void so_chamada_le(so_t *self);
 static void so_chamada_escr(so_t *self);
 static void so_chamada_cria_proc(so_t *self);
@@ -213,6 +239,7 @@ static err_t so_trata_chamada_sistema(so_t *self)
   return ERR_OK;
 }
 
+//TODO alterar so_chamada_le
 static void so_chamada_le(so_t *self)
 {
   // implementação com espera ocupada
@@ -254,7 +281,6 @@ static void so_chamada_escr(so_t *self)
   mem_escreve(self->mem, IRQ_END_A, 0);
 }
 
-//TODO: Proximos a implementar...
 static void so_chamada_cria_proc(so_t *self)
 {
   // ainda sem suporte a processos, carrega programa e passa a executar ele
@@ -371,7 +397,7 @@ static bool copia_str_da_mem(int tam, char str[tam], mem_t *mem, int ender)
 
 
 //Salva o estado da CPU para o processo PID;
-int process_save(so_t *self, unsigned int PID){
+static process_t *process_save(so_t *self, unsigned int PID){
 
   struct cpu_info_t_so  *cpuInfo = calloc(1, sizeof(cpu_info_t));
 
@@ -384,10 +410,10 @@ int process_save(so_t *self, unsigned int PID){
   process_t  *p = ptable_search(self->processTable, PID);
   proc_set_cpuinfo(p, cpuInfo);
 
-  return 0;
+  return p;
 }
 //Restaura o estado da CPU do processo PID;
-int process_recover(so_t *self, unsigned int PID){
+static int process_recover(so_t *self, unsigned int PID){
 
   process_t  *p = ptable_search(self->processTable, PID);
   struct cpu_info_t_so  *cpuInfo = proc_get_cpuinfo(p);
@@ -455,6 +481,47 @@ static int so_registra_proc(so_t *self, unsigned int address){
 static int so_mata_proc(so_t *self, unsigned int PID){
 
   sched_remove(self->scheduller, PID);
-  return proc_delete(self->processTable, PID);
+  int r =  proc_delete(self->processTable, PID);
 
+  so_broadcast_procs_block_PID(self, PID);
+
+}
+
+// Define processo com bloqueado e esperando por certo dispositivo
+static int so_device_busy(so_t *self, void *disp){
+  process_t  *p = ptable_search(self->processTable, self->runningP);
+
+  // Quando processo retornar deve requerir novamente ao dispositivo
+  cpu_info_t_so *c = proc_get_cpuinfo(p);
+  c->PC = c->PC -1;
+  proc_set_cpuinfo(p, c);
+
+  // Altera estado do processo, define que está esperando device,
+  // remove processo do escalonador
+  proc_set_state(p, blocked_dev);
+  proc_set_waiting_disp(p, disp);
+  sched_remove(self->scheduller, self->runningP);
+
+}
+
+// Define processo com bloqueado e esperando por certo Processo
+static int so_wait_proc(so_t *self, void *disp, unsigned int PID){
+  process_t  *p = ptable_search(self->processTable, self->runningP);
+
+  // Altera estado do processo, define que está esperando processo,
+  // remove processo do escalonador
+  proc_set_state(p, blocked_proc);
+  proc_set_waiting_PID(p, PID);
+  sched_remove(self->scheduller, self->runningP);
+
+  return 0;
+}
+
+// Parecido como pthread_signal_broadcast
+static int  so_broadcast_procs_block_PID(so_t *self, unsigned int PID){
+  ptable_wakeup_PID(self->processTable, PID, self->scheduller, QUANTUM);
+}
+
+static int  so_broadcast_procs_block_dev(so_t *self, void *device){
+  ptable_wakeup_dev(self->processTable, device, self->scheduller, QUANTUM);
 }
