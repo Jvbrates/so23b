@@ -1,9 +1,19 @@
 CC = gcc
-CFLAGS = -Wall -Werror -Wno-pointer-to-int-cast -Wno-int-to-pointer-cast -g
+
+# CFLAGS = -Wall -Werror -Wno-pointer-to-int-cast -Wno-int-to-pointer-cast -g
+ifdef wno
+	CFLAGS = -Wall -Werror -Wno-pointer-to-int-cast -Wno-int-to-pointer-cast  \
+	-Wno-unused-variable -Wno-unused-function -g
+else
+	# Vou ignorar pointer-int-cast em tod0 caso
+	CFLAGS = -Wall -Werror -Wno-pointer-to-int-cast -Wno-int-to-pointer-cast -g
+endif
+# Defina o scheduler
+
 LDLIBS = -lcurses
 
 OBJS = cpu.o es.o memoria.o relogio.o console.o instrucao.o err.o util/linked_list.o \
-main.o programa.o controle.o process_mng.o so.o irq.o
+main.o programa.o controle.o process_mng.o round_robin.o so.o irq.o
 OBJS_MONT = instrucao.o err.o montador.o
 #MAQS = trata_irq.maq init.maq ex1.maq ex2.maq ex3.maq ex4.maq ex5.maq ex6.maq
 MAQS = init.maq ex1.maq ex2.maq ex3.maq ex4.maq ex5.maq ex6.maq p1.maq p2.maq p3.maq
@@ -45,3 +55,4 @@ clean:
 
 # inclui as dependências
 include $(OBJS:.o=.d)
+

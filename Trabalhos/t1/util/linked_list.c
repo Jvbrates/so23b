@@ -45,8 +45,10 @@ node_t *llist_get_previous(node_t*node){
 }
 
 void *llist_get_packet(node_t *node){
-    if (node)
+    if (node) {
       return node->packet;
+    }
+    return NULL;
 }
 
 int llist_add_node_next(node_t *self, node_t *next){
@@ -126,11 +128,13 @@ node_t *llist_remove_node(node_t **node_holder, unsigned int key){
 
     if(!s)
       return NULL;
-    if(*node_holder == s) // Case the holder pointer to node that will be removed
-      if(s->next == s) // Case has one node in round list
+    if(*node_holder == s) { // Case the holder pointer to node that will be removed
+      if (s->next == s) { // Case has one node in round list
         *node_holder = NULL;
-      else
-         *node_holder = s->next;
+      } else {
+        *node_holder = s->next;
+      }
+    }
     llist_node_unlink(s);
 
     return s; // Note that this function no deference the node, just remove it

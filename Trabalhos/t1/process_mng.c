@@ -10,9 +10,9 @@ struct process_table_t  {
   node_t *first;
 };
 
-typedef union {
+typedef struct {
   unsigned int PID;
-  void *disp
+  void *disp;
 } waiting_id;
 
 
@@ -66,7 +66,7 @@ void ptable_destruct(process_table_t *self){
   llist_iterate_nodes(self->first, ptable_destruct_proc, NULL);
 
   //Destrói estrutura linked_list
-  llist_destruct(self->first);
+  llist_destruct(&(self->first));
 
   if(self)
       free(self);
@@ -76,7 +76,7 @@ void ptable_destruct(process_table_t *self){
 
 typedef struct {
   waiting_id w_id;
-  scheduller_t *sched;
+  scheduler_t *sched;
   unsigned int quantum;
 } wakeup_struct;
 
@@ -100,7 +100,8 @@ void *callback_wakeup_proc_dev(node_t *node, void *argument){
   wakeup_struct *wakeupStruct = (wakeup_struct *)argument;
 
   if(p->processState == blocked_proc &&
-      p->id.disp == (unsigned int)wakeupStruct->w_id.disp) {
+      p->id.disp == wakeupStruct->w_id.disp &&
+      p->id.PID == wakeupStruct->w_id.PID) {
       p->processState = waiting;
       sched_add(wakeupStruct->sched, p, p->PID, wakeupStruct->quantum);
   }
@@ -108,9 +109,11 @@ void *callback_wakeup_proc_dev(node_t *node, void *argument){
 }
 
 int ptable_wakeup_PID(process_table_t *self, unsigned int PID,
-                      scheduller_t *scheduller, unsigned int quantum){
+                      void *scheduler, unsigned int quantum){
 
-  wakeup_struct wakeupStruct = {0, scheduller, quantum};
+  wakeup_struct wakeupStruct;
+  wakeupStruct.sched = (scheduler_t *)scheduler;
+  wakeupStruct.quantum = quantum;
   wakeupStruct.w_id.PID = PID;
 
   llist_iterate_nodes(self->first,
@@ -118,11 +121,16 @@ int ptable_wakeup_PID(process_table_t *self, unsigned int PID,
   return 0;
 }
 
-int ptable_wakeup_dev(process_table_t *self, void *disp,
-                      scheduller_t *scheduller, unsigned int quantum){
+// Muitos argumentos nesta merda
+int ptable_wakeup_dev(process_table_t *self, void *disp, unsigned int ID,
+                      void *scheduler, unsigned int quantum){
+
   llist_iterate_nodes(self->first, callback_wakeup_proc_dev, disp);
 
-  wakeup_struct wakeupStruct = {0, scheduller, quantum};
+  wakeup_struct wakeupStruct;
+  wakeupStruct.sched = (scheduler_t *)scheduler;
+  wakeupStruct.quantum = quantum;
+  wakeupStruct.w_id.PID = ID;
   wakeupStruct.w_id.disp = disp;
 
   llist_iterate_nodes(self->first,
@@ -153,7 +161,7 @@ process_t *ptable_search(process_table_t *self, unsigned int PID){
 }
 
 int proc_delete(process_table_t *self, unsigned int PID){
-    node_t  *node = llist_remove_node(self->first, PID);
+    node_t  *node = llist_remove_node(&(self->first), PID);
     if(!node)//node not found
       return -1;
     process_t  *p = llist_get_packet(node);
@@ -175,18 +183,22 @@ process_state_t proc_get_state(process_t* self){
 
 unsigned int proc_get_PID(process_t* self){
     return self->PID;
+    return 0;
 }
 
 unsigned int proc_get_start_address(process_t* self){
     return self->start_address;
+    return 0;
 }
 
 int proc_set_cpuinfo(process_t *self, cpu_info_t cpuInfo){
     self->cpuInfo = cpuInfo;
+    return 0;
 }
 
 int proc_set_state(process_t *self, process_state_t processState){
     self->processState = processState;
+    return 0;
 }
 
 unsigned  int proc_get_waiting_PID(process_t *p){
@@ -199,9 +211,13 @@ void * proc_get_waiting_disp(process_t *p){
 
 int proc_set_waiting_PID(process_t *p, unsigned int PID){
     p->id.PID = PID;
+    return 0;
 }
 
-int proc_set_waiting_disp(process_t *p, void *disp){
+int proc_set_waiting_disp(process_t *p, void *disp, unsigned int ID){
     p->id.disp = disp;
+    p->id.PID = ID;
+
+    return 0;
 }
 

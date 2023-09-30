@@ -4,7 +4,8 @@
 
 #ifndef SO23B_PROCESS_MNG_H
 #define SO23B_PROCESS_MNG_H
-#include "scheduller_interface.h"
+#include "scheduler_interface.h"
+
 typedef struct process_table_t process_table_t;
 
 typedef struct process_t process_t;
@@ -41,14 +42,15 @@ int proc_delete(process_table_t *self, unsigned int PID);
 //Acorda todos os processos que estavam bloqueados esperando certo processo(PID)
 // E já adiciona o processo no escalonador
 int ptable_wakeup_PID(process_table_t *self, unsigned int PID,
-                      scheduller_t *scheduller, unsigned int quantum);
-int ptable_wakeup_dev(process_table_t *self, void *disp,
-                      scheduller_t *scheduller, unsigned int quantum);
+                      void *scheduler, unsigned int quantum);
+
+int ptable_wakeup_dev(process_table_t *self, void *disp, unsigned int PID,
+                      void *scheduler, unsigned int quantum);
 
 //Setters
 int proc_set_cpuinfo(process_t *self, cpu_info_t cpuInfo);
 int proc_set_waiting_PID(process_t *p, unsigned int PID);
-int proc_set_waiting_disp(process_t *p, void *disp);
+int proc_set_waiting_disp(process_t *p, void *disp, unsigned int ID);
 
 // Getters
 void * proc_get_waiting_disp(process_t *p);
