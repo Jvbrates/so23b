@@ -47,6 +47,7 @@ static bool copia_str_da_mem(int tam, char str[tam], mem_t *mem, int ender);
 static int so_registra_proc(so_t *self, unsigned int address);
 static int so_mata_proc(so_t *self, unsigned int PID);
 int so_start_ptable_sched(so_t *self, int process_zer0_addr);
+
 so_t *so_cria(cpu_t *cpu, mem_t *mem, console_t *console, relogio_t *relogio)
 {
   so_t *self = malloc(sizeof(*self));
@@ -112,7 +113,9 @@ static err_t so_trata_interrupcao(void *argC, int reg_A)
   console_printf(self->console, "SO: recebi IRQ %d (%s)", irq, irq_nome(irq));
 
   process_t  *p = process_save(self, self->runningP);
-  proc_set_state(p, waiting);
+
+  if(p) //Não tem como alterar o estado de um processo que nao existe
+    proc_set_state(p, waiting);
 
   /*TODO: No caso de um processo fazer uma requisição a um device ocupado, seu
    * PC deve ser PC-1 para quando o dispositivo estiver pronto ele fazer essa
@@ -141,13 +144,13 @@ static err_t so_trata_interrupcao(void *argC, int reg_A)
   }
 
 
+  if(irq != IRQ_RESET) {
+      process_t *to_run = sched_get_update(self->scheduler);
 
-  process_t  *to_run = sched_get_update(self->scheduler);
+      self->runningP = proc_get_PID(p);
 
-  self->runningP = proc_get_PID(p);
-
-  process_recover(self, self->runningP);
-
+      process_recover(self, self->runningP);
+  }
   return err;
 }
 
@@ -162,6 +165,7 @@ static err_t so_trata_irq_reset(so_t *self)
 
   // coloca um programa na memória
   int ender = so_carrega_programa(self, "init.maq");
+
   if (ender != 100) {
     console_printf(self->console, "SO: problema na carga do programa inicial");
     return ERR_CPU_PARADA;
@@ -423,7 +427,9 @@ static process_t *process_save(so_t *self, unsigned int PID){
   mem_le(self->mem, IRQ_END_modo, (int *)&(cpuInfo->modo));
 
   process_t  *p = ptable_search(self->processTable, PID);
-  proc_set_cpuinfo(p, cpuInfo);
+
+  if(p)
+    proc_set_cpuinfo(p, cpuInfo);
 
   return p;
 }

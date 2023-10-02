@@ -156,6 +156,8 @@ void * ptable_add_proc(process_table_t *self, cpu_info_t cpuInfo, unsigned int P
 }
 
 process_t *ptable_search(process_table_t *self, unsigned int PID){
+    if(!self)
+      return NULL;
     node_t  *node = llist_node_search(self->first, PID);
     return llist_get_packet(node);
 }
