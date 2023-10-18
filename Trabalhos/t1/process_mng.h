@@ -40,10 +40,12 @@ process_t *ptable_search(process_table_t *self, unsigned int PID);
 
 int proc_delete(process_table_t *self, unsigned int PID);
 
-//Acorda todos os processos que estavam bloqueados esperando certo processo(PID)
-// E já adiciona o processo no escalonador
-int ptable_wakeup_PID(process_table_t *self, unsigned int PID,
+/*Acorda(torna-os prontos) todos os processos que estavam bloqueados esperando
+* certo processo(PID) e adiciona os processos ao escalonador
+*/
+ int ptable_wakeup_PID(process_table_t *self, unsigned int PID,
                       void *scheduler, unsigned int quantum);
+
 
 int ptable_wakeup_dev(process_table_t *self, void *disp, unsigned int PID,
                       void *scheduler, unsigned int quantum);
@@ -51,9 +53,19 @@ int ptable_wakeup_dev(process_table_t *self, void *disp, unsigned int PID,
 
 int ptable_is_empty(process_table_t *self);
 
+process_t *ptable_search_pendencia(process_table_t *self,
+                                   process_state_t estado,
+                                   int dispositivo);
+
 //Setters
+
+//Salva o ponteiro para cpu_info_t
 int proc_set_cpuinfo(process_t *self, cpu_info_t cpuInfo);
+
+//Bloqueia o processo para esperar outro processo
 int proc_set_waiting_PID(process_t *p, unsigned int PID);
+
+// Bloqueia o processo para esperar um dispositivo
 int proc_set_waiting_disp(process_t *p, void *disp, unsigned int ID);
 
 // Getters

@@ -6,18 +6,30 @@
 
 #include <stdlib.h>
 #include <stdbool.h>
+#include <string.h>
 
 // intervalo entre interrupções do relógio
 #define INTERVALO_INTERRUPCAO 50   // em instruções executadas
 #define QUANTUM 10
+
+//Usado para tabela de pendencias,
+// tem 4 terminais. Em algum momento o relógio estará "ocupado"?
+#define NUM_ES 4
 struct so_t {
   cpu_t *cpu;
   mem_t *mem;
   console_t *console;
   relogio_t *relogio;
   process_table_t * processTable;
+  //Pensando em colocar scheduller dentro de process_table
   scheduler_t * scheduler;
   unsigned int runningP;
+
+  /*
+   * Para cada pendência/requisição de escrita/leitura em dado dipositivo o valor
+   * é incrementado, quando a pendencia é atendida, o valor é decrementado.
+   * */
+  int es_pendencias[NUM_ES][2];
 };
 
 
@@ -58,6 +70,7 @@ so_t *so_cria(cpu_t *cpu, mem_t *mem, console_t *console, relogio_t *relogio)
   self->mem = mem;
   self->console = console;
   self->relogio = relogio;
+  memset(self->es_pendencias, 0, sizeof(self->es_pendencias));
 
   // quando a CPU executar uma instrução CHAMAC, deve chamar essa função
   cpu_define_chamaC(self->cpu, so_trata_interrupcao, self);
@@ -98,6 +111,9 @@ static err_t so_trata_irq_err_cpu(so_t *self);
 static err_t so_trata_irq_relogio(so_t *self);
 static err_t so_trata_irq_desconhecida(so_t *self, int irq);
 static err_t so_trata_chamada_sistema(so_t *self);
+
+//Tratamento de pendências
+static err_t  so_trata_pendencias(so_t *self);
 
 // função a ser chamada pela CPU quando executa a instrução CHAMAC
 // essa instrução só deve ser executada quando for tratar uma interrupção
@@ -149,7 +165,7 @@ static err_t so_trata_interrupcao(void *argC, int reg_A)
   }
   // 3 - Verifica Pendencias
 
-
+  so_trata_pendencias(self);
 
   // 4 - Escalonador
   process_t *to_run = sched_get_update(self->scheduler);
@@ -175,6 +191,9 @@ static err_t so_trata_irq_reset(so_t *self)
       sched_destruct(self->scheduler);
 
   so_start_ptable_sched(self);
+
+  //Reseta tabela de pendências
+  memset(self->es_pendencias, 0, sizeof(self->es_pendencias));
 
   //Reseta o PID também;
   PID = 0;
@@ -310,7 +329,7 @@ static void so_chamada_escr(so_t *self)
   //   deveria usar dispositivo corrente de saída do processo
   for (;;) {
     int estado;
-    term_le(self->console, 3, &estado);
+    term_le(self->console, ((self->runningP -1 )%4)*4 + 3, &estado);
     if (estado != 0) break;
     // como não está saindo do SO, o laço do processador não tá rodando
     // esta gambiarra faz o console andar
@@ -376,7 +395,7 @@ static void so_chamada_mata_proc(so_t *self)
 
       if(processState == running ||
          processState == waiting ||
-         processState == blocked_dev ||
+         processState == blocked_read ||
          processState == blocked_proc) {
 
         so_mata_proc(self, ID_kill);
@@ -547,7 +566,7 @@ static int so_device_busy(so_t *self, void *disp, unsigned int id){
 
   // Altera estado do processo, define que está esperando device,
   // remove processo do escalonador
-  proc_set_state(p, blocked_dev);
+  proc_set_state(p, blocked_read);
   //É necessario passar a controladora e o ID
   proc_set_waiting_disp(p, disp, id);
   sched_remove(self->scheduler, self->runningP);
@@ -578,7 +597,6 @@ static int so_wait_proc(so_t *self){
   return 0;
 }
 
-// Parecido como pthread_signal_broadcast
 static int so_broadcast_procs_block_PID(so_t *self, unsigned int PID){
   return ptable_wakeup_PID(self->processTable, PID, self->scheduler, QUANTUM);
 }
@@ -586,4 +604,34 @@ static int so_broadcast_procs_block_PID(so_t *self, unsigned int PID){
 static int  so_broadcast_procs_block_dev(so_t *self, void *device,
                                         unsigned int PID){
   return ptable_wakeup_dev(self->processTable, device, PID, self->scheduler, QUANTUM);
+}
+
+
+/*3.
+ * Pendência de ESPERA_PROC não é tratada aqui
+ *
+ * */
+
+
+
+
+static err_t  so_trata_pendencias(so_t *self){
+
+  for (int i = 0; i < NUM_ES; ++i) {
+    // Trata pendencia de escrita
+    int estado =  term_le(self->console, i + 3, &estado);
+
+    if(self->es_pendencias[i][0] > 0 && estado != 0){
+      process_t *p = ptable_search_pendencia(self->processTable, blocked_write, i);
+      
+      if(!p) {
+        console_printf(self->console,
+                       "tabela de pendencias e ptable não sincronizadas");
+        return -1;
+      }
+
+
+    }
+  }
+  return ERR_OK;
 }

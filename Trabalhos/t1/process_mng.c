@@ -10,19 +10,14 @@ struct process_table_t  {
   node_t *first;
 };
 
-typedef struct {
-  unsigned int PID;
-  void *disp;
-} waiting_id;
 
 
 struct process_t {
-
   unsigned int PID;
   unsigned int start_address;
   void *cpuInfo;
   process_state_t processState;
-  waiting_id id;
+  unsigned int PID_or_device;
 
 };
 
@@ -73,9 +68,10 @@ void ptable_destruct(process_table_t *self){
 
 }
 
+/*
 
 typedef struct {
-  waiting_id w_id;
+  //waiting_id w_id;
   scheduler_t *sched;
   unsigned int quantum;
 } wakeup_struct;
@@ -120,8 +116,9 @@ int ptable_wakeup_PID(process_table_t *self, unsigned int PID,
                       callback_wakeup_proc_pid, (void * )&wakeupStruct);
   return 0;
 }
+*/
 
-// Muitos argumentos nesta merda
+/*
 int ptable_wakeup_dev(process_table_t *self, void *disp, unsigned int ID,
                       void *scheduler, unsigned int quantum){
 
@@ -137,6 +134,7 @@ int ptable_wakeup_dev(process_table_t *self, void *disp, unsigned int ID,
                       callback_wakeup_proc_pid, (void * )&wakeupStruct);
   return 0;
 }
+*/
 
 
 void * ptable_add_proc(process_table_t *self, cpu_info_t cpuInfo, unsigned int PID,
@@ -165,6 +163,45 @@ process_t *ptable_search(process_table_t *self, unsigned int PID){
 int ptable_is_empty(process_table_t *self){
     return (self->first == NULL);
 }
+
+
+/*
+ * Estado deve ser blocked_read ou blocked_write
+ */
+
+struct ptable_search_pendencia_arg{
+    process_state_t state;
+    int dispositivo;
+};
+
+void *callback_search_block(node_t *node, void *argument){
+
+    struct ptable_search_pendencia_arg *arg = argument;
+
+    process_t *p = llist_get_packet(node);
+
+    if(p->processState == arg->state && p->PID_or_device == argument){
+      return node;
+    }
+
+    return NULL;
+}
+
+process_t *ptable_search_pendencia(process_table_t *self,
+                                   process_state_t estado,
+                                   int dispositivo){
+
+    struct ptable_search_pendencia_arg pspa = {estado, dispositivo};
+
+    node_t *node = llist_iterate_nodes(self->first,
+                                       callback_search_block,
+                                       &pspa);
+
+    return  llist_get_packet(node);
+
+}
+
+//*----------------------------------------------------------------------------
 
 int proc_delete(process_table_t *self, unsigned int PID){
     node_t  *node = llist_remove_node(&(self->first), PID);
@@ -207,6 +244,7 @@ int proc_set_state(process_t *self, process_state_t processState){
     return 0;
 }
 
+/*
 unsigned  int proc_get_waiting_PID(process_t *p){
     return p->id.PID;
 }
@@ -227,3 +265,4 @@ int proc_set_waiting_disp(process_t *p, void *disp, unsigned int ID){
     return 0;
 }
 
+*/
