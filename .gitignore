@@ -1,1 +1,3 @@
-Trabalhos/**/*.d
+*.d
+*.o
+*.out
