@@ -3,9 +3,6 @@
 //
 
 /* PLANEJAMENTO:
- * A estrutura interna conterá uma lista circular, o relógio e o programa zer0;
- * O programa zer0 é o init/idle e será retornado quando não houver outro processo
- para ser escalonado.
  * A estrutura pacote da lista circular vai armazenar o PID, o quantum atual,
  * o quantum inicial, e (talvez) o ponteiro para o processo;
  * Funções que não fazem parte de scheduler_interface, serão static;
@@ -17,7 +14,6 @@
 #include "stdlib.h"
 
 struct scheduler_t{
-  process_t * proc_zer0;
   node_t * first;
   relogio_t *relogio;
 };
@@ -64,11 +60,9 @@ static sched_packet *create_packet(unsigned int PID,
 
 //-------------INTERFACE------------------------------------------------------->
 
-scheduler_t *sched_create(void *proc_zer0, relogio_t *rel){
+scheduler_t *sched_create(relogio_t *rel){
     scheduler_t  * sched = calloc(1, sizeof(scheduler_t));
     sched->relogio = rel;
-    sched->proc_zer0 = (process_t *)proc_zer0;
-
     return sched;
 }
 
@@ -105,7 +99,7 @@ int sched_add(scheduler_t *self,
 void *sched_get_update(scheduler_t *self){
 
     if(!self->first)
-      return self->proc_zer0;
+      NULL;
 
     sched_packet *schedPacket = llist_get_packet(self->first);
 

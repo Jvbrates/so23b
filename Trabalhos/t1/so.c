@@ -46,7 +46,8 @@ static int so_carrega_programa(so_t *self, char *nome_do_executavel);
 static bool copia_str_da_mem(int tam, char str[tam], mem_t *mem, int ender);
 static int so_registra_proc(so_t *self, unsigned int address);
 static int so_mata_proc(so_t *self, unsigned int PID);
-int so_start_ptable_sched(so_t *self, int process_zer0_addr);
+int so_start_ptable_sched(so_t *self);
+static int so_cria_proc(so_t *self, char nome[100]);
 
 so_t *so_cria(cpu_t *cpu, mem_t *mem, console_t *console, relogio_t *relogio)
 {
@@ -73,7 +74,7 @@ so_t *so_cria(cpu_t *cpu, mem_t *mem, console_t *console, relogio_t *relogio)
 }
 
 static int so_device_busy(so_t *self, void *disp, unsigned int id);
-static int so_wait_proc(so_t *self, void *disp, unsigned int PID);
+static int so_wait_proc(so_t *self);
 static int  so_broadcast_procs_block_dev(so_t *self, void *device,
                                         unsigned int PID);
 static int so_broadcast_procs_block_PID(so_t *self, unsigned int PID);
@@ -82,7 +83,7 @@ static int so_broadcast_procs_block_PID(so_t *self, unsigned int PID);
 
 //Salva e Recover
 static process_t *process_save(so_t *self, unsigned int PID);
-static int process_recover(so_t *self, unsigned int PID);
+static err_t process_recover(so_t *self, process_t *process);
 
 
 void so_destroi(so_t *self)
@@ -110,22 +111,26 @@ static err_t so_trata_interrupcao(void *argC, int reg_A)
   so_t *self = argC;
   irq_t irq = reg_A;
   err_t err;
-  console_printf(self->console, "SO: recebi IRQ %d (%s)", irq, irq_nome(irq));
 
-  process_t  *p = process_save(self, self->runningP);
+  console_printf(self->console, "SO: recebi IRQ %d (%s, %i)", irq,
+                 irq_nome(irq), self->runningP);
 
-  if(p) //Não tem como alterar o estado de um processo que nao existe
-    proc_set_state(p, waiting);
 
-  /*TODO: No caso de um processo fazer uma requisição a um device ocupado, seu
-   * PC deve ser PC-1 para quando o dispositivo estiver pronto ele fazer essa
-   * requisição novamente?
-   *
-   * TODO: Na funcao mata proc, devo debloquear qualquer processo que esteja
-   * esperando por ela e adicionar ao escalonador. Isto vai exigir uma estrutura
-   * struct {proc_state_t tipo_bloq, int ID_dev_or_p, scheduler *}
+  // 1 - Salva o processso
+
+  /* No caso de PID ser 0, então está é a primeira execução do trata_irq e não há
+  * processo para ser salvo, então a etapa deve ser puladas
    * */
+  if(PID != 0) {
+    process_t *p = process_save(self, self->runningP);
 
+    // Acho que isso não é necessário, mas por segurança. TODO: Remover?
+    proc_set_state(p, waiting);
+  }
+
+
+
+  // 2 - Atende interrupções
   switch (irq) {
     case IRQ_RESET:
       err = so_trata_irq_reset(self);
@@ -142,15 +147,21 @@ static err_t so_trata_interrupcao(void *argC, int reg_A)
     default:
       err = so_trata_irq_desconhecida(self, irq);
   }
+  // 3 - Verifica Pendencias
 
 
-  if(irq != IRQ_RESET) {
-      process_t *to_run = sched_get_update(self->scheduler);
 
-      self->runningP = proc_get_PID(p);
+  // 4 - Escalonador
+  process_t *to_run = sched_get_update(self->scheduler);
 
-      process_recover(self, self->runningP);
-  }
+  // 5 - Recupera processo, se existir um;
+  err_t err_recover = process_recover(self, to_run);
+
+  // Evita que process_recover sobrescreva erros de syscall
+  if(err_recover != ERR_OK)
+    err = err_recover;
+
+  // 6 - Retorna o self->erro
   return err;
 }
 
@@ -163,21 +174,29 @@ static err_t so_trata_irq_reset(so_t *self)
   if(self->scheduler)
       sched_destruct(self->scheduler);
 
+  so_start_ptable_sched(self);
+
+  //Reseta o PID também;
+  PID = 0;
   // coloca um programa na memória
-  int ender = so_carrega_programa(self, "init.maq");
+  char init_name[100] = "init.maq";
+  int ender = so_cria_proc(self, init_name);
+
+
+  //int ender = so_carrega_programa(self, "init.maq");
 
   if (ender != 100) {
     console_printf(self->console, "SO: problema na carga do programa inicial");
     return ERR_CPU_PARADA;
   }
 
-  //Quando o scheduler não tiver nada para escalonar ele vai chamar init.maq
-  so_start_ptable_sched(self, ender);
 
+
+  // Comentando isto daqui, NÃO DEVE ser mais necessário.
   // altera o PC para o endereço de carga (deve ter sido 100)
-  mem_escreve(self->mem, IRQ_END_PC, ender);
+  //mem_escreve(self->mem, IRQ_END_PC, ender);
   // passa o processador para modo usuário
-  mem_escreve(self->mem, IRQ_END_modo, usuario);
+  //mem_escreve(self->mem, IRQ_END_modo, usuario);
   return ERR_OK;
 }
 
@@ -239,6 +258,11 @@ static err_t so_trata_chamada_sistema(so_t *self)
     case SO_MATA_PROC:
       so_chamada_mata_proc(self);
       break;
+    case SO_ESPERA_PROC:
+      so_wait_proc(self);
+      console_printf(self->console,
+                     "Tá em espera proc %i %i", self->runningP, PID);
+      break ;
     default:
       console_printf(self->console,
           "SO: chamada de sistema desconhecida (%d)", id_chamada);
@@ -295,27 +319,38 @@ static void so_chamada_escr(so_t *self)
   }
   int dado;
   mem_le(self->mem, IRQ_END_X, &dado);
-  term_escr(self->console, 2, dado);
+  term_escr(self->console, ((self->runningP -1 )%4)*4 + 2, dado);
   mem_escreve(self->mem, IRQ_END_A, 0);
+}
+
+static int so_cria_proc(so_t *self, char nome[100]){
+  int ender_carga = so_carrega_programa(self, nome);
+  if (ender_carga > 0) {
+    so_registra_proc(self, ender_carga);
+    return ender_carga;
+  } else {
+    console_print_status(self->console, "mem: Erro ao carregar processo, "
+                                        "não registrado");
+    return -1;
+  }
 }
 
 static void so_chamada_cria_proc(so_t *self)
 {
-  // ainda sem suporte a processos, carrega programa e passa a executar ele
-  // quem chamou o sistema não vai mais ser executado, coitado!
 
-  // em X está o endereço onde está o nome do arquivo
+  process_t *process = ptable_search(self->processTable, self->runningP);
+  cpu_info_t_so *cpuInfoTSo = proc_get_cpuinfo(process);
   int ender_proc;
   if (mem_le(self->mem, IRQ_END_X, &ender_proc) == ERR_OK) {
     char nome[100];
     if (copia_str_da_mem(100, nome, self->mem, ender_proc)) {
-      int ender_carga = so_carrega_programa(self, nome);
-      if (ender_carga > 0) {
-        so_registra_proc(self, ender_carga);
-      } else {
-        console_print_status(self->console, "mem: Erro ao carregar processo, "
-                                            "não registrado");
+      if( so_cria_proc(self, nome) != -1){
+        cpuInfoTSo->A = PID;
+      } else{
+        cpuInfoTSo->A = -1;
       }
+
+      proc_set_cpuinfo(process, cpuInfoTSo);
     }
 
   }
@@ -333,7 +368,7 @@ static void so_chamada_mata_proc(so_t *self)
     } else {
       process_t  *p = ptable_search(self->processTable, (unsigned  int)ID_kill);
       if(!p) {
-        console_print_status(self->console, "SO(kill): Processo inesitente");
+        console_print_status(self->console, "SO(kill): Processo inexistente");
         mem_escreve(self->mem, IRQ_END_A, -1);
         return ;
       }
@@ -415,7 +450,8 @@ static bool copia_str_da_mem(int tam, char str[tam], mem_t *mem, int ender)
 
 
 //Salva o estado da CPU para o processo PID;
-static process_t *process_save(so_t *self, unsigned int PID){
+static process_t *process_save(so_t *self, unsigned int PID_){
+
 
   struct cpu_info_t_so  *cpuInfo = calloc(1, sizeof(cpu_info_t));
 
@@ -426,7 +462,7 @@ static process_t *process_save(so_t *self, unsigned int PID){
   // Pq tenho que converter um enum * para int *???
   mem_le(self->mem, IRQ_END_modo, (int *)&(cpuInfo->modo));
 
-  process_t  *p = ptable_search(self->processTable, PID);
+  process_t  *p = ptable_search(self->processTable, PID_);
 
   if(p)
     proc_set_cpuinfo(p, cpuInfo);
@@ -434,48 +470,41 @@ static process_t *process_save(so_t *self, unsigned int PID){
   return p;
 }
 //Restaura o estado da CPU do processo PID;
-static int process_recover(so_t *self, unsigned int PID){
+static err_t process_recover(so_t *self, process_t *process){
 
-  process_t  *p = ptable_search(self->processTable, PID);
-  struct cpu_info_t_so  *cpuInfo = proc_get_cpuinfo(p);
+  err_t err = ERR_OK;
 
-  mem_escreve(self->mem, IRQ_END_A, (cpuInfo->A));
-  mem_escreve(self->mem, IRQ_END_X, (cpuInfo->X));
-  mem_escreve(self->mem, IRQ_END_complemento, (cpuInfo->complemento));
-  mem_escreve(self->mem, IRQ_END_PC, (cpuInfo->PC));
-  mem_escreve(self->mem, IRQ_END_modo, (cpuInfo->modo));
+  if(!process) {
+    if (ptable_is_empty(self->processTable)) { // Sem processos
+      err = ERR_CPU_PARADA;
+    } else {                                  // Tabela de processo bloqueada
+      err = ERR_CPU_PARADA;
+    }
 
-  // Escrever na memória é suficiente, a instrução RETI carrega para o cpu
+  } else {
 
-  return 0;
+    process_t  *p = process;
+    struct cpu_info_t_so  *cpuInfo = proc_get_cpuinfo(p);
 
-}
+    mem_escreve(self->mem, IRQ_END_A, (cpuInfo->A));
+    mem_escreve(self->mem, IRQ_END_X, (cpuInfo->X));
+    mem_escreve(self->mem, IRQ_END_complemento, (cpuInfo->complemento));
+    mem_escreve(self->mem, IRQ_END_PC, (cpuInfo->PC));
+    mem_escreve(self->mem, IRQ_END_modo, (cpuInfo->modo));
 
-int so_start_ptable_sched(so_t *self, int process_zer0_addr){
-  self->processTable = ptable_create();
+    self->runningP = proc_get_PID(process);
 
-  struct cpu_info_t_so  *cpuInfo = calloc(1, sizeof(cpu_info_t));
-  cpuInfo->modo = usuario;
-  cpuInfo->PC = process_zer0_addr;
-  cpuInfo->complemento = 0;
-  cpuInfo->X = 0;
-  cpuInfo->A = 0;
-
-  void *pzer0 =  ptable_add_proc(self->processTable,
-                            cpuInfo, PID++,
-                            process_zer0_addr);
-
-  if (!pzer0) {
-    (console_print_status(self->console, "ptable: Erro ao registrar processo 0"));
-    return -1;
   }
+  return err;
+}
 
-  self->scheduler = sched_create(pzer0, self->relogio);
+int so_start_ptable_sched(so_t *self){
+  self->processTable = ptable_create();
+  self->scheduler = sched_create(self->relogio);
 
   return 0;
 }
 
-// Registra processos criados na CPU !! Não é usado no processo zer0
 static int so_registra_proc(so_t *self, unsigned int address){
   struct cpu_info_t_so  *cpuInfo = calloc(1, sizeof(cpu_info_t));
   cpuInfo->modo = usuario;
@@ -484,7 +513,7 @@ static int so_registra_proc(so_t *self, unsigned int address){
   cpuInfo->X = 0;
   // cpu.A: Herdado do processo que cria ou do lixo que estiver na memória
   mem_le(self->mem, IRQ_END_A, &(cpuInfo->A));
-  void *p =  ptable_add_proc(self->processTable, cpuInfo, PID++, address);
+  void *p =  ptable_add_proc(self->processTable, cpuInfo, ++PID, address);
   if (!p) {
     (console_print_status(self->console, "ptable: Erro ao registrar processo"));
     return -1;
@@ -513,7 +542,7 @@ static int so_device_busy(so_t *self, void *disp, unsigned int id){
 
   // Quando processo retornar deve requerir novamente ao dispositivo
   cpu_info_t_so *c = proc_get_cpuinfo(p);
-  c->PC = c->PC -1;
+  //c->PC = c->PC -1;
   proc_set_cpuinfo(p, c);
 
   // Altera estado do processo, define que está esperando device,
@@ -528,15 +557,24 @@ static int so_device_busy(so_t *self, void *disp, unsigned int id){
 }
 
 // Define processo com bloqueado e esperando por certo Processo
-static int so_wait_proc(so_t *self, void *disp, unsigned int PID){
+static int so_wait_proc(so_t *self){
   process_t  *p = ptable_search(self->processTable, self->runningP);
+  cpu_info_t_so  *cpuInfo = proc_get_cpuinfo(p);
+  unsigned  int PID = cpuInfo->X;
 
-  // Altera estado do processo, define que está esperando processo,
-  // remove processo do escalonador
-  proc_set_state(p, blocked_proc);
-  proc_set_waiting_PID(p, PID);
-  sched_remove(self->scheduler, self->runningP);
+  process_t * espera = ptable_search(self->processTable, PID);
+  if(!espera) {
+    cpuInfo->A = -1;
+  } else {
+    // Altera estado do processo, define que está esperando processo,
+    // remove processo do escalonador
+    proc_set_state(p, blocked_proc);
+    proc_set_waiting_PID(p, PID);
+    sched_remove(self->scheduler, self->runningP);
+    cpuInfo->A = 0;
+  }
 
+  proc_set_cpuinfo(p, cpuInfo);
   return 0;
 }
 

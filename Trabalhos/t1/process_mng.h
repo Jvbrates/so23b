@@ -12,9 +12,10 @@ typedef struct process_t process_t;
 
 typedef void * cpu_info_t;
 
-typedef enum { undefined=0,
-               blocked_dev, // Waiting until process
-               blocked_proc, // Blocked until device
+typedef enum { undefined=0,   // useful for dbg
+               blocked_read,  // blocked for read
+               blocked_write, // blocked for write
+               blocked_proc,  // blocked for a proc die
                running,
                waiting,
                dead
@@ -46,6 +47,9 @@ int ptable_wakeup_PID(process_table_t *self, unsigned int PID,
 
 int ptable_wakeup_dev(process_table_t *self, void *disp, unsigned int PID,
                       void *scheduler, unsigned int quantum);
+
+
+int ptable_is_empty(process_table_t *self);
 
 //Setters
 int proc_set_cpuinfo(process_t *self, cpu_info_t cpuInfo);

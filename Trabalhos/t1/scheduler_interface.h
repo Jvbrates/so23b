@@ -9,7 +9,7 @@
 #include "relogio.h"
 typedef struct scheduler_t scheduler_t;
 
-scheduler_t *sched_create(void *proc_zer0, relogio_t *rel);
+scheduler_t *sched_create(relogio_t *rel);
 
 //scheduler_destruct não deve destruir os pprocesso (packet), isto é funcao da
 // ptable

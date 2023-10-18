@@ -162,6 +162,10 @@ process_t *ptable_search(process_table_t *self, unsigned int PID){
     return llist_get_packet(node);
 }
 
+int ptable_is_empty(process_table_t *self){
+    return (self->first == NULL);
+}
+
 int proc_delete(process_table_t *self, unsigned int PID){
     node_t  *node = llist_remove_node(&(self->first), PID);
     if(!node)//node not found
