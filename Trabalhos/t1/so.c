@@ -27,8 +27,10 @@ struct so_t {
 
   /*
    * Para cada pendência/requisição de escrita/leitura em dado dipositivo o valor
-   * é incrementado, quando a pendencia é atendida, o valor é decrementado.
+   * é incrementado, quando a pendência é atendida, o valor é decrementado.
    * */
+  // [][0] -- Escrita
+  // [][1] -- Leitura
   int es_pendencias[NUM_ES][2];
 };
 
@@ -593,6 +595,8 @@ static int so_wait_proc(so_t *self){
     cpuInfo->A = 0;
   }
 
+  //FIXME se cpuinfo é  um ponteiro dentro de proc_t então não é necessário
+  // setar ele após alterar
   proc_set_cpuinfo(p, cpuInfo);
   return 0;
 }
@@ -616,22 +620,53 @@ static int  so_broadcast_procs_block_dev(so_t *self, void *device,
 
 
 static err_t  so_trata_pendencias(so_t *self){
+  err_t erro = ERR_OK;
 
   for (int i = 0; i < NUM_ES; ++i) {
     // Trata pendencia de escrita
-    int estado =  term_le(self->console, i + 3, &estado);
+    int estado_escr, estado_leitura;
+    term_le(self->console, i*4 + 3, &estado_escr);
+    term_le(self->console, i*4 + 1, &estado_leitura);
 
-    if(self->es_pendencias[i][0] > 0 && estado != 0){
+    if(self->es_pendencias[i][0] > 0 && estado_escr != 0){
       process_t *p = ptable_search_pendencia(self->processTable, blocked_write, i);
       
       if(!p) {
         console_printf(self->console,
                        "tabela de pendencias e ptable não sincronizadas");
-        return -1;
+        return erro++;
       }
 
+      cpu_info_t_so  *proc_info = proc_get_cpuinfo(p);
+      int dado = proc_info->X;
+
+      int ret = term_escr(self->console, i*4 + 2, dado);
+
+      proc_info->A = ret;
+
+      self->es_pendencias[i][0]--;
+
+    }
+
+    //Trata pendencia de leitura
+    if(self->es_pendencias[i][1] > 0 && estado_leitura != 0){
+      process_t *p = ptable_search_pendencia(self->processTable, blocked_read, i);
+      if(!p) {
+        console_printf(self->console,
+                       "tabela de pendencias e ptable não sincronizadas");
+        return erro++;
+      }
+      cpu_info_t_so  *proc_info = proc_get_cpuinfo(p);
+
+      int dado;
+      if(term_le(self->console, i*4, &dado) != ERR_OK)
+        erro++;
+
+      proc_info->A = dado;
+
+      self->es_pendencias[i][1]--;
 
     }
   }
-  return ERR_OK;
+  return erro;
 }
