@@ -254,6 +254,10 @@ static err_t so_trata_irq_desconhecida(so_t *self, int irq)
   return ERR_CPU_PARADA;
 }
 
+//FIXME Organizar isto aqui
+static int so_proc_pendencia(so_t *self, unsigned int PID_,
+                             process_state_t state, unsigned int PID_or_device);
+
 // Chamadas de sistema
 static void so_chamada_le(so_t *self);
 static void so_chamada_escr(so_t *self);
@@ -295,6 +299,15 @@ static err_t so_trata_chamada_sistema(so_t *self)
 //TODO alterar so_chamada_le
 static void so_chamada_le(so_t *self)
 {
+
+  int device = ((self->runningP - 1)%4)*4;
+
+  //Configura processo
+  so_proc_pendencia(self, self->runningP, blocked_read, device);
+
+  //Registra a "requisição"
+  self->es_pendencias[device][1]++;
+  /*
   // implementação com espera ocupada
   //   deveria bloquear o processo se leitura não disponível
   // implementação lendo direto do terminal A
@@ -306,7 +319,7 @@ static void so_chamada_le(so_t *self)
   {
   // i.e. Ainda não há nada para ler ou dispositivo ocupado
       so_device_busy(self, self->console, 1);
-  }
+  }*/
   /*
   for (;;) {
     int estado;
@@ -325,7 +338,17 @@ static void so_chamada_le(so_t *self)
 
 static void so_chamada_escr(so_t *self)
 {
-  // implementação com espera ocupada
+
+  int device = ((self->runningP - 1)%4)*4;
+
+  //Configura processo
+  so_proc_pendencia(self, self->runningP, blocked_write, device);
+
+  //Registra a "requisição"
+  self->es_pendencias[device][0]++;
+
+
+  /*// implementação com espera ocupada | deixar comentado, vai que precise
   //   deveria bloquear o processo se dispositivo ocupado
   // implementação escrevendo direto do terminal A
   //   deveria usar dispositivo corrente de saída do processo
@@ -341,7 +364,29 @@ static void so_chamada_escr(so_t *self)
   int dado;
   mem_le(self->mem, IRQ_END_X, &dado);
   term_escr(self->console, ((self->runningP -1 )%4)*4 + 2, dado);
-  mem_escreve(self->mem, IRQ_END_A, 0);
+  mem_escreve(self->mem, IRQ_END_A, 0);*/
+}
+
+// Definições do processo para esperar pendencia e remove do escalonador
+// Escolher PID como variavel global nao foi uma boa escolha
+static int so_proc_pendencia(so_t *self, unsigned int PID_,
+                            process_state_t state, unsigned int PID_or_device){
+
+  process_t *p = ptable_search(self->processTable, PID_);
+  if(!p) {
+    console_printf(self->console,
+                   "Processo [%ui] existe mas não está na ptable "
+                   , PID_);
+    return -1;
+  }
+
+
+  proc_set_state(p, state);
+  proc_set_PID_or_device(p, PID_or_device);
+  sched_remove(self->scheduler, PID_);
+
+
+  return ERR_OK;
 }
 
 static int so_cria_proc(so_t *self, char nome[100]){
@@ -634,7 +679,8 @@ static err_t  so_trata_pendencias(so_t *self){
       if(!p) {
         console_printf(self->console,
                        "tabela de pendencias e ptable não sincronizadas");
-        return erro++;
+        erro++;
+        continue ;
       }
 
       cpu_info_t_so  *proc_info = proc_get_cpuinfo(p);
@@ -654,7 +700,9 @@ static err_t  so_trata_pendencias(so_t *self){
       if(!p) {
         console_printf(self->console,
                        "tabela de pendencias e ptable não sincronizadas");
-        return erro++;
+        // Ou falha na funcao search...
+        erro++;
+        continue ;
       }
       cpu_info_t_so  *proc_info = proc_get_cpuinfo(p);
 
