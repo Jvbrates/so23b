@@ -180,7 +180,7 @@ void *callback_search_block(node_t *node, void *argument){
 
     process_t *p = llist_get_packet(node);
 
-    if(p->processState == arg->state && p->PID_or_device == argument){
+    if(p->processState == arg->state && p->PID_or_device == arg->dispositivo){
       return node;
     }
 
@@ -243,6 +243,14 @@ int proc_set_state(process_t *self, process_state_t processState){
     self->processState = processState;
     return 0;
 }
+
+int proc_set_PID_or_device(process_t *self, unsigned int PID_or_device){
+    self->PID_or_device = PID_or_device;
+    return 0;
+}
+
+
+
 
 /*
 unsigned  int proc_get_waiting_PID(process_t *p){

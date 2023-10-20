@@ -99,7 +99,7 @@ int sched_add(scheduler_t *self,
 void *sched_get_update(scheduler_t *self){
 
     if(!self->first)
-      NULL;
+      return NULL;
 
     sched_packet *schedPacket = llist_get_packet(self->first);
 
