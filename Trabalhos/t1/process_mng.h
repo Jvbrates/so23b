@@ -46,6 +46,9 @@ process_t *ptable_search_pendencia(process_table_t *self,
                                    process_state_t estado,
                                    int dispositivo);
 
+
+int ptable_delete(process_table_t *self, unsigned int PID);
+
 //Setters
 
 //Salva o ponteiro para cpu_info_t
@@ -58,9 +61,10 @@ int proc_set_waiting_PID(process_t *p, unsigned int PID);
 * ou identificador do dispositivo (terminal) que está esperando acessar
 */
 int proc_set_PID_or_device(process_t *self, unsigned int PID_or_device);
+int proc_get_PID_or_device(process_t *self);
+
 
 // Getters
-void * proc_get_waiting_disp(process_t *p);
 unsigned  int proc_get_waiting_PID(process_t *p);
 cpu_info_t proc_get_cpuinfo(process_t* self);
 process_state_t proc_get_state(process_t* self);

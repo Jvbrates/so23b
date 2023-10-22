@@ -163,39 +163,3 @@ void llist_delete_node(node_t *node){
 }
 
 
-/*
-
-int main(){
-
-  node_t *A = llist_create_node_round((void *)65, 1);
-  A->next = A;
-  A->previous = A;
-
-  node_t *salva_last = llist_create_node_round((void *)(52), 2);
-  llist_add_node_next(A, salva_last);
-//node_t * salva_last = addnext_to(A, (void *)66, 2);
-  salva_last = llist_create_node_round((void *)(52), 0);
-  llist_add_node_previous(A, salva_last);
-
-  printf("%d,%d,%d,%d\n", A->key, A->next->key, A->next->next->key, A->next->next->next->key);
-
-  llist_remove_node(&A, 1);
-  printf("%d,%d,%d,%d\n", A->key, A->next->key, A->next->next->key, A->next->next->next->key);
-  llist_remove_node(&A, 2);
-  printf("%d,%d,%d,%d\n", A->key, A->next->key, A->next->next->key, A->next->next->next->key);
-  llist_remove_node(&A, 0);
-  printf("pointer %p\n", A);
-  printf("%d,%d,%d,%d\n", A->key, A->next->key, A->next->next->key, A->next->next->next->key);
-  // remove_node(salva_last);
-  // llist_delete_node(&A, A);
-
-  //Teste search | funcionando
-  // node_t *s = llist_iterate_nodes(A, callback_search_key, (void *)1);
-
-
-
-  //printf("%d,%d,%d,%d\n", A->key, A->next->key, A->next->next->key, A->next->next->next->key);
-
-  return 0;
-}
- */

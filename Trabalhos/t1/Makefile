@@ -26,16 +26,24 @@ montador: ${OBJS_MONT}
 
 # para gerar o programa principal, precisa de todos os .o)
 main: ${OBJS}
+	$(CC) $(CFLAGS) -o main ${OBJS} $(LDLIBS)
 
 # para transformar um .asm em .maq, precisamos do montador
 # monta os programas de usuário no endereço 100
+	#./montador -e 100 $*.asm > $*.maq
 %.maq: %.asm montador
-#./montador -e 100 $*.asm > $*.maq
-end=100 ; \
-for arq in ${MAQS}; do \
-./montador -e $$end `basename $$arq .maq`.asm > $$arq ;\
-end=`expr $$end + 1000` ;\
-done
+	end=100 ; \
+	for arq in ${MAQS}; do \
+	./montador -e $$end `basename $$arq .maq`.asm > $$arq ;\
+	end=`expr $$end + 1000` ;\
+	done
+
+maq:
+	end=100 ; \
+	for arq in ${MAQS}; do \
+	./montador -e $$end `basename $$arq .maq`.asm > $$arq ;\
+	end=`expr $$end + 1000` ;\
+	done
 
 # o módulo trata_irq tem que ser montado no endereço 10, que é para onde
 # a CPU desvia quando recebe uma interrupção

@@ -12,6 +12,10 @@
 #define INTERVALO_INTERRUPCAO 50   // em instruções executadas
 #define QUANTUM 10
 
+//dbg
+static int pend[5];
+static int aten[5];
+
 //Usado para tabela de pendencias,
 // tem 4 terminais. Em algum momento o relógio estará "ocupado"?
 #define NUM_ES 4
@@ -23,7 +27,9 @@ struct so_t {
   process_table_t * processTable;
   //Pensando em colocar scheduller dentro de process_table
   scheduler_t * scheduler;
+  // TODO: Remover necessidade disto, usar somente o ponteiro
   unsigned int runningP;
+  process_t *p_runningP;
 
   /*
    * Para cada pendência/requisição de escrita/leitura em dado dipositivo o valor
@@ -59,7 +65,7 @@ static err_t so_trata_interrupcao(void *argC, int reg_A);
 static int so_carrega_programa(so_t *self, char *nome_do_executavel);
 static bool copia_str_da_mem(int tam, char str[tam], mem_t *mem, int ender);
 static int so_registra_proc(so_t *self, unsigned int address);
-static int so_mata_proc(so_t *self, unsigned int PID);
+static int so_mata_proc(so_t *self, process_t *p);
 int so_start_ptable_sched(so_t *self);
 static int so_cria_proc(so_t *self, char nome[100]);
 
@@ -133,15 +139,15 @@ static err_t so_trata_interrupcao(void *argC, int reg_A)
 
   // 1 - Salva o processso
 
-  /* No caso de PID ser 0, então está é a primeira execução do trata_irq e não há
-  * processo para ser salvo, então a etapa deve ser puladas
-   * */
-  if(PID != 0) {
-    process_t *p = process_save(self, self->runningP);
 
-    // Acho que isso não é necessário, mas por segurança. TODO: Remover?
-    proc_set_state(p, waiting);
+  /* No caso de PID ser 0, então está é a primeira execução do trata_irq e não há
+  * processo para ser salvo, então a etapa deve ser pulada
+   * */
+  if(PID == 0 && irq != 0) {
+    goto pendencias;
   }
+  if(self->runningP != 0)
+    process_save(self, self->runningP);
 
 
 
@@ -163,7 +169,7 @@ static err_t so_trata_interrupcao(void *argC, int reg_A)
       err = so_trata_irq_desconhecida(self, irq);
   }
   // 3 - Verifica Pendencias
-
+pendencias:
   so_trata_pendencias(self);
 
   // 4 - Escalonador
@@ -171,11 +177,8 @@ static err_t so_trata_interrupcao(void *argC, int reg_A)
   if(!to_run)
       console_printf(self->console, "Nada para escalonar no momento");
   // 5 - Recupera processo, se existir um;
-  err_t err_recover = process_recover(self, to_run);
+  process_recover(self, to_run);
 
-  // Evita que process_recover sobrescreva erros de syscall
-  if(err_recover != ERR_OK)
-    err = err_recover;
 
   // 6 - Retorna o self->erro
   return err;
@@ -221,6 +224,7 @@ static err_t so_trata_irq_reset(so_t *self)
 
 static err_t so_trata_irq_err_cpu(so_t *self)
 {
+  console_tictac(self->console);
   // Ocorreu um erro interno na CPU
   // O erro está codificado em IRQ_END_erro
   // Em geral, causa a morte do processo que causou o erro
@@ -229,7 +233,10 @@ static err_t so_trata_irq_err_cpu(so_t *self)
   mem_le(self->mem, IRQ_END_erro, &err_int);
   err_t err = err_int;
   if(err_int == ERR_CPU_PARADA){
-    return ERR_OK;
+    so_trata_irq_relogio(self);
+    console_printf(self->console,
+                   "SO: IRQ não tratada -- erro na CPU: %s", err_nome(err));
+    return ERR_CPU_PARADA;
   }
 
   console_printf(self->console,
@@ -302,40 +309,15 @@ static err_t so_trata_chamada_sistema(so_t *self)
 static void so_chamada_le(so_t *self)
 {
 
-  int device = ((self->runningP - 1)%4)*4;
+  int device = ((self->runningP - 1)%4);
 
   //Configura processo
   so_proc_pendencia(self, self->runningP, blocked_read, device);
 
   //Registra a "requisição"
   (self->es_pendencias[device][1])++;
-  /*
-  // implementação com espera ocupada
-  //   deveria bloquear o processo se leitura não disponível
-  // implementação lendo direto do terminal A
-  //   deveria usar dispositivo corrente de entrada do processo
 
-  int estado;
-  err_t status = term_le(self->console, 1, &estado);
-  if(estado == 0 || status == ERR_OCUP)
-  {
-  // i.e. Ainda não há nada para ler ou dispositivo ocupado
-      so_device_busy(self, self->console, 1);
-  }*/
-  /*
-  for (;;) {
-    int estado;
-    term_le(self->console, 1, &estado);
-    if (estado != 0) break;
-    // como não está saindo do SO, o laço do processador não tá rodando
-    // esta gambiarra faz o console andar
-    console_tictac(self->console);
-    console_atualiza(self->console);
-  }
-  */
-  int dado;
-  term_le(self->console, 0, &dado);
-  mem_escreve(self->mem, IRQ_END_A, dado);
+
 }
 
 static void so_chamada_escr(so_t *self)
@@ -345,30 +327,12 @@ static void so_chamada_escr(so_t *self)
 
   //Registra a "requisição"
   (self->es_pendencias[device][0])++;
+  pend[self->runningP]++;
 
 
   //Configura processo
   so_proc_pendencia(self, self->runningP, blocked_write, device);
 
-
-
-  /*// implementação com espera ocupada | deixar comentado, vai que precise
-  //   deveria bloquear o processo se dispositivo ocupado
-  // implementação escrevendo direto do terminal A
-  //   deveria usar dispositivo corrente de saída do processo
-  for (;;) {
-    int estado;
-    term_le(self->console, ((self->runningP -1 )%4)*4 + 3, &estado);
-    if (estado != 0) break;
-    // como não está saindo do SO, o laço do processador não tá rodando
-    // esta gambiarra faz o console andar
-    console_tictac(self->console);
-    console_atualiza(self->console);
-  }
-  int dado;
-  mem_le(self->mem, IRQ_END_X, &dado);
-  term_escr(self->console, ((self->runningP -1 )%4)*4 + 2, dado);
-  mem_escreve(self->mem, IRQ_END_A, 0);*/
 }
 
 // Definições do processo para esperar pendencia e remove do escalonador
@@ -377,6 +341,7 @@ static int so_proc_pendencia(so_t *self, unsigned int PID_,
                             process_state_t state, unsigned int PID_or_device){
 
   process_t *p = ptable_search(self->processTable, PID_);
+
   if(!p) {
     console_printf(self->console,
                    "Processo [%ui] existe mas não está na ptable "
@@ -424,44 +389,34 @@ static void so_chamada_cria_proc(so_t *self)
     }
 
   }
-  mem_escreve(self->mem, IRQ_END_A, -1); //Todo remover este -1
+
 }
 
 static void so_chamada_mata_proc(so_t *self)
 {
-  // ainda sem suporte a processos, retorna erro -1
-  console_printf(self->console, "SO: SO_MATA_PROC não implementada");
-   int ID_kill;
-  if (mem_le(self->mem, IRQ_END_X, &ID_kill) == ERR_OK) {
-    if(!ID_kill){
-      console_print_status(self->console, "SO(kill): tentativa de matar init.asm!");
-    } else {
-      process_t  *p = ptable_search(self->processTable, (unsigned  int)ID_kill);
-      if(!p) {
-        console_print_status(self->console, "SO(kill): Processo inexistente");
-        mem_escreve(self->mem, IRQ_END_A, -1);
-        return ;
-      }
-      process_state_t  processState = proc_get_state(p);
 
-      if(processState == running ||
-         processState == waiting ||
-         processState == blocked_read ||
-         processState == blocked_proc) {
-
-        so_mata_proc(self, ID_kill);
-
-      } else {
-        console_print_status(self->console, "SO(kill): Processo inexistente");
-        mem_escreve(self->mem, IRQ_END_A, -1);
-        return ;
-      }
-    }
+  int proc_kill;
+  mem_le(self->mem, IRQ_END_X, &proc_kill);
+  // FIXME gambiarra feia
+  self->p_runningP = ptable_search(self->processTable, self->runningP);
+  process_t *pk;
+  if(proc_kill) {
+    pk = ptable_search(self->processTable, proc_kill);
   } else {
-    console_print_status(self->console, "mem: erro ao ler da memoria");
+    pk = self->p_runningP;
   }
 
-  mem_escreve(self->mem, IRQ_END_A, -1);
+  if(pk){
+
+    cpu_info_t_so *cpuInfo = proc_get_cpuinfo(self->p_runningP);
+    cpuInfo->A = 0;
+    so_mata_proc(self, pk);
+
+  }else{
+    cpu_info_t_so *cpuInfo = proc_get_cpuinfo(self->p_runningP);
+    cpuInfo->A = -1;
+  }
+
 }
 
 
@@ -549,9 +504,16 @@ static err_t process_recover(so_t *self, process_t *process){
       err = ERR_CPU_PARADA;
     } else {                                  // Tabela de processo bloqueada
 
-      mem_escreve(self->mem, IRQ_END_erro, ERR_CPU_PARADA);
-      mem_escreve(self->mem, IRQ_END_modo, usuario);
-      //err = ERR_CPU_PARADA;
+      //mem_escreve(self->mem, IRQ_END_erro, ERR_CPU_PARADA);
+      mem_escreve(self->mem, IRQ_END_modo, supervisor);
+      mem_escreve(self->mem, IRQ_END_PC, 10);
+      mem_escreve(self->mem, IRQ_END_A, IRQ_RELOGIO);
+
+
+      self->runningP = 0;
+      //Armar relógio?
+      //so_trata_irq_relogio(self);
+      //console_atualiza(self->console);
     }
 
   } else {
@@ -601,10 +563,20 @@ static int so_registra_proc(so_t *self, unsigned int address){
 //Mata um processo, não faz verificações.
 // Na prática: Remove da lista scheduler(necessário) e remove da lista de
 // processos
-static int so_mata_proc(so_t *self, unsigned int PID){
+static int so_mata_proc(so_t *self, process_t *p){
 
-  sched_remove(self->scheduler, PID);
-  int r =  proc_delete(self->processTable, PID);
+  process_state_t estado = proc_get_state(p);
+  proc_set_state(p, dead);
+
+  if(estado == waiting) {
+    sched_remove(self->scheduler, proc_get_PID(p));
+  } else if( estado == blocked_read){
+    (self->es_pendencias[proc_get_PID_or_device(p)][1])--;
+  } else if(estado == blocked_write){
+    (self->es_pendencias[proc_get_PID_or_device(p)][0])--;
+  }
+  ptable_delete(self->processTable, proc_get_PID(p));
+
   return 0;
 }
 
@@ -648,14 +620,14 @@ static err_t  so_trata_pendencias(so_t *self){
 
   for (int i = 0; i < NUM_ES; ++i) {
     // Trata pendencia de escrita
-    int estado_escr, estado_leitura;
+    static int estado_escr, estado_leitura;
     term_le(self->console, i*4 + 3, &estado_escr);
     term_le(self->console, i*4 + 1, &estado_leitura);
 
     if(self->es_pendencias[i][0] > 0 && estado_escr != 0){
       process_t *p = ptable_search_pendencia(self->processTable, blocked_write, i);
       
-      if(!p) {
+      if(p == NULL) {
         console_printf(self->console,
                        "tabela de pendencias e ptable não sincronizadas");
         erro++;
@@ -670,9 +642,9 @@ static err_t  so_trata_pendencias(so_t *self){
       proc_info->A = ret;
 
       (self->es_pendencias[i][0])--;
+      aten[proc_get_PID(p)]++;
 
       proc_set_state(p, waiting);
-      unsigned int pid_local = proc_get_PID(p);
 
       sched_add(self->scheduler, p, proc_get_PID(p), QUANTUM);
 
@@ -681,7 +653,7 @@ static err_t  so_trata_pendencias(so_t *self){
     //Trata pendencia de leitura
     if(self->es_pendencias[i][1] > 0 && estado_leitura != 0){
       process_t *p = ptable_search_pendencia(self->processTable, blocked_read, i);
-      if(!p) {
+      if(p == NULL) {
         console_printf(self->console,
                        "tabela de pendencias e ptable não sincronizadas");
         // Ou falha na funcao search...
@@ -700,7 +672,6 @@ static err_t  so_trata_pendencias(so_t *self){
 
       proc_set_state(p, waiting);
       proc_set_PID_or_device(p, 0);
-      unsigned int pid_local = proc_get_PID(p);
 
       sched_add(self->scheduler, p, proc_get_PID(p), QUANTUM);
 

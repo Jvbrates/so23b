@@ -68,75 +68,6 @@ void ptable_destruct(process_table_t *self){
 
 }
 
-/*
-
-typedef struct {
-  //waiting_id w_id;
-  scheduler_t *sched;
-  unsigned int quantum;
-} wakeup_struct;
-
-
-void *callback_wakeup_proc_pid(node_t *node, void *argument){
-  process_t *p = llist_get_packet(node);
-
-  wakeup_struct *wakeupStruct = (wakeup_struct *)argument;
-
-  if(p->processState == blocked_proc &&
-      p->id.PID == (unsigned int)wakeupStruct->w_id.PID) {
-      p->processState = waiting;
-      sched_add(wakeupStruct->sched, p, p->PID, wakeupStruct->quantum);
-  }
-  return NULL;
-}
-
-void *callback_wakeup_proc_dev(node_t *node, void *argument){
-  process_t *p = llist_get_packet(node);
-
-  wakeup_struct *wakeupStruct = (wakeup_struct *)argument;
-
-  if(p->processState == blocked_proc &&
-      p->id.disp == wakeupStruct->w_id.disp &&
-      p->id.PID == wakeupStruct->w_id.PID) {
-      p->processState = waiting;
-      sched_add(wakeupStruct->sched, p, p->PID, wakeupStruct->quantum);
-  }
-  return NULL;
-}
-
-int ptable_wakeup_PID(process_table_t *self, unsigned int PID,
-                      void *scheduler, unsigned int quantum){
-
-  wakeup_struct wakeupStruct;
-  wakeupStruct.sched = (scheduler_t *)scheduler;
-  wakeupStruct.quantum = quantum;
-  wakeupStruct.w_id.PID = PID;
-
-  llist_iterate_nodes(self->first,
-                      callback_wakeup_proc_pid, (void * )&wakeupStruct);
-  return 0;
-}
-*/
-
-/*
-int ptable_wakeup_dev(process_table_t *self, void *disp, unsigned int ID,
-                      void *scheduler, unsigned int quantum){
-
-  llist_iterate_nodes(self->first, callback_wakeup_proc_dev, disp);
-
-  wakeup_struct wakeupStruct;
-  wakeupStruct.sched = (scheduler_t *)scheduler;
-  wakeupStruct.quantum = quantum;
-  wakeupStruct.w_id.PID = ID;
-  wakeupStruct.w_id.disp = disp;
-
-  llist_iterate_nodes(self->first,
-                      callback_wakeup_proc_pid, (void * )&wakeupStruct);
-  return 0;
-}
-*/
-
-
 void * ptable_add_proc(process_table_t *self, cpu_info_t cpuInfo, unsigned int PID,
                     unsigned int start_address){
     process_t * p  = proc_create(cpuInfo, PID, start_address);
@@ -161,7 +92,9 @@ process_t *ptable_search(process_table_t *self, unsigned int PID){
 }
 
 int ptable_is_empty(process_table_t *self){
-    return (self->first == NULL);
+    if (self->first == NULL)
+      return 1;
+    return 0;
 }
 
 
@@ -203,16 +136,19 @@ process_t *ptable_search_pendencia(process_table_t *self,
 
 //*----------------------------------------------------------------------------
 
-int proc_delete(process_table_t *self, unsigned int PID){
+int ptable_delete(process_table_t *self, unsigned int PID){
     node_t  *node = llist_remove_node(&(self->first), PID);
     if(!node)//node not found
       return -1;
     process_t  *p = llist_get_packet(node);
     llist_delete_node(node);
 
-    if(p)
-      free(p);
 
+    if(p) {
+      if(p->cpuInfo)
+        free(p->cpuInfo);
+      free(p);
+    }
     return 0;
 }
 
@@ -250,6 +186,13 @@ int proc_set_PID_or_device(process_t *self, unsigned int PID_or_device){
 }
 
 
+
+int proc_get_PID_or_device(process_t *self){
+    if(self)
+      return self->PID_or_device;
+
+    return -1;
+}
 
 
 /*

@@ -10,6 +10,7 @@ struct controle_t {
   console_t *console;
   enum { executando, passo, parado, fim } estado;
 };
+static unsigned long int test;
 
 // funções auxiliares
 static void controle_processa_teclado(controle_t *self);
@@ -38,10 +39,11 @@ void controle_laco(controle_t *self)
 {
   // executa uma instrução por vez até a console dizer que chega
   do {
-    if (self->estado == passo || self->estado == executando) {
+    if (self->estado == passo || self->estado == executando || self->estado == parado) {
       cpu_executa_1(self->cpu);
       rel_tictac(self->relogio);
       console_tictac(self->console);
+      test++;
       // enquanto não tem controlador de interrupção, fala direto com o relógio
       // o dispositivo 3 do relógio contém 1 se o timer expirou
       int tem_int;
