@@ -34,7 +34,7 @@ void ptable_destruct(process_table_t *processTable);
 
 
 void *ptable_add_proc(process_table_t *self, cpu_info_t cpuInfo,
-                    int PID, int start_address);
+                    int PID, int start_address, double priority);
 
 process_t *ptable_search(process_table_t *self, int PID);
 
@@ -74,5 +74,11 @@ process_state_t proc_get_state(process_t* self);
 int proc_get_PID(process_t* self);
 int proc_set_state(process_t *self, process_state_t processState);
 
+/* Como a prioridade deve manter-se ao longo da existência de um processo,
+ * deve ser mantido com a tabela de processos e nao com o escalonador
+ */
+double proc_get_priority(process_t *self);
+
+double proc_get_prioity(process_t *self, double priority);
 
 #endif // SO23B_PROCESS_MNG_H

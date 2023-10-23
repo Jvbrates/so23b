@@ -11,20 +11,16 @@
 // intervalo entre interrupções do relógio
 #define INTERVALO_INTERRUPCAO 50   // em instruções executadas
 #define QUANTUM 10
+#define NUM_ES 4 // 4 terminais
 
 
-//Usado para tabela de pendencias,
-// tem 4 terminais. Em algum momento o relógio estará "ocupado"?
-#define NUM_ES 4
 struct so_t {
   cpu_t *cpu;
   mem_t *mem;
   console_t *console;
   relogio_t *relogio;
   process_table_t * processTable;
-  //Pensando em colocar scheduller dentro de process_table
   scheduler_t * scheduler;
-  // TODO: Remover necessidade disto, usar somente o ponteiro
   int runningP;
   process_t *p_runningP;
 
@@ -37,11 +33,6 @@ struct so_t {
   int es_pendencias[NUM_ES][2];
 };
 
-
-/*
- * TODO:
- * cpu_info_t == void* e struct cpu_info_t_so está confuso...Resolva isto
- * */
 typedef struct cpu_info_t_so {
   int PC;
   int X;
@@ -51,9 +42,10 @@ typedef struct cpu_info_t_so {
   cpu_modo_t modo;
 }cpu_info_t_so;
 
-
-
 static int PID;
+
+
+//---------------------------------------------------------------------------
 
 // função de tratamento de interrupção (entrada no SO)
 static err_t so_trata_interrupcao(void *argC, int reg_A);
@@ -61,51 +53,15 @@ static err_t so_trata_interrupcao(void *argC, int reg_A);
 // funções auxiliares
 static int so_carrega_programa(so_t *self, char *nome_do_executavel);
 static bool copia_str_da_mem(int tam, char str[tam], mem_t *mem, int ender);
+
+//Processos
+static process_t *process_save(so_t *self, int PID);
+static err_t process_recover(so_t *self, process_t *process);
+static int so_cria_proc(so_t *self, char nome[100]);
 static int so_registra_proc(so_t *self, int address);
 static int so_mata_proc(so_t *self, process_t *p);
 int so_start_ptable_sched(so_t *self);
-static int so_cria_proc(so_t *self, char nome[100]);
 
-so_t *so_cria(cpu_t *cpu, mem_t *mem, console_t *console, relogio_t *relogio)
-{
-  so_t *self = malloc(sizeof(*self));
-  if (self == NULL) return NULL;
-
-  self->cpu = cpu;
-  self->mem = mem;
-  self->console = console;
-  self->relogio = relogio;
-  memset(self->es_pendencias, 0, sizeof(self->es_pendencias));
-
-  // quando a CPU executar uma instrução CHAMAC, deve chamar essa função
-  cpu_define_chamaC(self->cpu, so_trata_interrupcao, self);
-  // coloca o tratador de interrupção na memória
-  if (so_carrega_programa(self, "trata_irq.maq") != 10) {
-    console_printf(console, "SO: problema na carga do tratador de interrupções");
-    free(self);
-    self = NULL;
-  }
-  // programa a interrupção do relógio
-  rel_escr(self->relogio, 2, INTERVALO_INTERRUPCAO);
-
-  return self;
-}
-
-static int so_wait_proc(so_t *self);
-
-
-// funções auxiliares para tratar cada tipo de interrupção
-
-//Salva e Recover
-static process_t *process_save(so_t *self, int PID);
-static err_t process_recover(so_t *self, process_t *process);
-
-
-void so_destroi(so_t *self)
-{
-  cpu_define_chamaC(self->cpu, NULL, NULL);
-  free(self);
-}
 
 // Tratamento de interrupção
 static err_t so_trata_irq_reset(so_t *self);
@@ -116,7 +72,22 @@ static err_t so_trata_chamada_sistema(so_t *self);
 
 //Tratamento de pendências
 static err_t  so_trata_pendencias(so_t *self);
+static int so_proc_pendencia(so_t *self, int PID_,
+                             process_state_t state, int PID_or_device);
+static int so_wait_proc(so_t *self);
 
+
+// Chamadas de sistema
+static void so_chamada_le(so_t *self);
+static void so_chamada_escr(so_t *self);
+static void so_chamada_cria_proc(so_t *self);
+static void so_chamada_mata_proc(so_t *self);
+
+//----------------------------------------------------------------------------
+// Funções:
+
+
+/*ENTRYPOINT*/
 // função a ser chamada pela CPU quando executa a instrução CHAMAC
 // essa instrução só deve ser executada quando for tratar uma interrupção
 // o primeiro argumento é um ponteiro para o SO, o segundo é a identificação
@@ -135,10 +106,6 @@ static err_t so_trata_interrupcao(void *argC, int reg_A)
 
 
   // 1 - Salva o processso
-  /* No caso de PID ser 0, então está é a primeira execução do trata_irq e não há
-  * processo para ser salvo, então a etapa deve ser pulada
-   * */
-
   if(self->runningP != 0) {
     process_save(self, self->runningP);
     self->p_runningP = ptable_search(self->processTable, self->runningP);
@@ -146,37 +113,42 @@ static err_t so_trata_interrupcao(void *argC, int reg_A)
 
   // 2 - Atende interrupções
   switch (irq) {
-    case IRQ_RESET:
-      err = so_trata_irq_reset(self);
-      break;
-    case IRQ_ERR_CPU:
-      err = so_trata_irq_err_cpu(self);
-      break;
-    case IRQ_SISTEMA:
-      err = so_trata_chamada_sistema(self);
-      break;
-    case IRQ_RELOGIO:
-      err = so_trata_irq_relogio(self);
-      break;
-    default:
-      err = so_trata_irq_desconhecida(self, irq);
+  case IRQ_RESET:
+    err = so_trata_irq_reset(self);
+    break;
+  case IRQ_ERR_CPU:
+    err = so_trata_irq_err_cpu(self);
+    break;
+  case IRQ_SISTEMA:
+    err = so_trata_chamada_sistema(self);
+    break;
+  case IRQ_RELOGIO:
+    err = so_trata_irq_relogio(self);
+    break;
+  default:
+    err = so_trata_irq_desconhecida(self, irq);
   }
   // 3 - Verifica Pendencias
-//pendencias:
   so_trata_pendencias(self);
 
   // 4 - Escalonador
   process_t *to_run = sched_get(self->scheduler);
   if(!to_run)
-      console_printf(self->console, "Nada para escalonar no momento");
+    console_printf(self->console, "SO: Nada para escalonar no momento");
+
   // 5 - Recupera processo, se existir um;
   process_recover(self, to_run);
 
-
-  // 6 - Retorna o self->erro
+  // 6 - Retorna erro
   return err;
 }
 
+
+
+/*IRQ_RESET:
+ * Destrói estruturas que já existam e cria novas
+ * Define valores iniciais do sistema
+ * */
 static err_t so_trata_irq_reset(so_t *self)
 {
   //Reset ptable e sched;
@@ -188,33 +160,27 @@ static err_t so_trata_irq_reset(so_t *self)
 
   so_start_ptable_sched(self);
 
-  //Reseta tabela de pendências
+  //Reset tabela de pendências
   memset(self->es_pendencias, 0, sizeof(self->es_pendencias));
 
-  //Reseta o PID também;
+  //Reset o PID também;
   PID = 0;
+
   // coloca um programa na memória
   char init_name[100] = "init.maq";
   int ender = so_cria_proc(self, init_name);
 
-
-  //int ender = so_carrega_programa(self, "init.maq");
-
   if (ender != 100) {
-    console_printf(self->console, "SO: problema na carga do programa inicial");
-    return ERR_CPU_PARADA;
+      console_printf(self->console, "SO: problema na carga do programa inicial");
+      return ERR_CPU_PARADA;
   }
 
-
-
-  // Comentando isto daqui, NÃO DEVE ser mais necessário.
-  // altera o PC para o endereço de carga (deve ter sido 100)
-  //mem_escreve(self->mem, IRQ_END_PC, ender);
-  // passa o processador para modo usuário
-  //mem_escreve(self->mem, IRQ_END_modo, usuario);
   return ERR_OK;
 }
 
+
+/*IRQ_ERR_CPU:
+ * Mata o processo que causou o erro, se possível*/
 static err_t so_trata_irq_err_cpu(so_t *self)
 {
   // Ocorreu um erro interno na CPU
@@ -232,6 +198,15 @@ static err_t so_trata_irq_err_cpu(so_t *self)
 
       console_printf(self->console, "SO: IRQ não tratada -- erro na CPU: %s",
                      err_nome(err));
+
+      if(self->runningP != 0){
+        console_printf(self->console, "SO: Matando %i",
+                       self->runningP);
+
+        so_mata_proc(self, self->p_runningP);
+      }
+
+
     } else {
       console_printf(self->console, "SO: Aparentemente todos os processos "
                                     "estavam bloqueados um execução atrás",
@@ -246,6 +221,8 @@ static err_t so_trata_irq_err_cpu(so_t *self)
 
 }
 
+
+/*IRQ_RELOGIO: Rearma o relógio e atualiza o escalonador*/
 static err_t so_trata_irq_relogio(so_t *self)
 {
   // ocorreu uma interrupção do relógio
@@ -257,23 +234,17 @@ static err_t so_trata_irq_relogio(so_t *self)
   return ERR_OK;
 }
 
+
+/*Não alterado*/
 static err_t so_trata_irq_desconhecida(so_t *self, int irq)
 {
   console_printf(self->console,
-      "SO: não sei tratar IRQ %d (%s)", irq, irq_nome(irq));
+                 "SO: não sei tratar IRQ %d (%s)", irq, irq_nome(irq));
   return ERR_CPU_PARADA;
 }
 
-//FIXME Organizar isto aqui
-static int so_proc_pendencia(so_t *self, int PID_,
-                             process_state_t state, int PID_or_device);
 
-// Chamadas de sistema
-static void so_chamada_le(so_t *self);
-static void so_chamada_escr(so_t *self);
-static void so_chamada_cria_proc(so_t *self);
-static void so_chamada_mata_proc(so_t *self);
-
+/*Não Alterado*/
 static err_t so_trata_chamada_sistema(so_t *self)
 {
   int id_chamada;
@@ -295,8 +266,6 @@ static err_t so_trata_chamada_sistema(so_t *self)
       break;
     case SO_ESPERA_PROC:
       so_wait_proc(self);
-      console_printf(self->console,
-                     "Tá em espera proc %i %i", self->runningP, PID);
       break ;
     default:
       console_printf(self->console,
@@ -306,7 +275,10 @@ static err_t so_trata_chamada_sistema(so_t *self)
   return ERR_OK;
 }
 
-//TODO alterar so_chamada_le
+
+/* Chamadas escrita e leitura:
+ * Em ambas nada é escrito ou lido, os processos são bloqueados e as requisições
+ * são registradas para serem resolvidas posteriormente*/
 static void so_chamada_le(so_t *self)
 {
 
@@ -328,7 +300,6 @@ static void so_chamada_escr(so_t *self)
 
   //Registra a "requisição"
   (self->es_pendencias[device][0])++;
-  pend[self->runningP]++;
 
 
   //Configura processo
@@ -336,41 +307,8 @@ static void so_chamada_escr(so_t *self)
 
 }
 
-// Definições do processo para esperar pendencia e remove do escalonador
-// Escolher PID como variavel global nao foi uma boa escolha
-static int so_proc_pendencia(so_t *self, int PID_,
-                            process_state_t state, int PID_or_device){
 
-  process_t *p = ptable_search(self->processTable, PID_);
-
-  if(!p) {
-    console_printf(self->console,
-                   "Processo [%ui] existe mas não está na ptable "
-                   , PID_);
-    return -1;
-  }
-
-
-  proc_set_state(p, state);
-  proc_set_PID_or_device(p, PID_or_device);
-  sched_remove(self->scheduler, PID_);
-
-
-  return ERR_OK;
-}
-
-static int so_cria_proc(so_t *self, char nome[100]){
-  int ender_carga = so_carrega_programa(self, nome);
-  if (ender_carga > 0) {
-    so_registra_proc(self, ender_carga);
-    return ender_carga;
-  } else {
-    console_printf(self->console, "mem: Erro ao carregar processo, "
-                                        "não registrado");
-    return -1;
-  }
-}
-
+/* Criação de processo a partir de chamada do sistema, chama so_cria_proc*/
 static void so_chamada_cria_proc(so_t *self)
 {
 
@@ -386,13 +324,13 @@ static void so_chamada_cria_proc(so_t *self)
         cpuInfoTSo->A = -1;
       }
 
-      proc_set_cpuinfo(process, cpuInfoTSo);
     }
 
   }
 
 }
 
+/* Faz as verificações necessárias e chama so_mata_proc*/
 static void so_chamada_mata_proc(so_t *self)
 {
 
@@ -419,7 +357,7 @@ static void so_chamada_mata_proc(so_t *self)
 
 }
 
-
+/*Não alterado*/
 // carrega o programa na memória
 // retorna o endereço de carga ou -1
 static int so_carrega_programa(so_t *self, char *nome_do_executavel)
@@ -448,6 +386,7 @@ static int so_carrega_programa(so_t *self, char *nome_do_executavel)
   return end_ini;
 }
 
+/*Não Alterado*/
 // copia uma string da memória do simulador para o vetor str.
 // retorna false se erro (string maior que vetor, valor não ascii na memória,
 //   erro de acesso à memória)
@@ -470,11 +409,23 @@ static bool copia_str_da_mem(int tam, char str[tam], mem_t *mem, int ender)
   return false;
 }
 
-//-----------------------------------------------------------------------------|
 
 
+/* Carrega processo na memória e registra ele no sistema*/
+static int so_cria_proc(so_t *self, char nome[100]){
+  int ender_carga = so_carrega_programa(self, nome);
+  if (ender_carga > 0) {
+    so_registra_proc(self, ender_carga);
+    return ender_carga;
+  } else {
+    console_printf(self->console, "mem: Erro ao carregar processo, "
+                                  "não registrado");
+    return -1;
+  }
+}
 
-//Salva o estado da CPU para o processo PID;
+
+/*Salva o estado da CPU para o processo PID_;*/
 static process_t *process_save(so_t *self, int PID_){
 
 
@@ -493,7 +444,8 @@ static process_t *process_save(so_t *self, int PID_){
 
   return p;
 }
-//Restaura o estado da CPU do processo PID;
+
+/*Restaura o estado da CPU do processo;*/
 static err_t process_recover(so_t *self, process_t *process){
 
   err_t err = ERR_OK;
@@ -534,6 +486,7 @@ static err_t process_recover(so_t *self, process_t *process){
   return err;
 }
 
+/*Inicializa tabela de processo e escalonador*/
 int so_start_ptable_sched(so_t *self){
   self->processTable = ptable_create();
   self->scheduler = sched_create(self->relogio);
@@ -541,19 +494,26 @@ int so_start_ptable_sched(so_t *self){
   return 0;
 }
 
+
+
+/* Registra um novo processos na tabela de processos e no escalonador */
 static int so_registra_proc(so_t *self, int address){
+
   struct cpu_info_t_so  *cpuInfo = calloc(1, sizeof(cpu_info_t));
+
   cpuInfo->modo = usuario;
   cpuInfo->PC = address;
   cpuInfo->complemento = 0;
   cpuInfo->X = 0;
   // cpu.A: Herdado do processo que cria ou do lixo que estiver na memória
   mem_le(self->mem, IRQ_END_A, &(cpuInfo->A));
-  void *p =  ptable_add_proc(self->processTable, cpuInfo, ++PID, address);
+  void *p =  ptable_add_proc(self->processTable, cpuInfo, ++PID, address, 0.5);
+
   if (!p) {
     (console_printf(self->console, "ptable: Erro ao registrar processo"));
     return -1;
   }
+
   if(sched_add(self->scheduler, p, PID, QUANTUM) != 0)
     console_printf(self->console, "sched: Erro ao adicionar processo");
 
@@ -561,9 +521,14 @@ static int so_registra_proc(so_t *self, int address){
 
 }
 
-//Mata um processo, não faz verificações.
-// Na prática: Remove da lista scheduler(necessário) e remove da lista de
-// processos
+
+
+/*Mata o processo:
+ * - Remove do scheduller, caso necessário
+ * - Desbloqueia processos que estevam esperando a morte deste
+ * - Decrementa de uma das listas de pendência, caso necessário
+ * - Remove da tabela de processos
+ * */
 static int so_mata_proc(so_t *self, process_t *p){
 
   process_state_t estado = proc_get_state(p);
@@ -583,40 +548,13 @@ static int so_mata_proc(so_t *self, process_t *p){
 }
 
 
-
-// Define processo com bloqueado e esperando por certo Processo
-static int so_wait_proc(so_t *self){
-  process_t  *p = ptable_search(self->processTable, self->runningP);
-  cpu_info_t_so  *cpuInfo = proc_get_cpuinfo(p);
-  int PID_ = cpuInfo->X;
-
-
-
-  process_t * espera = ptable_search(self->processTable, PID_);
-  if(!espera) {
-    cpuInfo->A = -1;
-  } else {
-    // Altera estado do processo, define que está esperando processo,
-    // remove processo do escalonador
-    proc_set_state(p, blocked_proc);
-    proc_set_PID_or_device(p, PID_);
-    sched_remove(self->scheduler, self->runningP);
-    cpuInfo->A = 0;
-  }
-
-  return 0;
-}
-
-
-
-/*3.
- * Pendência de ESPERA_PROC não é tratada aqui
- *
+/* Trateamento de pendências [Terminais]
+ * Percorre a lista de pendências vendo se há pendencias
+ * Caso haja pendência e seja possível atender:
+ *    Busca um processo correspondente na tabela de processos;
+ *    Atende a requisição;
+ *    Decrementa o valor correspondente na lista de pendencias;
  * */
-
-
-
-
 static err_t  so_trata_pendencias(so_t *self){
   err_t erro = ERR_OK;
 
@@ -644,7 +582,6 @@ static err_t  so_trata_pendencias(so_t *self){
       proc_info->A = ret;
 
       (self->es_pendencias[i][0])--;
-      aten[proc_get_PID(p)]++;
 
       proc_set_state(p, waiting);
 
@@ -680,4 +617,86 @@ static err_t  so_trata_pendencias(so_t *self){
     }
   }
   return erro;
+}
+
+
+
+/* Usado para bloquear o processo
+ * Altera seu estado
+ * Define o valor associado ao bloqueio:
+ *    Dispositivo que está esperando,
+ *    Ou processo que está esperado
+ * Remove o processo do escalonador*/
+static int so_proc_pendencia(so_t *self, int PID_,
+                             process_state_t state, int PID_or_device){
+
+  process_t *p = ptable_search(self->processTable, PID_);
+
+  if(!p) {
+    console_printf(self->console,
+                   "Processo [%ui] existe mas não está na ptable "
+                   , PID_);
+    return -1;
+  }
+
+
+  proc_set_state(p, state);
+  proc_set_PID_or_device(p, PID_or_device);
+  sched_remove(self->scheduler, PID_);
+
+
+  return ERR_OK;
+}
+
+
+/* Bloqueia um processo até que outro morra
+ * Caso o processo que ele deseja esperar exista*/
+static int so_wait_proc(so_t *self){
+  process_t  *p = ptable_search(self->processTable, self->runningP);
+  cpu_info_t_so  *cpuInfo = proc_get_cpuinfo(p);
+
+  int PID_ = cpuInfo->X;
+
+  process_t * espera = ptable_search(self->processTable, PID_);
+  if(!espera) {
+    cpuInfo->A = -1;
+  } else {
+    so_proc_pendencia(self, self->runningP, blocked_proc, PID_);
+    cpuInfo->A = 0;
+  }
+
+  return 0;
+}
+
+/*Não Alterado*/
+so_t *so_cria(cpu_t *cpu, mem_t *mem, console_t *console, relogio_t *relogio)
+{
+  so_t *self = malloc(sizeof(*self));
+  if (self == NULL) return NULL;
+
+  self->cpu = cpu;
+  self->mem = mem;
+  self->console = console;
+  self->relogio = relogio;
+  memset(self->es_pendencias, 0, sizeof(self->es_pendencias));
+
+  // quando a CPU executar uma instrução CHAMAC, deve chamar essa função
+  cpu_define_chamaC(self->cpu, so_trata_interrupcao, self);
+  // coloca o tratador de interrupção na memória
+  if (so_carrega_programa(self, "trata_irq.maq") != 10) {
+    console_printf(console, "SO: problema na carga do tratador de interrupções");
+    free(self);
+    self = NULL;
+  }
+  // programa a interrupção do relógio
+  rel_escr(self->relogio, 2, INTERVALO_INTERRUPCAO);
+
+  return self;
+}
+
+/*Não Alterado*/
+void so_destroi(so_t *self)
+{
+  cpu_define_chamaC(self->cpu, NULL, NULL);
+  free(self);
 }

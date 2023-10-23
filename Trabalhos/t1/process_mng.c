@@ -19,13 +19,14 @@ struct process_t {
   void *cpuInfo;
   process_state_t processState;
   int PID_or_device;
-
+  double priority;// round_robin_prio
 };
 
 
 process_t *proc_create(cpu_info_t cpuInfo,
                        int PID,
-                       int start_address){
+                       int start_address,
+                       double priority){
   process_t  *p = calloc(1, sizeof(process_t));
   if(!p)
     return NULL;
@@ -34,7 +35,7 @@ process_t *proc_create(cpu_info_t cpuInfo,
   p->PID = PID;
   p->start_address = start_address;
   p->processState = waiting; //Tod0 processo criado inicia esperando
-
+  p->priority = priority;
   return p;
 }
 
@@ -70,8 +71,8 @@ void ptable_destruct(process_table_t *self){
 }
 
 void * ptable_add_proc(process_table_t *self, cpu_info_t cpuInfo, int PID,
-                    int start_address){
-    process_t * p  = proc_create(cpuInfo, PID, start_address);
+                    int start_address, double priority){
+    process_t * p  = proc_create(cpuInfo, PID, start_address, priority);
 
     if(!p)
       return NULL;
@@ -157,7 +158,6 @@ void *callback_wait_proc(node_t *node, void *argument){
 }
 
 
-
 void ptable_proc_wait(process_table_t *self,
                       int PID_wait,
                       void *sched,
@@ -233,25 +233,16 @@ int proc_get_PID_or_device(process_t *self){
 }
 
 
-/*
-unsigned  int proc_get_waiting_PID(process_t *p){
-    return p->id.PID;
+double proc_get_priority(process_t *self){
+    if(self)
+      return self->priority;
+
+    return -1;
 }
 
-void * proc_get_waiting_disp(process_t *p){
-    return p->id.disp;
+
+void proc_set_priority(process_t *self, double priority){
+    if(self)
+      self->priority = priority;
+
 }
-
-int proc_set_waiting_PID(process_t *p, int PID){
-    p->id.PID = PID;
-    return 0;
-}
-
-int proc_set_waiting_disp(process_t *p, void *disp, int ID){
-    p->id.disp = disp;
-    p->id.PID = ID;
-
-    return 0;
-}
-
-*/
