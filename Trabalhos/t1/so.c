@@ -138,18 +138,16 @@ static err_t so_trata_interrupcao(void *argC, int reg_A)
 
 
   // 1 - Salva o processso
-
-
   /* No caso de PID ser 0, então está é a primeira execução do trata_irq e não há
   * processo para ser salvo, então a etapa deve ser pulada
    * */
   if(PID == 0 && irq != 0) {
     goto pendencias;
   }
-  if(self->runningP != 0)
+  if(self->runningP != 0) {
     process_save(self, self->runningP);
-
-
+    self->p_runningP = ptable_search(self->processTable, self->runningP);
+  }
 
   // 2 - Atende interrupções
   switch (irq) {
@@ -373,7 +371,7 @@ static int so_cria_proc(so_t *self, char nome[100]){
 static void so_chamada_cria_proc(so_t *self)
 {
 
-  process_t *process = ptable_search(self->processTable, self->runningP);
+  process_t *process = self->p_runningP;
   cpu_info_t_so *cpuInfoTSo = proc_get_cpuinfo(process);
   int ender_proc;
   if (mem_le(self->mem, IRQ_END_X, &ender_proc) == ERR_OK) {
@@ -397,8 +395,7 @@ static void so_chamada_mata_proc(so_t *self)
 
   int proc_kill;
   mem_le(self->mem, IRQ_END_X, &proc_kill);
-  // FIXME gambiarra feia
-  self->p_runningP = ptable_search(self->processTable, self->runningP);
+
   process_t *pk;
   if(proc_kill) {
     pk = ptable_search(self->processTable, proc_kill);
@@ -502,6 +499,10 @@ static err_t process_recover(so_t *self, process_t *process){
   if(!process) {
     if (ptable_is_empty(self->processTable)) { // Sem processos
       err = ERR_CPU_PARADA;
+      mem_escreve(self->mem, IRQ_END_erro, ERR_CPU_PARADA);
+      mem_escreve(self->mem, IRQ_END_modo, usuario);
+      self->runningP = 0;
+
     } else {                                  // Tabela de processo bloqueada
 
       //mem_escreve(self->mem, IRQ_END_erro, ERR_CPU_PARADA);
@@ -570,6 +571,7 @@ static int so_mata_proc(so_t *self, process_t *p){
 
   if(estado == waiting) {
     sched_remove(self->scheduler, proc_get_PID(p));
+    ptable_proc_wait(self->processTable, proc_get_PID(p),self->scheduler, QUANTUM);
   } else if( estado == blocked_read){
     (self->es_pendencias[proc_get_PID_or_device(p)][1])--;
   } else if(estado == blocked_write){

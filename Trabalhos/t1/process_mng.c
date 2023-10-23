@@ -5,6 +5,7 @@
 #include "process_mng.h"
 #include "util/linked_list.h"
 #include "stdlib.h"
+#include "scheduler_interface.h"
 
 struct process_table_t  {
   node_t *first;
@@ -132,6 +133,43 @@ process_t *ptable_search_pendencia(process_table_t *self,
 
     return  llist_get_packet(node);
 
+}
+
+//-----------------------------------------------------------------------------|
+typedef struct {
+    scheduler_t *sched_t;
+    unsigned int PID_wait_t;
+    unsigned int quantum;
+} arg_wait;
+
+void *callback_wait_proc(node_t *node, void *argument){
+
+    arg_wait *arg = argument;
+
+    process_t *p = llist_get_packet(node);
+
+    if(p->processState == blocked_proc && p->PID_or_device == arg->PID_wait_t){
+      p->processState = waiting;
+      sched_add(arg->sched_t, p, p->PID, arg->quantum);
+    }
+
+    return NULL;
+}
+
+
+
+void ptable_proc_wait(process_table_t *self,
+                      unsigned int PID_wait,
+                      void *sched,
+                      unsigned int QUANTUM){
+
+    arg_wait arg = {(scheduler_t *)sched, PID_wait, QUANTUM} ;
+
+    arg.sched_t = sched;
+
+    llist_iterate_nodes(self->first,
+                        callback_wait_proc,
+                        &arg);
 }
 
 //*----------------------------------------------------------------------------
