@@ -34,11 +34,11 @@ void ptable_destruct(process_table_t *processTable);
 
 
 void *ptable_add_proc(process_table_t *self, cpu_info_t cpuInfo,
-                    unsigned int PID, unsigned int start_address);
+                    int PID, int start_address);
 
-process_t *ptable_search(process_table_t *self, unsigned int PID);
+process_t *ptable_search(process_table_t *self, int PID);
 
-int proc_delete(process_table_t *self, unsigned int PID);
+int proc_delete(process_table_t *self, int PID);
 
 int ptable_is_empty(process_table_t *self);
 
@@ -47,7 +47,7 @@ process_t *ptable_search_pendencia(process_table_t *self,
                                    int dispositivo);
 
 
-int ptable_delete(process_table_t *self, unsigned int PID);
+int ptable_delete(process_table_t *self, int PID);
 
 //Setters
 
@@ -55,23 +55,23 @@ int ptable_delete(process_table_t *self, unsigned int PID);
 int proc_set_cpuinfo(process_t *self, cpu_info_t cpuInfo);
 
 //Bloqueia o processo para esperar outro processo
-int proc_set_waiting_PID(process_t *p, unsigned int PID);
+int proc_set_waiting_PID(process_t *p, int PID);
 
 /* PID do precesso que está sendo esperado (SO_ESPERA_PROC)
 * ou identificador do dispositivo (terminal) que está esperando acessar
 */
-int proc_set_PID_or_device(process_t *self, unsigned int PID_or_device);
+int proc_set_PID_or_device(process_t *self, int PID_or_device);
 int proc_get_PID_or_device(process_t *self);
 
 void ptable_proc_wait(process_table_t *self,
-                      unsigned int PID_wait,
+                      int PID_wait,
                       void *sched,
-                      unsigned int QUANTUM);
+                      int QUANTUM);
 // Getters
 unsigned  int proc_get_waiting_PID(process_t *p);
 cpu_info_t proc_get_cpuinfo(process_t* self);
 process_state_t proc_get_state(process_t* self);
-unsigned int proc_get_PID(process_t* self);
+int proc_get_PID(process_t* self);
 int proc_set_state(process_t *self, process_state_t processState);
 
 

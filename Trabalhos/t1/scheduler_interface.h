@@ -17,12 +17,15 @@ void sched_destruct(scheduler_t *self);
 
 int sched_add(scheduler_t *self,
               void *process,
-              unsigned int PID,
-              unsigned int QUANTUM);
+              int PID,
+              int QUANTUM);
 
-void *sched_get_update(scheduler_t *self);
+void *sched_get(scheduler_t *self);
 
-int sched_remove(scheduler_t *self, unsigned int PID);
+void *sched_update(scheduler_t *self);
+
+
+int sched_remove(scheduler_t *self, int PID);
 
 
 #endif // SO23B_scheduler_INTERFACE_H

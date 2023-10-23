@@ -20,9 +20,9 @@ struct scheduler_t{
 
 typedef struct scheduler_t_node{
   process_t *proc;
-  unsigned int PID;
-  unsigned int quantum;
-  unsigned int curr_quantum;
+  int PID;
+  int quantum;
+  int curr_quantum;
 }sched_packet;
 
 
@@ -44,8 +44,8 @@ static void *sched_callback_destruct_packet(node_t *node, void *arg){
     
 }
 
-static sched_packet *create_packet(unsigned int PID,
-                                   unsigned int QUANTUM,
+static sched_packet *create_packet(int PID,
+                                   int QUANTUM,
                                    process_t *process){
 
     sched_packet *schedPacket = calloc(1, sizeof(sched_packet));
@@ -81,8 +81,8 @@ void sched_destruct(scheduler_t *self){
 
 int sched_add(scheduler_t *self,
               void *process,
-              unsigned int PID,
-              unsigned int QUANTUM){
+              int PID,
+              int QUANTUM){
 
     sched_packet *schedPacket = create_packet(PID, QUANTUM, process);
 
@@ -94,6 +94,33 @@ int sched_add(scheduler_t *self,
     llist_add_node(&(self->first), node);
 
     return 0;
+}
+
+void *sched_update(scheduler_t *self){
+    if(!self->first)
+      return NULL;
+
+    sched_packet *schedPacket = llist_get_packet(self->first);
+
+    // Consome quantum
+    schedPacket->curr_quantum--;
+    if(schedPacket->curr_quantum <= 0){
+      schedPacket->curr_quantum = schedPacket->quantum;
+      // Como é lista circular não haverá NULL, espera-se isto;
+      self->first = llist_get_next(self->first);
+    }
+
+    return schedPacket->proc;
+}
+
+
+void *sched_get(scheduler_t *self){
+    if(!self->first)
+      return NULL;
+
+    sched_packet *schedPacket = llist_get_packet(self->first);
+
+    return schedPacket->proc;
 }
 
 void *sched_get_update(scheduler_t *self){
@@ -110,13 +137,10 @@ void *sched_get_update(scheduler_t *self){
       // Como é lista circular não haverá NULL, espera-se isto;
       self->first = llist_get_next(self->first);
     }
-
-
     return schedPacket->proc;
-
 }
 
-int sched_remove(scheduler_t *self, unsigned int PID){
+int sched_remove(scheduler_t *self, int PID){
 
     node_t  *node = llist_remove_node(&(self->first), PID);
 

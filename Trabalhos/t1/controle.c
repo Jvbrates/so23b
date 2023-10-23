@@ -39,7 +39,7 @@ void controle_laco(controle_t *self)
 {
   // executa uma instrução por vez até a console dizer que chega
   do {
-    if (self->estado == passo || self->estado == executando || self->estado == parado) {
+    if (self->estado == passo || self->estado == executando) {
       cpu_executa_1(self->cpu);
       rel_tictac(self->relogio);
       console_tictac(self->console);
@@ -52,6 +52,7 @@ void controle_laco(controle_t *self)
         cpu_interrompe(self->cpu, IRQ_RELOGIO);
       }
     }
+
     controle_processa_teclado(self);
     controle_atualiza_console(self);
   } while (self->estado != fim);

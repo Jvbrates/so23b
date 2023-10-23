@@ -14,18 +14,18 @@ struct process_table_t  {
 
 
 struct process_t {
-  unsigned int PID;
-  unsigned int start_address;
+  int PID;
+  int start_address;
   void *cpuInfo;
   process_state_t processState;
-  unsigned int PID_or_device;
+  int PID_or_device;
 
 };
 
 
 process_t *proc_create(cpu_info_t cpuInfo,
-                       unsigned int PID,
-                       unsigned int start_address){
+                       int PID,
+                       int start_address){
   process_t  *p = calloc(1, sizeof(process_t));
   if(!p)
     return NULL;
@@ -69,8 +69,8 @@ void ptable_destruct(process_table_t *self){
 
 }
 
-void * ptable_add_proc(process_table_t *self, cpu_info_t cpuInfo, unsigned int PID,
-                    unsigned int start_address){
+void * ptable_add_proc(process_table_t *self, cpu_info_t cpuInfo, int PID,
+                    int start_address){
     process_t * p  = proc_create(cpuInfo, PID, start_address);
 
     if(!p)
@@ -85,7 +85,7 @@ void * ptable_add_proc(process_table_t *self, cpu_info_t cpuInfo, unsigned int P
     return p;
 }
 
-process_t *ptable_search(process_table_t *self, unsigned int PID){
+process_t *ptable_search(process_table_t *self, int PID){
     if(!self)
       return NULL;
     node_t  *node = llist_node_search(self->first, PID);
@@ -138,8 +138,8 @@ process_t *ptable_search_pendencia(process_table_t *self,
 //-----------------------------------------------------------------------------|
 typedef struct {
     scheduler_t *sched_t;
-    unsigned int PID_wait_t;
-    unsigned int quantum;
+    int PID_wait_t;
+    int quantum;
 } arg_wait;
 
 void *callback_wait_proc(node_t *node, void *argument){
@@ -159,9 +159,9 @@ void *callback_wait_proc(node_t *node, void *argument){
 
 
 void ptable_proc_wait(process_table_t *self,
-                      unsigned int PID_wait,
+                      int PID_wait,
                       void *sched,
-                      unsigned int QUANTUM){
+                      int QUANTUM){
 
     arg_wait arg = {(scheduler_t *)sched, PID_wait, QUANTUM} ;
 
@@ -174,7 +174,7 @@ void ptable_proc_wait(process_table_t *self,
 
 //*----------------------------------------------------------------------------
 
-int ptable_delete(process_table_t *self, unsigned int PID){
+int ptable_delete(process_table_t *self, int PID){
     node_t  *node = llist_remove_node(&(self->first), PID);
     if(!node)//node not found
       return -1;
@@ -198,12 +198,12 @@ process_state_t proc_get_state(process_t* self){
     return self->processState;
 }
 
-unsigned int proc_get_PID(process_t* self){
+int proc_get_PID(process_t* self){
     return self->PID;
     return 0;
 }
 
-unsigned int proc_get_start_address(process_t* self){
+int proc_get_start_address(process_t* self){
     return self->start_address;
     return 0;
 }
@@ -218,7 +218,7 @@ int proc_set_state(process_t *self, process_state_t processState){
     return 0;
 }
 
-int proc_set_PID_or_device(process_t *self, unsigned int PID_or_device){
+int proc_set_PID_or_device(process_t *self, int PID_or_device){
     self->PID_or_device = PID_or_device;
     return 0;
 }
@@ -242,12 +242,12 @@ void * proc_get_waiting_disp(process_t *p){
     return p->id.disp;
 }
 
-int proc_set_waiting_PID(process_t *p, unsigned int PID){
+int proc_set_waiting_PID(process_t *p, int PID){
     p->id.PID = PID;
     return 0;
 }
 
-int proc_set_waiting_disp(process_t *p, void *disp, unsigned int ID){
+int proc_set_waiting_disp(process_t *p, void *disp, int ID){
     p->id.disp = disp;
     p->id.PID = ID;
 
