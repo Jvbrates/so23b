@@ -4,13 +4,13 @@
 typedef struct node_t node_t;
 
 struct node_t {
-  unsigned int key;
+  int key;
   void *packet;
   node_t *next;
   node_t *previous;
 };
 
-node_t *llist_create_node(void *packet, unsigned int key){
+node_t *llist_create_node(void *packet, int key){
     node_t *node = malloc(sizeof(node_t));
     if(node) {
       node->packet = packet;
@@ -21,7 +21,7 @@ node_t *llist_create_node(void *packet, unsigned int key){
     return node;
 }
 
-node_t *llist_create_node_round(void *packet, unsigned int key){
+node_t *llist_create_node_round(void *packet, int key){
     node_t *node = malloc(sizeof(node_t));
     if(node) {
       node->packet = packet;
@@ -49,6 +49,12 @@ void *llist_get_packet(node_t *node){
       return node->packet;
     }
     return NULL;
+}
+
+int llist_get_key(node_t *node){
+    if(node)
+      return node->key;
+    return  -1;
 }
 
 int llist_add_node_next(node_t *self, node_t *next){
@@ -117,13 +123,13 @@ void *llist_callback_search_key(node_t*node, void *arg){
       return NULL;
 }
 
-void *llist_node_search(node_t *first, unsigned int key){
+void *llist_node_search(node_t *first, int key){
     return llist_iterate_nodes(first,
                                llist_callback_search_key,
                                (void *)key);
 }
 
-node_t *llist_remove_node(node_t **node_holder, unsigned int key){
+node_t *llist_remove_node(node_t **node_holder, int key){
     node_t *s = llist_iterate_nodes(*node_holder, llist_callback_search_key, (void *)key);
 
     if(!s)
