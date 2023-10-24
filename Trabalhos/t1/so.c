@@ -133,9 +133,13 @@ static err_t so_trata_interrupcao(void *argC, int reg_A)
 
   // 4 - Escalonador
   process_t *to_run = sched_get(self->scheduler);
-  if(!to_run)
-    console_printf(self->console, "SO: Nada para escalonar no momento");
-
+  if(!to_run) {
+    console_printf(self->console, "SO: Nada para escalonar no momento, REL: %i",
+                   rel_agora(self->relogio));
+  }else {
+    console_printf(self->console, "SO: Escolhido %i, prio %f", proc_get_PID(to_run),
+                   proc_get_priority(to_run));
+  }
   // 5 - Recupera processo, se existir um;
   process_recover(self, to_run);
 
@@ -198,7 +202,6 @@ static err_t so_trata_irq_err_cpu(so_t *self)
 
       console_printf(self->console, "SO: IRQ não tratada -- erro na CPU: %s",
                      err_nome(err));
-
       if(self->runningP != 0){
         console_printf(self->console, "SO: Matando %i",
                        self->runningP);

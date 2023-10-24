@@ -79,6 +79,6 @@ int proc_set_state(process_t *self, process_state_t processState);
  */
 double proc_get_priority(process_t *self);
 
-double proc_get_prioity(process_t *self, double priority);
+void proc_set_priority(process_t *self, double priority);
 
 #endif // SO23B_PROCESS_MNG_H
