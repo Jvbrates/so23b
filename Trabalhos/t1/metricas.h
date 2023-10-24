@@ -5,6 +5,7 @@
 #ifndef SO23B_METRICAS_H
 #define SO23B_METRICAS_H
 #include "irq.h"
+#include "stdio.h"
 
 typedef struct {
   int procs;
@@ -12,5 +13,12 @@ typedef struct {
   int irq_count[N_IRQ];
   int preemps
 }metricas;
+
+
+void init_metricas(metricas *m);
+
+void salva_metricas(metricas m, FILE *file);
+
+
 
 #endif // SO23B_METRICAS_H
