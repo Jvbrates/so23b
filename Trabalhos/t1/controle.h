@@ -9,9 +9,9 @@
 
 typedef struct controle_t controle_t;
 
-#include "memoria.h"
-#include "cpu.h"
 #include "console.h"
+#include "cpu.h"
+#include "memoria.h"
 #include "relogio.h"
 
 controle_t *controle_cria(cpu_t *cpu, console_t *console, relogio_t *relogio);

@@ -1,9 +1,9 @@
-#include "controle.h"
-#include "programa.h"
-#include "memoria.h"
-#include "cpu.h"
-#include "relogio.h"
 #include "console.h"
+#include "controle.h"
+#include "cpu.h"
+#include "memoria.h"
+#include "programa.h"
+#include "relogio.h"
 #include "so.h"
 
 #include <stdio.h>

@@ -1,9 +1,9 @@
 #include "so.h"
 #include "irq.h"
-#include "programa.h"
 #include "process_mng.h"
+#include "programa.h"
 #include "scheduler_interface.h"
-#include "metricas.h"
+#include "util/metricas.h"
 
 #include <stdlib.h>
 #include <stdbool.h>

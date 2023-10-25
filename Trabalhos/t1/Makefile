@@ -11,10 +11,10 @@ endif
 # Defina o scheduler
 ifdef rr2
 	OBJS = cpu.o es.o memoria.o relogio.o console.o instrucao.o err.o util/linked_list.o \
-    main.o programa.o controle.o process_mng.o round_robin2.o so.o irq.o metricas.o
+    main.o programa.o controle.o process_mng.o round_robin2.o so.o irq.o util/metricas.o
 else
 	OBJS = cpu.o es.o memoria.o relogio.o console.o instrucao.o err.o util/linked_list.o \
-    main.o programa.o controle.o process_mng.o round_robin.o so.o irq.o metricas.o
+    main.o programa.o controle.o process_mng.o round_robin.o so.o irq.o util/metricas.o
 endif
 LDLIBS = -lcurses
 
@@ -40,14 +40,14 @@ main: ${OBJS}
 %.maq: %.asm montador
 	end=100 ; \
 	for arq in ${MAQS}; do \
-	./montador -e $$end `basename $$arq .maq`.asm > $$arq ;\
+	./montador -e $$end ./asm/`basename $$arq .maq`.asm > $$arq ;\
 	end=`expr $$end + 1000` ;\
 	done
 
 maq:
 	end=100 ; \
 	for arq in ${MAQS}; do \
-	./montador -e $$end `basename $$arq .maq`.asm > $$arq ;\
+	./montador -e $$end ./asm/`basename $$arq .maq`.asm > ./bin/$$arq ;\
 	end=`expr $$end + 1000` ;\
 	done
 

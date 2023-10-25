@@ -7,7 +7,7 @@
 
 #include "process_mng.h"
 #include "relogio.h"
-#include "metricas.h"
+#include "util/metricas.h"
 
 typedef struct scheduler_t scheduler_t;
 
