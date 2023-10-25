@@ -11,10 +11,10 @@ endif
 # Defina o scheduler
 ifdef rr2
 	OBJS = cpu.o es.o memoria.o relogio.o console.o instrucao.o err.o util/linked_list.o \
-    main.o programa.o controle.o process_mng.o round_robin2.o so.o irq.o
+    main.o programa.o controle.o process_mng.o round_robin2.o so.o irq.o metricas.o
 else
 	OBJS = cpu.o es.o memoria.o relogio.o console.o instrucao.o err.o util/linked_list.o \
-    main.o programa.o controle.o process_mng.o round_robin.o so.o irq.o
+    main.o programa.o controle.o process_mng.o round_robin.o so.o irq.o metricas.o
 endif
 LDLIBS = -lcurses
 

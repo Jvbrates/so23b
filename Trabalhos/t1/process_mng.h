@@ -18,7 +18,8 @@ typedef enum { undefined=0,   // useful for dbg
                blocked_proc,  // blocked for a proc die
                running,
                waiting,
-               dead
+               dead,
+               n_states
 } process_state_t;
 
 //ptable <-> process_table_t
@@ -34,7 +35,7 @@ void ptable_destruct(process_table_t *processTable);
 
 
 void *ptable_add_proc(process_table_t *self, cpu_info_t cpuInfo,
-                    int PID, int start_address, double priority);
+                    int PID, int start_address, double priority, double start_time);
 
 process_t *ptable_search(process_table_t *self, int PID);
 
@@ -48,6 +49,8 @@ process_t *ptable_search_pendencia(process_table_t *self,
 
 
 int ptable_delete(process_table_t *self, int PID);
+
+void ptable_log_states(process_table_t *self);
 
 //Setters
 
@@ -81,4 +84,16 @@ double proc_get_priority(process_t *self);
 
 void proc_set_priority(process_t *self, double priority);
 
+void proc_incr_preemp(process_t *self);
+
+void proc_set_end_time(process_t*self, int time);
+
+
+int proc_get_start_time(process_t *self);
+int proc_get_end_time(process_t *self);
+int proc_get_preemp(process_t *self);
+int *proc_get_state_count(process_t *self);
+int *proc_get_timestate_count(process_t *self);
+
+char *estado_nome(process_state_t estado);
 #endif // SO23B_PROCESS_MNG_H

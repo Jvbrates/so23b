@@ -7,9 +7,11 @@
 
 #include "process_mng.h"
 #include "relogio.h"
+#include "metricas.h"
+
 typedef struct scheduler_t scheduler_t;
 
-scheduler_t *sched_create(relogio_t *rel);
+scheduler_t *sched_create(relogio_t *rel, metricas *log);
 
 //scheduler_destruct não deve destruir os pprocesso (packet), isto é funcao da
 // ptable

@@ -3,6 +3,7 @@
 #include "programa.h"
 #include "process_mng.h"
 #include "scheduler_interface.h"
+#include "metricas.h"
 
 #include <stdlib.h>
 #include <stdbool.h>
@@ -23,7 +24,6 @@ struct so_t {
   scheduler_t * scheduler;
   int runningP;
   process_t *p_runningP;
-
   /*
    * Para cada pendência/requisição de escrita/leitura em dado dipositivo o valor
    * é incrementado, quando a pendência é atendida, o valor é decrementado.
@@ -31,6 +31,8 @@ struct so_t {
   // [][0] -- Escrita
   // [][1] -- Leitura
   int es_pendencias[NUM_ES][2];
+  metricas *log;
+
 };
 
 typedef struct cpu_info_t_so {
@@ -112,6 +114,8 @@ static err_t so_trata_interrupcao(void *argC, int reg_A)
   }
 
   // 2 - Atende interrupções
+  log_irq(self->log,irq);
+
   switch (irq) {
   case IRQ_RESET:
     err = so_trata_irq_reset(self);
@@ -142,6 +146,9 @@ static err_t so_trata_interrupcao(void *argC, int reg_A)
   }
   // 5 - Recupera processo, se existir um;
   process_recover(self, to_run);
+
+  // Log
+  ptable_log_states(self->processTable);
 
   // 6 - Retorna erro
   return err;
@@ -214,6 +221,8 @@ static err_t so_trata_irq_err_cpu(so_t *self)
       console_printf(self->console, "SO: Aparentemente todos os processos "
                                     "estavam bloqueados um execução atrás",
                      err_nome(err));
+
+      log_ocioso(self->log);
 
       return ERR_OK;
 
@@ -418,6 +427,7 @@ static bool copia_str_da_mem(int tam, char str[tam], mem_t *mem, int ender)
 static int so_cria_proc(so_t *self, char nome[100]){
   int ender_carga = so_carrega_programa(self, nome);
   if (ender_carga > 0) {
+    log_proc(self->log);
     so_registra_proc(self, ender_carga);
     return ender_carga;
   } else {
@@ -454,12 +464,14 @@ static err_t process_recover(so_t *self, process_t *process){
   err_t err = ERR_OK;
 
   if(!process) {
-    if (ptable_is_empty(self->processTable)) { // Sem processos
+    if (ptable_is_empty(self->processTable)) { // Sem processos, parando...
       err = ERR_CPU_PARADA;
       mem_escreve(self->mem, IRQ_END_erro, ERR_CPU_PARADA);
       mem_escreve(self->mem, IRQ_END_modo, supervisor);
       self->runningP = 0;
       self->p_runningP = NULL;
+      log_exectime(self->log, rel_agora(self->relogio));
+      log_save_tofile(self->log);
 
     } else { // Tabela de processo bloqueada
 
@@ -483,6 +495,7 @@ static err_t process_recover(so_t *self, process_t *process){
     mem_escreve(self->mem, IRQ_END_PC, (cpuInfo->PC));
     mem_escreve(self->mem, IRQ_END_modo, (cpuInfo->modo));
     mem_escreve(self->mem, IRQ_END_erro, ERR_OK);
+    proc_set_state(p, running);
     self->runningP = proc_get_PID(process);
 
   }
@@ -492,7 +505,7 @@ static err_t process_recover(so_t *self, process_t *process){
 /*Inicializa tabela de processo e escalonador*/
 int so_start_ptable_sched(so_t *self){
   self->processTable = ptable_create();
-  self->scheduler = sched_create(self->relogio);
+  self->scheduler = sched_create(self->relogio, self->log);
 
   return 0;
 }
@@ -510,7 +523,9 @@ static int so_registra_proc(so_t *self, int address){
   cpuInfo->X = 0;
   // cpu.A: Herdado do processo que cria ou do lixo que estiver na memória
   mem_le(self->mem, IRQ_END_A, &(cpuInfo->A));
-  void *p =  ptable_add_proc(self->processTable, cpuInfo, ++PID, address, 0.5);
+
+  void *p =  ptable_add_proc(self->processTable, cpuInfo, ++PID, address, 0.5,
+                            rel_agora(self->relogio));
 
   if (!p) {
     (console_printf(self->console, "ptable: Erro ao registrar processo"));
@@ -535,9 +550,12 @@ static int so_registra_proc(so_t *self, int address){
 static int so_mata_proc(so_t *self, process_t *p){
 
   process_state_t estado = proc_get_state(p);
+  proc_set_end_time(p, rel_agora(self->relogio));
+  log_save_proc_tofile(p, self->log);
+
   proc_set_state(p, dead);
 
-  if(estado == waiting) {
+  if(estado == waiting || estado == running) {
     sched_remove(self->scheduler, proc_get_PID(p));
     ptable_proc_wait(self->processTable, proc_get_PID(p),self->scheduler, QUANTUM);
   } else if( estado == blocked_read){
@@ -676,6 +694,10 @@ so_t *so_cria(cpu_t *cpu, mem_t *mem, console_t *console, relogio_t *relogio)
 {
   so_t *self = malloc(sizeof(*self));
   if (self == NULL) return NULL;
+
+  if(self->log)
+    free(self->log);
+  self->log = log_init("registro_provisorio\0"); //FIXME
 
   self->cpu = cpu;
   self->mem = mem;

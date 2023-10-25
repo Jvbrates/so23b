@@ -22,9 +22,8 @@
 struct scheduler_t{
   node_t * first;
   relogio_t *relogio;
-  /* ID do processo que foi preempetado,
-   * não deve ser considerado na busca por um novo processo */
-  int key_preemp;
+  metricas *log;
+
 };
 
 typedef struct scheduler_t_node{
@@ -121,9 +120,10 @@ static void sched_choose_new(scheduler_t *self, int preemp){
 
 //-------------INTERFACE------------------------------------------------------->
 
-scheduler_t *sched_create(relogio_t *rel){
+scheduler_t *sched_create(relogio_t *rel, metricas *log){
   scheduler_t  * sched = calloc(1, sizeof(scheduler_t));
   sched->relogio = rel;
+  sched->log = log;
   return sched;
 }
 
@@ -167,6 +167,7 @@ void *sched_update(scheduler_t *self){
   // Incrementa
   schedPacket->curr_quantum++;
   if(schedPacket->curr_quantum >= schedPacket->quantum){ //preempção
+    log_preemp(self->log);
     schedPacket->curr_quantum = 1;
 
     //Atualizar prioridade

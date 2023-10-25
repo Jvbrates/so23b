@@ -1,4 +1,6 @@
+# **/*
+*
 !Makefile
-!*.c
-!*.h
-**/*
+!/Trabalhos/t1/**/*.c
+!/Trabalhos/t1/**/*.h
+

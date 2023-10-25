@@ -102,10 +102,14 @@ node_t *llist_add_node(node_t **node_holder, node_t *node){
 
 
 node_t *llist_iterate_nodes(node_t *start, func callback, void *arg){
+    if(!start) {
+      return NULL;
+    }
     void *ret = callback(start, arg);
 
-    if(ret)
+    if(ret) {
       return ret;
+    }
 
     for (node_t *i = start->next; i != NULL && i!=start; i = i->next) {
       ret = callback(i, arg);

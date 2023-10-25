@@ -16,6 +16,7 @@
 struct scheduler_t{
   node_t * first;
   relogio_t *relogio;
+  metricas *log;
 };
 
 typedef struct scheduler_t_node{
@@ -60,9 +61,10 @@ static sched_packet *create_packet(int PID,
 
 //-------------INTERFACE------------------------------------------------------->
 
-scheduler_t *sched_create(relogio_t *rel){
+scheduler_t *sched_create(relogio_t *rel, metricas *log){
     scheduler_t  * sched = calloc(1, sizeof(scheduler_t));
     sched->relogio = rel;
+    sched->log = log;
     return sched;
 }
 
@@ -105,6 +107,8 @@ void *sched_update(scheduler_t *self){
     // Consome quantum
     schedPacket->curr_quantum--;
     if(schedPacket->curr_quantum <= 0){
+      log_preemp(self->log);
+      proc_incr_preemp(schedPacket->proc);
       schedPacket->curr_quantum = schedPacket->quantum;
       // Como é lista circular não haverá NULL, espera-se isto;
       self->first = llist_get_next(self->first);
@@ -133,6 +137,7 @@ void *sched_get_update(scheduler_t *self){
     // Consome quantum
     schedPacket->curr_quantum--;
     if(schedPacket->curr_quantum <= 0){
+      //log_preemp(self->log);
       schedPacket->curr_quantum = schedPacket->quantum;
       // Como é lista circular não haverá NULL, espera-se isto;
       self->first = llist_get_next(self->first);

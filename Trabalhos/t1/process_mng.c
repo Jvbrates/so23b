@@ -11,7 +11,15 @@ struct process_table_t  {
   node_t *first;
 };
 
-
+static char *nomes_estados[n_states] = {
+    [undefined] = "Indefinido",
+    [running] = "Executando",
+    [blocked_proc] = "Bloqueado esperando outro processo",
+    [blocked_write] = "Bloqueado para escrita",
+    [blocked_read] = "Bloqueado para leitura",
+    [waiting] = "Pronto",
+    [dead] = "Morto"
+};
 
 struct process_t {
   int PID;
@@ -20,13 +28,37 @@ struct process_t {
   process_state_t processState;
   int PID_or_device;
   double priority;// round_robin_prio
+
+
+  //LOG infos
+  process_state_t previous_state;
+
+  //Calcular o tempo de retorno
+  int start_time;
+  int end_time;
+
+  //Calcular o numero de entradas em cada processo e tempo total em cada um
+  int state_count[n_states];
+  int time_state_count[n_states];
+
+
+  // Tempo médio em running;
+  /* Não é necessário, o tempo médio seria a soma dos peridos prontos, divido
+   * pelo numeros de vezes que esteve neste estado, este valor já foi contado;*/
+  // double average_rtime;
+
+  //Numero de preempções | incrementado pelo escalonador
+  int preemp;
+
+
 };
 
 
 process_t *proc_create(cpu_info_t cpuInfo,
                        int PID,
                        int start_address,
-                       double priority){
+                       double priority,
+                       int start_time){
   process_t  *p = calloc(1, sizeof(process_t));
   if(!p)
     return NULL;
@@ -36,6 +68,14 @@ process_t *proc_create(cpu_info_t cpuInfo,
   p->start_address = start_address;
   p->processState = waiting; //Tod0 processo criado inicia esperando
   p->priority = priority;
+
+  //LOG
+  p->start_time = start_time;
+  p->previous_state = undefined;
+  p->preemp  = 0;
+  // p->average_rtime = 0;
+  p->end_time = 0;
+
   return p;
 }
 
@@ -71,8 +111,8 @@ void ptable_destruct(process_table_t *self){
 }
 
 void * ptable_add_proc(process_table_t *self, cpu_info_t cpuInfo, int PID,
-                    int start_address, double priority){
-    process_t * p  = proc_create(cpuInfo, PID, start_address, priority);
+                    int start_address, double priority, double start_time){
+    process_t * p  = proc_create(cpuInfo, PID, start_address, priority, start_time);
 
     if(!p)
       return NULL;
@@ -245,4 +285,75 @@ void proc_set_priority(process_t *self, double priority){
     if(self)
       self->priority = priority;
 
+}
+
+
+void proc_set_end_time(process_t*self, int time){
+    if(self)
+      self->end_time = time;
+}
+
+
+void proc_incr_preemp(process_t *self){
+    if(self)
+      self->preemp++;
+}
+
+
+
+void *callback_log_states(node_t *node, void *argument) {
+    if(!node)
+      return NULL;
+
+
+    process_t *p = llist_get_packet(node);
+    if(p->processState != p->previous_state){
+      p->state_count[p->processState]++;
+    }
+
+
+    p->time_state_count[p->processState]++;
+    p->previous_state = p->processState;
+    return NULL;
+}
+void ptable_log_states(process_table_t *self){
+    llist_iterate_nodes(self->first, callback_log_states, NULL);
+}
+
+int *proc_get_timestate_count(process_t *self){
+    if(self)
+      return self->time_state_count;
+
+    return NULL;
+}
+
+
+int *proc_get_state_count(process_t *self){
+    if(self)
+      return self->state_count;
+
+    return NULL;
+}
+
+int proc_get_preemp(process_t *self){
+    if(self)
+      return self->preemp;
+
+    return -1;
+}
+
+int proc_get_end_time(process_t *self){
+    if(self)
+      return self->end_time;
+    return -1;
+}
+
+int proc_get_start_time(process_t *self){
+    if(self)
+      return self->start_time;
+    return -1;
+}
+
+char *estado_nome(process_state_t estado){
+    return nomes_estados[estado];
 }
