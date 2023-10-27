@@ -40,14 +40,14 @@ main: ${OBJS}
 %.maq: %.asm montador
 	end=100 ; \
 	for arq in ${MAQS}; do \
-	./montador -e $$end ./asm/`basename $$arq .maq`.asm > $$arq ;\
+	./montador -e $$end `basename $$arq .maq`.asm > $$arq ;\
 	end=`expr $$end + 1000` ;\
 	done
 
 maq:
 	end=100 ; \
 	for arq in ${MAQS}; do \
-	./montador -e $$end ./asm/`basename $$arq .maq`.asm > ./bin/$$arq ;\
+	./montador -e $$end .`basename $$arq .maq`.asm > $$arq ;\
 	end=`expr $$end + 1000` ;\
 	done
 

@@ -50,7 +50,7 @@ process_t *ptable_search_pendencia(process_table_t *self,
 
 int ptable_delete(process_table_t *self, int PID);
 
-void ptable_log_states(process_table_t *self);
+void ptable_log_states(process_table_t *self, int tempo_estado, void* log);
 
 //Setters
 

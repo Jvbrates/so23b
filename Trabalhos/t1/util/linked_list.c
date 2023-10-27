@@ -105,23 +105,28 @@ node_t *llist_iterate_nodes(node_t *start, func callback, void *arg){
     if(!start) {
       return NULL;
     }
+
+    node_t *i = start->next;
+
     void *ret = callback(start, arg);
 
     if(ret) {
       return ret;
     }
 
-    for (node_t *i = start->next; i != NULL && i!=start; i = i->next) {
+    for (; i != NULL && i!=start;) {
+      node_t  *i_ = i->next;
       ret = callback(i, arg);
       if(ret)
         return ret;
+      i = i_;
     }
 
     return NULL;
 }
 
 void *llist_callback_search_key(node_t*node, void *arg){
-    if(node->key == (unsigned  int) arg)
+    if(node->key == *((int *) arg))
       return node;
     else
       return NULL;
@@ -130,11 +135,11 @@ void *llist_callback_search_key(node_t*node, void *arg){
 void *llist_node_search(node_t *first, int key){
     return llist_iterate_nodes(first,
                                llist_callback_search_key,
-                               (void *)key);
+                               &key);
 }
 
 node_t *llist_remove_node(node_t **node_holder, int key){
-    node_t *s = llist_iterate_nodes(*node_holder, llist_callback_search_key, (void *)key);
+    node_t *s = llist_iterate_nodes(*node_holder, llist_callback_search_key, &key);
 
     if(!s)
       return NULL;

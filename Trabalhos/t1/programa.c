@@ -49,7 +49,7 @@ programa_t *prog_cria(char *nome)
 {
   char file_path[105];
   sprintf(file_path, "./bin/%s", nome);
-  FILE *arq = fopen(file_path, "r");
+  FILE *arq = fopen(nome, "r");
   if (arq == NULL) return NULL;
   char *linha = NULL;
   size_t tam_lin;

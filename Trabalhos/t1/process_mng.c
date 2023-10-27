@@ -117,6 +117,7 @@ void * ptable_add_proc(process_table_t *self, cpu_info_t cpuInfo, int PID,
     if(!p)
       return NULL;
 
+    p->processState = waiting;
     node_t *nd = llist_create_node(p, p->PID);
     if(!nd)
       return NULL;
@@ -299,25 +300,43 @@ void proc_incr_preemp(process_t *self){
       self->preemp++;
 }
 
+//-----------------------------------------------------------------------------
+
+typedef struct {
+    int tempo_estado;
+    process_table_t *self;
+    metricas *log;
+}log_kill;
 
 
 void *callback_log_states(node_t *node, void *argument) {
     if(!node)
       return NULL;
 
+    log_kill *lk = (log_kill *)argument;
 
     process_t *p = llist_get_packet(node);
     if(p->processState != p->previous_state){
-      p->state_count[p->processState]++;
+      p->state_count[p->previous_state]++;
     }
 
 
-    p->time_state_count[p->processState]++;
+    p->time_state_count[p->previous_state]+= lk->tempo_estado;
     p->previous_state = p->processState;
+
+    if(p->processState == dead) {
+      log_save_proc_tofile(p, lk->log);
+      ptable_delete(lk->self, p->PID);
+    }
+
     return NULL;
 }
-void ptable_log_states(process_table_t *self){
-    llist_iterate_nodes(self->first, callback_log_states, NULL);
+void ptable_log_states(process_table_t *self, int tempo_estado, void *log){
+
+
+    log_kill lk = {tempo_estado, self, log};
+
+    llist_iterate_nodes(self->first, callback_log_states, &lk);
 }
 
 int *proc_get_timestate_count(process_t *self){

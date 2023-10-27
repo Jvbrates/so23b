@@ -32,6 +32,7 @@ struct so_t {
   // [][1] -- Leitura
   int es_pendencias[NUM_ES][2];
   metricas *log;
+  int tempo_chamda_anterior;
 
 };
 
@@ -148,7 +149,10 @@ static err_t so_trata_interrupcao(void *argC, int reg_A)
   process_recover(self, to_run);
 
   // Log
-  ptable_log_states(self->processTable);
+  //Tempo que cada processo ficou no estado anterior a este;
+  int tempo_estado = rel_agora(self->relogio) - self->tempo_chamda_anterior;
+  ptable_log_states(self->processTable, tempo_estado, self->log);
+  self->tempo_chamda_anterior = rel_agora(self->relogio);
 
   // 6 - Retorna erro
   return err;
@@ -219,7 +223,7 @@ static err_t so_trata_irq_err_cpu(so_t *self)
 
     } else {
       console_printf(self->console, "SO: Aparentemente todos os processos "
-                                    "estavam bloqueados um execução atrás",
+                                    "estavam bloqueados uma execução atrás",
                      err_nome(err));
 
       log_ocioso(self->log);
@@ -551,7 +555,20 @@ static int so_mata_proc(so_t *self, process_t *p){
 
   process_state_t estado = proc_get_state(p);
   proc_set_end_time(p, rel_agora(self->relogio));
-  log_save_proc_tofile(p, self->log);
+
+  /*Como nao passara pelo funcao iteradora de log, as ultimas informações
+  * precisam ser salvas aqui.
+   * Outra soluçao seroa definir o estado do processo como dead e matar ele
+   * durante a iteração após salvar as informações
+   * */
+  //process_state_t p_estado = proc_get_state(p);
+  //int *p_state_count = proc_get_state_count(p);
+  //int *p_state_time = proc_get_timestate_count(p);
+
+  //p_state_count[p_estado]++;
+  //p_state_time[p_estado] += rel_agora(self->relogio) - self->tempo_chamda_anterior;
+
+  //log_save_proc_tofile(p, self->log);
 
   proc_set_state(p, dead);
 
@@ -563,7 +580,7 @@ static int so_mata_proc(so_t *self, process_t *p){
   } else if(estado == blocked_write){
     (self->es_pendencias[proc_get_PID_or_device(p)][0])--;
   }
-  ptable_delete(self->processTable, proc_get_PID(p));
+  //ptable_delete(self->processTable, proc_get_PID(p));
 
   return 0;
 }
@@ -697,7 +714,7 @@ so_t *so_cria(cpu_t *cpu, mem_t *mem, console_t *console, relogio_t *relogio)
 
   if(self->log)
     free(self->log);
-  self->log = log_init("registro_provisorio\0"); //FIXME
+  self->log = log_init("registro\0");
 
   self->cpu = cpu;
   self->mem = mem;
@@ -715,6 +732,8 @@ so_t *so_cria(cpu_t *cpu, mem_t *mem, console_t *console, relogio_t *relogio)
   }
   // programa a interrupção do relógio
   rel_escr(self->relogio, 2, INTERVALO_INTERRUPCAO);
+
+  self->tempo_chamda_anterior = rel_agora(self->relogio);
 
   return self;
 }
