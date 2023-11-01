@@ -58,7 +58,7 @@ static int so_carrega_programa(so_t *self, char *nome_do_executavel);
 static bool copia_str_da_mem(int tam, char str[tam], mem_t *mem, int ender);
 
 //Processos
-static process_t *process_save(so_t *self, int PID);
+static process_t *process_save(so_t *self, process_t *p);
 static err_t process_recover(so_t *self, process_t *process);
 static int so_cria_proc(so_t *self, char nome[100]);
 static int so_registra_proc(so_t *self, int address);
@@ -110,8 +110,8 @@ static err_t so_trata_interrupcao(void *argC, int reg_A)
 
   // 1 - Salva o processso
   if(self->runningP != 0) {
-    process_save(self, self->runningP);
     self->p_runningP = ptable_search(self->processTable, self->runningP);
+    process_save(self, self->p_runningP);
   }
 
   // 2 - Atende interrupções
@@ -443,21 +443,20 @@ static int so_cria_proc(so_t *self, char nome[100]){
 
 
 /*Salva o estado da CPU para o processo PID_;*/
-static process_t *process_save(so_t *self, int PID_){
+static process_t *process_save(so_t *self, process_t *p){
 
 
-  struct cpu_info_t_so  *cpuInfo = calloc(1, sizeof(cpu_info_t));
+  if(p == NULL || !p)
+    return NULL;
+  //struct cpu_info_t_so  *cpuInfo = calloc(1, sizeof(cpu_info_t));
+
+  cpu_info_t_so *cpuInfo = proc_get_cpuinfo(p);
 
   mem_le(self->mem, IRQ_END_A, &(cpuInfo->A));
   mem_le(self->mem, IRQ_END_X, &(cpuInfo->X));
   mem_le(self->mem, IRQ_END_complemento, &(cpuInfo->complemento));
   mem_le(self->mem, IRQ_END_PC, &(cpuInfo->PC));
   mem_le(self->mem, IRQ_END_modo, (int *)&(cpuInfo->modo));
-
-  process_t  *p = ptable_search(self->processTable, PID_);
-
-  if(p)
-    proc_set_cpuinfo(p, cpuInfo);
 
   return p;
 }
@@ -528,6 +527,7 @@ static int so_registra_proc(so_t *self, int address){
   // cpu.A: Herdado do processo que cria ou do lixo que estiver na memória
   mem_le(self->mem, IRQ_END_A, &(cpuInfo->A));
 
+
   void *p =  ptable_add_proc(self->processTable, cpuInfo, ++PID, address, 0.5,
                             rel_agora(self->relogio));
 
@@ -556,7 +556,7 @@ static int so_mata_proc(so_t *self, process_t *p){
   process_state_t estado = proc_get_state(p);
   proc_set_end_time(p, rel_agora(self->relogio));
 
-  /*Como nao passara pelo funcao iteradora de log, as ultimas informações
+  /*Como nao passara pelo funcao iteradora de log, as últimas informações
   * precisam ser salvas aqui.
    * Outra soluçao seroa definir o estado do processo como dead e matar ele
    * durante a iteração após salvar as informações
@@ -692,6 +692,9 @@ static int so_proc_pendencia(so_t *self, int PID_,
 static int so_wait_proc(so_t *self){
   process_t  *p = ptable_search(self->processTable, self->runningP);
   cpu_info_t_so  *cpuInfo = proc_get_cpuinfo(p);
+
+  if(!cpuInfo)
+    return -1;
 
   int PID_ = cpuInfo->X;
 
