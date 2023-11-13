@@ -4,6 +4,7 @@
 #include "programa.h"
 #include "scheduler_interface.h"
 #include "util/metricas.h"
+#include "instrucao.h"
 
 #include <stdlib.h>
 #include <stdbool.h>
@@ -728,11 +729,10 @@ so_t *so_cria(cpu_t *cpu, mem_t *mem, console_t *console, relogio_t *relogio)
   // quando a CPU executar uma instrução CHAMAC, deve chamar essa função
   cpu_define_chamaC(self->cpu, so_trata_interrupcao, self);
   // coloca o tratador de interrupção na memória
-  if (so_carrega_programa(self, "trata_irq.maq") != 10) {
-    console_printf(console, "SO: problema na carga do tratador de interrupções");
-    free(self);
-    self = NULL;
-  }
+
+  mem_escreve(self->mem, 10, CHAMAC);
+  mem_escreve(self->mem, 11, RETI);
+
   // programa a interrupção do relógio
   rel_escr(self->relogio, 2, INTERVALO_INTERRUPCAO);
 
