@@ -1,5 +1,4 @@
 #include "cpu.h"
-#include "err.h"
 #include "instrucao.h"
 
 #include <stdbool.h>

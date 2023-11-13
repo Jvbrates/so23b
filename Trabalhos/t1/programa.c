@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+
 struct programa_t {
   int carga;
   int tamanho;
@@ -46,6 +47,8 @@ static void pega_dados(programa_t *self, char *lin)
 
 programa_t *prog_cria(char *nome)
 {
+  char file_path[105];
+  sprintf(file_path, "./bin/%s", nome);
   FILE *arq = fopen(nome, "r");
   if (arq == NULL) return NULL;
   char *linha = NULL;

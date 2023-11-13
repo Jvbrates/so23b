@@ -7,13 +7,14 @@
 
 typedef struct so_t so_t;
 
-#include "memoria.h"
-#include "cpu.h"
 #include "console.h"
+#include "cpu.h"
+#include "memoria.h"
 #include "relogio.h"
 
 so_t *so_cria(cpu_t *cpu, mem_t *mem, console_t *console, relogio_t *relogio);
 void so_destroi(so_t *self);
+
 
 // Chamadas de sistema
 // Uma chamada de sistema é realizada colocando a identificação da

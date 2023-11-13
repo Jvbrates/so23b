@@ -9,9 +9,9 @@
 // - controlador de ES, para as instruções de ES
 
 #include "err.h"
-#include "memoria.h"
 #include "es.h"
 #include "irq.h"
+#include "memoria.h"
 
 typedef struct cpu_t cpu_t; // tipo opaco
 
