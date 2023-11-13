@@ -1,0 +1,378 @@
+//
+// Created by jvbrates on 9/22/23.
+//
+
+#include "process_mng.h"
+#include "util/linked_list.h"
+#include "stdlib.h"
+#include "scheduler_interface.h"
+
+struct process_table_t  {
+  node_t *first;
+};
+
+static char *nomes_estados[n_states] = {
+    [undefined] = "Indefinido",
+    [running] = "Executando",
+    [blocked_proc] = "Bloqueado esperando outro processo",
+    [blocked_write] = "Bloqueado para escrita",
+    [blocked_read] = "Bloqueado para leitura",
+    [waiting] = "Pronto",
+    [dead] = "Morto"
+};
+
+struct process_t {
+  int PID;
+  int start_address;
+  void *cpuInfo;
+  process_state_t processState;
+  int PID_or_device;
+  double priority;// round_robin_prio
+
+
+  //LOG infos
+  process_state_t previous_state;
+
+  //Calcular o tempo de retorno
+  int start_time;
+  int end_time;
+
+  //Calcular o numero de entradas em cada processo e tempo total em cada um
+  int state_count[n_states];
+  int time_state_count[n_states];
+
+
+  // Tempo médio em running;
+  /* Não é necessário, o tempo médio seria a soma dos peridos prontos, divido
+   * pelo numeros de vezes que esteve neste estado, este valor já foi contado;*/
+  // double average_rtime;
+
+  //Numero de preempções | incrementado pelo escalonador
+  int preemp;
+
+
+};
+
+
+process_t *proc_create(cpu_info_t cpuInfo,
+                       int PID,
+                       int start_address,
+                       double priority,
+                       int start_time){
+  process_t  *p = calloc(1, sizeof(process_t));
+  if(!p)
+    return NULL;
+
+  p->cpuInfo = cpuInfo;
+  p->PID = PID;
+  p->start_address = start_address;
+  p->processState = waiting; //Tod0 processo criado inicia esperando
+  p->priority = priority;
+
+  //LOG
+  p->start_time = start_time;
+  p->previous_state = undefined;
+  p->preemp  = 0;
+  // p->average_rtime = 0;
+  p->end_time = 0;
+
+  return p;
+}
+
+//-----------------------------------------------------------------------------|
+process_table_t *ptable_create(){
+  process_table_t *p = calloc(1, sizeof(process_table_t));
+  if(!p)
+    return NULL;
+  return p;
+}
+
+void *ptable_destruct_proc(node_t *node, void * arg){
+  process_t *p = (process_t *)llist_get_packet(node);
+
+  if(p) {
+    free(p->cpuInfo);
+    free(p);
+  }
+  return NULL;
+}
+
+void ptable_destruct(process_table_t *self){
+
+  //Destrói processos
+  llist_iterate_nodes(self->first, ptable_destruct_proc, NULL);
+
+  //Destrói estrutura linked_list
+  llist_destruct(&(self->first));
+
+  if(self)
+      free(self);
+
+}
+
+void * ptable_add_proc(process_table_t *self, cpu_info_t cpuInfo, int PID,
+                    int start_address, double priority, double start_time){
+    process_t * p  = proc_create(cpuInfo, PID, start_address, priority, start_time);
+
+    if(!p)
+      return NULL;
+
+    p->processState = waiting;
+    node_t *nd = llist_create_node(p, p->PID);
+    if(!nd)
+      return NULL;
+
+    llist_add_node(&(self->first), nd);
+
+    return p;
+}
+
+process_t *ptable_search(process_table_t *self, int PID){
+    if(!self)
+      return NULL;
+    node_t  *node = llist_node_search(self->first, PID);
+    return llist_get_packet(node);
+}
+
+int ptable_is_empty(process_table_t *self){
+    if (self->first == NULL)
+      return 1;
+    return 0;
+}
+
+
+/*
+ * Estado deve ser blocked_read ou blocked_write
+ */
+
+struct ptable_search_pendencia_arg{
+    process_state_t state;
+    int dispositivo;
+};
+
+void *callback_search_block(node_t *node, void *argument){
+
+    struct ptable_search_pendencia_arg *arg = argument;
+
+    process_t *p = llist_get_packet(node);
+
+    if(p->processState == arg->state && p->PID_or_device == arg->dispositivo){
+      return node;
+    }
+
+    return NULL;
+}
+
+process_t *ptable_search_pendencia(process_table_t *self,
+                                   process_state_t estado,
+                                   int dispositivo){
+
+    struct ptable_search_pendencia_arg pspa = {estado, dispositivo};
+
+    node_t *node = llist_iterate_nodes(self->first,
+                                       callback_search_block,
+                                       &pspa);
+
+    return  llist_get_packet(node);
+
+}
+
+//-----------------------------------------------------------------------------|
+typedef struct {
+    scheduler_t *sched_t;
+    int PID_wait_t;
+    int quantum;
+} arg_wait;
+
+void *callback_wait_proc(node_t *node, void *argument){
+
+    arg_wait *arg = argument;
+
+    process_t *p = llist_get_packet(node);
+
+    if(p->processState == blocked_proc && p->PID_or_device == arg->PID_wait_t){
+      p->processState = waiting;
+      sched_add(arg->sched_t, p, p->PID, arg->quantum);
+    }
+
+    return NULL;
+}
+
+
+void ptable_proc_wait(process_table_t *self,
+                      int PID_wait,
+                      void *sched,
+                      int QUANTUM){
+
+    arg_wait arg = {(scheduler_t *)sched, PID_wait, QUANTUM} ;
+
+    arg.sched_t = sched;
+
+    llist_iterate_nodes(self->first,
+                        callback_wait_proc,
+                        &arg);
+}
+
+//*----------------------------------------------------------------------------
+
+int ptable_delete(process_table_t *self, int PID){
+    node_t  *node = llist_remove_node(&(self->first), PID);
+    if(!node)//node not found
+      return -1;
+    process_t  *p = llist_get_packet(node);
+    llist_delete_node(node);
+
+
+    if(p) {
+      if(p->cpuInfo)
+        free(p->cpuInfo);
+      free(p);
+    }
+    return 0;
+}
+
+cpu_info_t proc_get_cpuinfo(process_t* self){
+    return self->cpuInfo;
+}
+
+process_state_t proc_get_state(process_t* self){
+    return self->processState;
+}
+
+int proc_get_PID(process_t* self){
+    return self->PID;
+    return 0;
+}
+
+int proc_get_start_address(process_t* self){
+    return self->start_address;
+    return 0;
+}
+
+int proc_set_cpuinfo(process_t *self, cpu_info_t cpuInfo){
+    self->cpuInfo = cpuInfo;
+    return 0;
+}
+
+int proc_set_state(process_t *self, process_state_t processState){
+    self->processState = processState;
+    return 0;
+}
+
+int proc_set_PID_or_device(process_t *self, int PID_or_device){
+    self->PID_or_device = PID_or_device;
+    return 0;
+}
+
+
+
+int proc_get_PID_or_device(process_t *self){
+    if(self)
+      return self->PID_or_device;
+
+    return -1;
+}
+
+
+double proc_get_priority(process_t *self){
+    if(self)
+      return self->priority;
+
+    return -1;
+}
+
+
+void proc_set_priority(process_t *self, double priority){
+    if(self)
+      self->priority = priority;
+
+}
+
+
+void proc_set_end_time(process_t*self, int time){
+    if(self)
+      self->end_time = time;
+}
+
+
+void proc_incr_preemp(process_t *self){
+    if(self)
+      self->preemp++;
+}
+
+//-----------------------------------------------------------------------------
+
+typedef struct {
+    int tempo_estado;
+    process_table_t *self;
+    metricas *log;
+}log_kill;
+
+
+void *callback_log_states(node_t *node, void *argument) {
+    if(!node)
+      return NULL;
+
+    log_kill *lk = (log_kill *)argument;
+
+    process_t *p = llist_get_packet(node);
+    if(p->processState != p->previous_state){
+      p->state_count[p->previous_state]++;
+    }
+
+
+    p->time_state_count[p->previous_state]+= lk->tempo_estado;
+    p->previous_state = p->processState;
+
+    if(p->processState == dead) {
+      log_save_proc_tofile(p, lk->log);
+      ptable_delete(lk->self, p->PID);
+    }
+
+    return NULL;
+}
+void ptable_log_states(process_table_t *self, int tempo_estado, void *log){
+
+
+    log_kill lk = {tempo_estado, self, log};
+
+    llist_iterate_nodes(self->first, callback_log_states, &lk);
+}
+
+int *proc_get_timestate_count(process_t *self){
+    if(self)
+      return self->time_state_count;
+
+    return NULL;
+}
+
+
+int *proc_get_state_count(process_t *self){
+    if(self)
+      return self->state_count;
+
+    return NULL;
+}
+
+int proc_get_preemp(process_t *self){
+    if(self)
+      return self->preemp;
+
+    return -1;
+}
+
+int proc_get_end_time(process_t *self){
+    if(self)
+      return self->end_time;
+    return -1;
+}
+
+int proc_get_start_time(process_t *self){
+    if(self)
+      return self->start_time;
+    return -1;
+}
+
+char *estado_nome(process_state_t estado){
+    return nomes_estados[estado];
+}
