@@ -429,6 +429,9 @@ static bool copia_str_da_mem(int tam, char str[tam], mem_t *mem, int ender)
 
 
 /* Carrega processo na memória e registra ele no sistema*/
+// TODO: Isto daqui terá de ser alterado no T2,
+//  carregar_programa() retornarar mais informações do que somente o
+//  endereço de carga e estas serao registradas no processo
 static int so_cria_proc(so_t *self, char nome[100]){
   int ender_carga = so_carrega_programa(self, nome);
   if (ender_carga > 0) {
