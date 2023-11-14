@@ -32,13 +32,16 @@ void tabpag_destroi(tabpag_t *self)
 static void tabpag__remove_pagina(tabpag_t *self, int pagina)
 {
   if (pagina >= self->tam_tab) return;
+
   if (pagina < self->tam_tab - 1) {
     self->tabela[pagina].quadro = -1;
     return;
   }
+
   do {
     self->tam_tab--;
   } while (self->tam_tab > 0 && self->tabela[self->tam_tab - 1].quadro == -1);
+
   if (self->tam_tab == 0) {
     free(self->tabela);
     self->tabela = NULL;
@@ -46,6 +49,7 @@ static void tabpag__remove_pagina(tabpag_t *self, int pagina)
     self->tabela = realloc(self->tabela, self->tam_tab * sizeof(descritor_t));
     assert(self->tabela != NULL);
   }
+
 }
 
 static void tabpag__insere_pagina(tabpag_t *self, int pagina)

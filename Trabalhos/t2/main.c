@@ -16,6 +16,7 @@
 
 typedef struct {
   mem_t *mem;
+  mem_t *sec_mem; // <--
   mmu_t *mmu;
   cpu_t *cpu;
   relogio_t *relogio;
@@ -29,6 +30,9 @@ void cria_hardware(hardware_t *hw)
   // cria a memória e a MMU
   hw->mem = mem_cria(MEM_TAM);
   hw->mmu = mmu_cria(hw->mem);
+
+  // cria a memória secundaria
+  hw->sec_mem = mem_cria(MEM_TAM*10);
 
   // cria dispositivos de E/S
   hw->console = console_cria();
@@ -66,6 +70,7 @@ void destroi_hardware(hardware_t *hw)
   console_destroi(hw->console);
   mmu_destroi(hw->mmu);
   mem_destroi(hw->mem);
+  mem_destroi(hw->sec_mem); // <---
 }
 
 int main()
@@ -76,7 +81,7 @@ int main()
   // cria o hardware
   cria_hardware(&hw);
   // cria o sistema operacional
-  so = so_cria(hw.cpu, hw.mem, hw.mmu, hw.console, hw.relogio);
+  so = so_cria(hw.cpu, hw.mem, hw.sec_mem, hw.mmu, hw.console, hw.relogio);
   
   // executa o laço de execução da CPU
   controle_laco(hw.controle);

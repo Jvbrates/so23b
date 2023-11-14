@@ -18,15 +18,17 @@ static char *nomes_estados[n_states] = {
     [blocked_write] = "Bloqueado para escrita",
     [blocked_read] = "Bloqueado para leitura",
     [waiting] = "Pronto",
+    [suspended] = "Suspenso paginando",
     [dead] = "Morto"
 };
 
 struct process_t {
+
   int PID;
   int start_address;
   void *cpuInfo;
   process_state_t processState;
-  int PID_or_device;
+  int PID_or_device_or_time; // 'time' referente ao tempo de espera do disco
   double priority;// round_robin_prio
 
 
@@ -50,13 +52,27 @@ struct process_t {
   //Numero de preempções | incrementado pelo escalonador
   int preemp;
 
+  // Adições para o T2 - Paginação de Memória
+
+  // TODO:
+  // [] Criar
+  // [] Destruir
+  tabpag_t *tpag;
+
+  // É preciso saber onde um processo está alocado na memória secundária
+  // para poder carregar para a principal quando necessário
+  int quadro_sec_mem;
+
+  // Necessário para saber se ocorreu uma falha de página ou `segmentation fault`
+  int size;
+  int pagina_fim;
 
 };
 
 
 process_t *proc_create(cpu_info_t cpuInfo,
                        int PID,
-                       int start_address,
+                       ret_so_carrega_programa start_address,
                        double priority,
                        int start_time){
   process_t  *p = calloc(1, sizeof(process_t));
@@ -65,7 +81,7 @@ process_t *proc_create(cpu_info_t cpuInfo,
 
   p->cpuInfo = cpuInfo;
   p->PID = PID;
-  p->start_address = start_address;
+  p->start_address = start_address.end_virt_ini; // T2
   p->processState = waiting; //Tod0 processo criado inicia esperando
   p->priority = priority;
 
@@ -73,9 +89,14 @@ process_t *proc_create(cpu_info_t cpuInfo,
   p->start_time = start_time;
   p->previous_state = undefined;
   p->preemp  = 0;
-  // p->average_rtime = 0;
   p->end_time = 0;
 
+
+  // T2
+  p->quadro_sec_mem = start_address.quadro_ini;
+  p->size = start_address.end_virt_fim - start_address.end_virt_ini;
+  p->pagina_fim = start_address.pagina_fim; // TODO Acho que não é necessario guardar isto
+  p->tpag = tabpag_cria();
   return p;
 }
 
@@ -92,6 +113,7 @@ void *ptable_destruct_proc(node_t *node, void * arg){
 
   if(p) {
     free(p->cpuInfo);
+    tabpag_destroi(p->tpag);
     free(p);
   }
   return NULL;
@@ -111,7 +133,7 @@ void ptable_destruct(process_table_t *self){
 }
 
 void * ptable_add_proc(process_table_t *self, cpu_info_t cpuInfo, int PID,
-                    int start_address, double priority, double start_time){
+                    ret_so_carrega_programa start_address, double priority, double start_time){
     process_t * p  = proc_create(cpuInfo, PID, start_address, priority, start_time);
 
     if(!p)
@@ -156,7 +178,7 @@ void *callback_search_block(node_t *node, void *argument){
 
     process_t *p = llist_get_packet(node);
 
-    if(p->processState == arg->state && p->PID_or_device == arg->dispositivo){
+    if(p->processState == arg->state && p->PID_or_device_or_time == arg->dispositivo){
       return node;
     }
 
@@ -190,7 +212,7 @@ void *callback_wait_proc(node_t *node, void *argument){
 
     process_t *p = llist_get_packet(node);
 
-    if(p->processState == blocked_proc && p->PID_or_device == arg->PID_wait_t){
+    if(p->processState == blocked_proc && p->PID_or_device_or_time == arg->PID_wait_t){
       p->processState = waiting;
       sched_add(arg->sched_t, p, p->PID, arg->quantum);
     }
@@ -259,8 +281,8 @@ int proc_set_state(process_t *self, process_state_t processState){
     return 0;
 }
 
-int proc_set_PID_or_device(process_t *self, int PID_or_device){
-    self->PID_or_device = PID_or_device;
+int proc_set_PID_or_device(process_t *self, int PID_or_device_or_time){
+    self->PID_or_device_or_time = PID_or_device_or_time;
     return 0;
 }
 
@@ -268,7 +290,7 @@ int proc_set_PID_or_device(process_t *self, int PID_or_device){
 
 int proc_get_PID_or_device(process_t *self){
     if(self)
-      return self->PID_or_device;
+      return self->PID_or_device_or_time;
 
     return -1;
 }
@@ -375,4 +397,23 @@ int proc_get_start_time(process_t *self){
 
 char *estado_nome(process_state_t estado){
     return nomes_estados[estado];
+}
+
+
+// T2
+
+tabpag_t *proc_get_tpag(process_t *self){
+    return self->tpag;
+}
+void proc_set_tpag(process_t *self, tabpag_t *tpag){
+    self->tpag = tpag;
+}
+int proc_get_quadro_smem(process_t *self){
+    return self->quadro_sec_mem;
+}
+int proc_get_size(process_t *self){
+    return self->size;
+}
+int proc_get_pagina_fim(process_t *self){
+    return self->pagina_fim;
 }

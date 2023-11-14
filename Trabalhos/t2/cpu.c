@@ -390,40 +390,48 @@ void cpu_executa_1(cpu_t *self)
   if (self->erro != ERR_OK) return;
 
   int opcode;
-  if (!pega_opcode(self, &opcode)) return;
+  //FIXME
+  // Pega opcode está retornando ERR_INS_INV mas isto não está gerando interrupção,
+  // o que deveria ocorrer
+  bool dbg = pega_opcode(self, &opcode);
+  if (!dbg) {
+    if (self->erro != ERR_END_INV && self->erro != ERR_PAG_AUSENTE )
+      return ;
+  } else {
 
-  switch (opcode) {
-    case NOP:    op_NOP(self);    break;
-    case PARA:   op_PARA(self);   break;
-    case CARGI:  op_CARGI(self);  break;
-    case CARGM:  op_CARGM(self);  break;
-    case CARGX:  op_CARGX(self);  break;
-    case ARMM:   op_ARMM(self);   break;
-    case ARMX:   op_ARMX(self);   break;
-    case TRAX:   op_TRAX(self);   break;
-    case CPXA:   op_CPXA(self);   break;
-    case INCX:   op_INCX(self);   break;
-    case SOMA:   op_SOMA(self);   break;
-    case SUB:    op_SUB(self);    break;
-    case MULT:   op_MULT(self);   break;
-    case DIV:    op_DIV(self);    break;
-    case RESTO:  op_RESTO(self);  break;
-    case NEG:    op_NEG(self);    break;
-    case DESV:   op_DESV(self);   break;
-    case DESVZ:  op_DESVZ(self);  break;
-    case DESVNZ: op_DESVNZ(self); break;
-    case DESVN:  op_DESVN(self);  break;
-    case DESVP:  op_DESVP(self);  break;
-    case CHAMA:  op_CHAMA(self);  break;
-    case RET:    op_RET(self);    break;
-    case LE:     op_LE(self);     break;
-    case ESCR:   op_ESCR(self);   break;
-    case RETI:   op_RETI(self);   break;
-    case CHAMAC: op_CHAMAC(self); break;
-    case CHAMAS: op_CHAMAS(self); break;
-    default:     self->erro = ERR_INSTR_INV;
+    switch (opcode) {
+      case NOP:    op_NOP(self);    break;
+      case PARA:   op_PARA(self);   break;
+      case CARGI:  op_CARGI(self);  break;
+      case CARGM:  op_CARGM(self);  break;
+      case CARGX:  op_CARGX(self);  break;
+      case ARMM:   op_ARMM(self);   break;
+      case ARMX:   op_ARMX(self);   break;
+      case TRAX:   op_TRAX(self);   break;
+      case CPXA:   op_CPXA(self);   break;
+      case INCX:   op_INCX(self);   break;
+      case SOMA:   op_SOMA(self);   break;
+      case SUB:    op_SUB(self);    break;
+      case MULT:   op_MULT(self);   break;
+      case DIV:    op_DIV(self);    break;
+      case RESTO:  op_RESTO(self);  break;
+      case NEG:    op_NEG(self);    break;
+      case DESV:   op_DESV(self);   break;
+      case DESVZ:  op_DESVZ(self);  break;
+      case DESVNZ: op_DESVNZ(self); break;
+      case DESVN:  op_DESVN(self);  break;
+      case DESVP:  op_DESVP(self);  break;
+      case CHAMA:  op_CHAMA(self);  break;
+      case RET:    op_RET(self);    break;
+      case LE:     op_LE(self);     break;
+      case ESCR:   op_ESCR(self);   break;
+      case RETI:   op_RETI(self);   break;
+      case CHAMAC: op_CHAMAC(self); break;
+      case CHAMAS: op_CHAMAS(self); break;
+      default:     self->erro = ERR_INSTR_INV;
+    }
+
   }
-
   if (self->erro != ERR_OK && self->erro != ERR_CPU_PARADA && self->modo == usuario) {
     cpu_interrompe(self, IRQ_ERR_CPU);
   }
@@ -436,10 +444,15 @@ bool cpu_interrompe(cpu_t *self, irq_t irq)
   // esta é uma CPU boazinha, salva todo o estado interno da CPU
   // poe em modo supervisor, para que o acesso seja feito na memória física
   self->modo = supervisor;
+
+  //FIXME aqui em poe_mem() o retorno de mmu_escreve()
+  // vai sobrescrever self->erro, o que vai atrapalhar o save em IRQ_END_erro
+  int erro = self->erro;
+
   poe_mem(self, IRQ_END_PC,          self->PC);
   poe_mem(self, IRQ_END_A,           self->A);
   poe_mem(self, IRQ_END_X,           self->X);
-  poe_mem(self, IRQ_END_erro,        self->erro);
+  poe_mem(self, IRQ_END_erro,        erro);  // <----
   poe_mem(self, IRQ_END_complemento, self->complemento);
   poe_mem(self, IRQ_END_modo,        usuario);
 
