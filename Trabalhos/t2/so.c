@@ -267,7 +267,7 @@ static void so_salva_estado_da_cpu(so_t *self)
   // mem_le(self->mem, IRQ_END_X, endereco onde vai o X no descritor);
   // etc
 }
-static err_t so_trata_pendencias(so_t *self)
+static err_t so_trata_pendencias(so_t *self) // <-- FIXME Obvio que os processos não vão desbloquear se tu tratar isto
 {
   // realiza ações que não são diretamente ligadar com a interrupção que
   //   está sendo atendida:
@@ -388,6 +388,8 @@ static err_t so_trata_irq_err_cpu(so_t *self) // <-----
 
       break;
     }
+    case ERR_PAG_AUSENTE:
+      console_printf(self->console, "Processo que causou erro PAG_AUSENTE %i", self->runningP);
     case ERR_END_INV: {
 
       console_printf(self->console, "Processo que causou erro END_INV %i", self->runningP);
@@ -435,10 +437,24 @@ static err_t so_trata_irq_err_cpu(so_t *self) // <-----
 
       break ;
     }
-    case ERR_PAG_AUSENTE: {
-      console_printf(self->console, "Processo que causou erro PAG_AUSENTE %i", self->runningP);
-      break ;
-    }
+    //case ERR_PAG_AUSENTE: {
+
+      /* TODO: Como é possível erro de pagina ausente se eu ainda não programei
+       * substituição de pag?
+       */
+      /* ANSWER: Considere que o programa contem as paginas A,B,C dispostas
+       * sequencialmente em seu espaco de endereçamento.
+       * A tabela de paginas, um vetor, do programa em dado momento é tab[frame_A],
+       * somente A está mapeado.
+       * Caso A chame um função em C:
+       *  Como a relação página-quadro é definido com base no indice da
+       *  tabela, está será redimensionada para tab[frame_A, -1, frame_C]
+       *  Assim, caso o programa acesse a memória em B ele receberá um ERR_PAG_AUSENTE
+       *  */
+
+
+      //break ;
+    //}
   }
 
 
@@ -823,7 +839,7 @@ static int so_proc_pendencia(so_t *self, int PID_,
 
   if(!p) {
     console_printf(self->console,
-                   "Processo [%ui] existe mas não está na ptable "
+                   "Processo [%i] existe mas não está na ptable "
                    , PID_);
     return -1;
   }
