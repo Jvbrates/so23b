@@ -116,4 +116,7 @@ int proc_get_quadro_smem(process_t *self);
 int proc_get_size(process_t *self);
 int proc_get_pagina_fim(process_t *self);
 
+/* Retorna o endereço da página correspondete na memória secundária, -1 se não existir (END_INV)*/
+int proc_get_page_addr(process_t *self, int address, int tam_pag);
+
 #endif // SO23B_PROCESS_MNG_H

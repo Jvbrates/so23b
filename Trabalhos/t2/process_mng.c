@@ -25,7 +25,7 @@ static char *nomes_estados[n_states] = {
 struct process_t {
 
   int PID;
-  int start_address;
+  int start_address; //T2: Agora é virtual
   void *cpuInfo;
   process_state_t processState;
   int PID_or_device_or_time; // 'time' referente ao tempo de espera do disco
@@ -416,4 +416,17 @@ int proc_get_size(process_t *self){
 }
 int proc_get_pagina_fim(process_t *self){
     return self->pagina_fim;
+}
+
+int proc_get_page_addr(process_t *self, int address, int tam_pag){
+    if(self->size + self->start_address < address || address < self->start_address) {
+      return -1;
+    }
+
+    address = address - self->start_address;
+
+    int pag = address / tam_pag;
+
+    return (self->quadro_sec_mem * tam_pag)+(pag * tam_pag);
+
 }

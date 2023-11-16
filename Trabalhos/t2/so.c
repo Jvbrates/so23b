@@ -88,7 +88,8 @@ static err_t so_trata_interrupcao(void *argC, int reg_A);
 static ret_so_carrega_programa so_carrega_programa(so_t *self, char *nome_do_executavel);
 static bool so_copia_str_do_processo(so_t *self, int tam, char str[tam],
                                      int end_virt/*, processo*/);
-
+// Cópia de uma memória para outra, from mem1 to mem2
+static int so_mem_to_mem(mem_t *mem1, int mem1_addr, mem_t *mem2, int mem2_addr, int range);
 
 //Processos
 static process_t *process_save(so_t *self, process_t *p);
@@ -238,6 +239,9 @@ static err_t so_trata_interrupcao(void *argC, int reg_A)
   }else {
     console_printf(self->console, "SO: Escolhido %i, prio %f", proc_get_PID(to_run),
                    proc_get_priority(to_run));
+
+
+    mmu_define_tabpag(self->mmu, proc_get_tpag(to_run)); // <-----
   }
 
 
@@ -355,35 +359,90 @@ static err_t so_trata_irq_err_cpu(so_t *self) // <-----
   int err_int;
   mem_le(self->mem, IRQ_END_erro, &err_int);
   err_t err = err_int;
-  if(err_int == ERR_CPU_PARADA){
-    cpu_modo_t modo;
-    mem_le(self->mem, IRQ_END_modo, (int *)&modo);
+  switch (err_int) {
+    case ERR_CPU_PARADA: {
+      cpu_modo_t modo;
+      mem_le(self->mem, IRQ_END_modo, (int *) &modo);
 
-    if(modo == supervisor) {
+      if (modo == supervisor) {
 
-      console_printf(self->console, "SO: IRQ não tratada -- erro na CPU: %s",
-                     err_nome(err));
-      if(self->runningP != 0){
-        console_printf(self->console, "SO: Matando %i",
-                       self->runningP);
+        console_printf(self->console, "SO: IRQ não tratada -- erro na CPU: %s",
+                       err_nome(err));
+        if (self->runningP != 0) {
+          console_printf(self->console, "SO: Matando %i",
+                         self->runningP);
 
-        so_mata_proc(self, self->p_runningP);
+          so_mata_proc(self, self->p_runningP);
+        }
+
+
+      } else {
+        console_printf(self->console, "SO: Aparentemente todos os processos "
+                                      "estavam bloqueados uma execução atrás",
+                       err_nome(err));
+
+        log_ocioso(self->log);
+
+        return ERR_OK;
       }
 
+      break;
+    }
+    case ERR_END_INV: {
 
-    } else {
-      console_printf(self->console, "SO: Aparentemente todos os processos "
-                                    "estavam bloqueados uma execução atrás",
-                     err_nome(err));
+      console_printf(self->console, "Processo que causou erro END_INV %i", self->runningP);
+      // TODO: Continuar aqui, já está gerando ERR_END_INV
+      /* 1. Verificar se o processo A está acessando um endereço válido;
+       * 2. Encontrar o endereço do processo na memória secundária
+       * 3. Escolher uma quadro para substituir
+       * 4. Se este quadro estava sendo usada por outro processo B
+       *  4.1 Caso B tenha alterado o quadro: Gravar este quadro na memória secundária na página correspondente de B
+       *  4.2 Inválidar este quadro de memória na tpag de B
+       * 5. Copiar a memória do disco de A para a memória principal
+       * 6. Atualizar a tab_pag de A;
+       * 7. Bloquear o processo pelo tempo que simula as operações de disco
+       * */
 
-      log_ocioso(self->log);
+
+      int addr;
+      mmu_le(self->mmu, IRQ_END_complemento, &addr, supervisor);
+
+
+      // 1 e 2
+      int addr_mem_sec = proc_get_page_addr(self->p_runningP, addr, TAM_PAGINA);
+      if(addr_mem_sec == -1) {
+        console_printf(self->console, "SO: Matando %i [ERR_END_INV] %i",
+                       self->runningP, addr);
+
+        so_mata_proc(self, self->p_runningP);
+        return  ERR_OK;
+      }
+
+      // 3.
+      // 4.
+      // 5.
+      int quadro_mem = self->quadro_livre++;
+      so_mem_to_mem(self->sec_mem, addr_mem_sec, self->mem, quadro_mem*TAM_PAGINA, TAM_PAGINA);
+
+      // 6.
+      tabpag_t *proc_pag = proc_get_tpag(self->p_runningP);
+      tabpag_define_quadro(proc_pag, addr/TAM_PAGINA, quadro_mem);
+
+      // 7.
 
       return ERR_OK;
 
+
+      break ;
+    }
+    case ERR_PAG_AUSENTE: {
+      console_printf(self->console, "Processo que causou erro PAG_AUSENTE %i", self->runningP);
+      break ;
     }
   }
 
-  // TODO: Continuar aqui, já está gerando ERR_END_INV
+
+
 
   return ERR_CPU_PARADA;
 
