@@ -375,11 +375,12 @@ static err_t so_trata_pendencias(so_t *self)
                   }
                 } else {
                   so_mem_virt_irq(self, p, true); // Sim, ele pode acabar caindo em page fault novamente
+                  continue ;
                 }
 
               }
 
-
+              console_printf(self->console, "MEMVIRT: Waking up p %i", proc_get_PID(p));
               self->sec_req--;
               proc_set_state(p, waiting);
               proc_set_PID_or_device(p, 0);
@@ -504,7 +505,7 @@ static err_t so_trata_irq_err_cpu(so_t *self) // <-----
     }
     case ERR_PAG_AUSENTE:
     case ERR_END_INV: {
-      console_printf(self->console, "Processo %i causou erro %s ", self->runningP, err_nome(err));
+      console_printf(self->console, "Processo %i causou erro %s ", self->runningP, err_nome(err_int));
 
       retorno = so_mem_virt_irq(self, self->p_runningP, false);
     }
@@ -961,7 +962,7 @@ static int so_proc_pendencia(so_t *self, int PID_,
     }
     self->sec_tempo_livre = when_wake;
 
-
+    console_printf(self->console, "MEMVIRT: p %i waiting %i",proc_get_PID(p), when_wake);
     PID_or_device = when_wake;
   }
 
@@ -1078,7 +1079,7 @@ static err_t  so_mem_virt_irq(so_t *self, process_t *p, bool cria_proc){
 
   // Mata o processo caso ele tente acessar um endereço inválido
   if(addr_mem_sec == -1) {
-    console_printf(self->console, "SO: Matando %i [ERR_END_INV] %i",
+    console_printf(self->console, "MEMVIRT: Matando %i [ERR_END_INV] %i",
                    self->runningP, addr);
 
     so_mata_proc(self, self->p_runningP);
@@ -1094,6 +1095,11 @@ static err_t  so_mem_virt_irq(so_t *self, process_t *p, bool cria_proc){
   // 6.
   tabpag_t *proc_pag = proc_get_tpag(self->p_runningP);
   tabpag_define_quadro(proc_pag, addr/TAM_PAGINA, quadro_mem);
+
+  //log
+  console_printf(self->console, "MEMVIRT: p %i. pag %i to frame %i %s", proc_get_PID(p), addr/TAM_PAGINA, quadro_mem,
+                 (cria_proc == true?"suspended_create_proc":"suspended"));
+
 
   // 7.
   so_proc_pendencia(self, self->runningP,
