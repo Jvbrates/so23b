@@ -37,7 +37,8 @@ struct so_t {
 
   //memória secundária
   mem_t *sec_mem;
-  int sm_req; // Numero de requisições ao disco
+  int sec_req; // Numero de requisições ao disco
+  int sec_tempo_livre;
 
   mmu_t *mmu;
   console_t *console;
@@ -142,6 +143,9 @@ so_t *so_cria(cpu_t *cpu, mem_t *mem, mem_t *sec_mem, mmu_t *mmu,
   //   não vão ser usadas por programas de usuário)
   self->sec_mem_quadro_livre = 0;
 
+  self->sec_req = 0;
+  self->sec_tempo_livre = 0;
+
   self->quadro_livre = 99 / TAM_PAGINA + 1;
   return self;
 }
@@ -162,6 +166,7 @@ static err_t so_trata_irq_err_cpu(so_t *self);
 static err_t so_trata_irq_relogio(so_t *self);
 static err_t so_trata_irq_desconhecida(so_t *self, int irq);
 static err_t so_trata_chamada_sistema(so_t *self);
+static err_t  so_mem_virt_irq(so_t *self);
 
 // funções auxiliares para o tratamento de interrupção
 static void so_salva_estado_da_cpu(so_t *self);
@@ -236,6 +241,9 @@ static err_t so_trata_interrupcao(void *argC, int reg_A)
   if(!to_run) {
     console_printf(self->console, "SO: Nada para escalonar no momento, REL: %i",
                    rel_agora(self->relogio));
+
+
+    /// FIXME o que ocorre de
   }else {
     console_printf(self->console, "SO: Escolhido %i, prio %f", proc_get_PID(to_run),
                    proc_get_priority(to_run));
@@ -267,15 +275,79 @@ static void so_salva_estado_da_cpu(so_t *self)
   // mem_le(self->mem, IRQ_END_X, endereco onde vai o X no descritor);
   // etc
 }
-static err_t so_trata_pendencias(so_t *self) // <-- FIXME Obvio que os processos não vão desbloquear se tu tratar isto
+static err_t so_trata_pendencias(so_t *self)
 {
-  // realiza ações que não são diretamente ligadar com a interrupção que
-  //   está sendo atendida:
-  // - E/S pendente
-  // - desbloqueio de processos
-  // - contabilidades
+  err_t erro = ERR_OK;
 
-  return ERR_OK;
+
+  // Pendencias de entrada e saída, bloqueio
+  for (int i = 0; i < NUM_ES; ++i) {
+    // Trata pendencia de escrita
+    static int estado_escr, estado_leitura;
+    term_le(self->console, i*4 + 3, &estado_escr);
+    term_le(self->console, i*4 + 1, &estado_leitura);
+
+    if(self->es_pendencias[i][0] > 0 && estado_escr != 0){
+      process_t *p = ptable_search_pendencia(self->processTable, blocked_write, i);
+
+      if(p == NULL) {
+        console_printf(self->console,
+                       "tabela de pendencias e ptable não sincronizadas");
+        erro++;
+        continue ;
+      }
+
+      cpu_info_t_so  *proc_info = proc_get_cpuinfo(p);
+      int dado = proc_info->X;
+
+      int ret = term_escr(self->console, i*4 + 2, dado);
+
+      proc_info->A = ret;
+
+      (self->es_pendencias[i][0])--;
+
+      proc_set_state(p, waiting);
+
+      sched_add(self->scheduler, p, proc_get_PID(p), QUANTUM);
+
+    }
+
+    //Trata pendencia de leitura
+    if(self->es_pendencias[i][1] > 0 && estado_leitura != 0){
+      process_t *p = ptable_search_pendencia(self->processTable, blocked_read, i);
+      if(p == NULL) {
+        console_printf(self->console,
+                       "tabela de pendencias e ptable não sincronizadas");
+        // Ou falha na funcao search...
+        erro++;
+        continue ;
+      }
+      cpu_info_t_so  *proc_info = proc_get_cpuinfo(p);
+
+      int dado;
+      if(term_le(self->console, i*4, &dado) != ERR_OK)
+        erro++;
+
+      proc_info->A = dado;
+
+      self->es_pendencias[i][1]--;
+
+      proc_set_state(p, waiting);
+      proc_set_PID_or_device(p, 0);
+
+      sched_add(self->scheduler, p, proc_get_PID(p), QUANTUM);
+
+    }
+  }
+
+
+  // Pendencias de page_fault, suspend
+  if(self->sec_req){
+
+  }
+
+
+  return erro;
 }
 static void so_escalona(so_t *self)
 {
@@ -347,6 +419,10 @@ static err_t so_trata_irq_reset(so_t *self)
   return ERR_OK;
 }
 
+
+
+// FIXME: Está função está com muitas responsabilidades,
+//  é melhor quebrá-la em outras funções específicas
 /*IRQ_ERR_CPU:
  * Mata o processo que causou o erro, se possível*/
 static err_t so_trata_irq_err_cpu(so_t *self) // <-----
@@ -358,7 +434,7 @@ static err_t so_trata_irq_err_cpu(so_t *self) // <-----
   // Ainda não temos processos, causa a parada da CPU
   int err_int;
   mem_le(self->mem, IRQ_END_erro, &err_int);
-  err_t err = err_int;
+  err_t err = err_int, retorno = ERR_CPU_PARADA;
   switch (err_int) {
     case ERR_CPU_PARADA: {
       cpu_modo_t modo;
@@ -389,78 +465,28 @@ static err_t so_trata_irq_err_cpu(so_t *self) // <-----
       break;
     }
     case ERR_PAG_AUSENTE:
-      console_printf(self->console, "Processo que causou erro PAG_AUSENTE %i", self->runningP);
     case ERR_END_INV: {
+      console_printf(self->console, "Processo %i causou erro %s ", self->runningP, err_nome(err));
 
-      console_printf(self->console, "Processo que causou erro END_INV %i", self->runningP);
-      // TODO: Continuar aqui, já está gerando ERR_END_INV
-      /* 1. Verificar se o processo A está acessando um endereço válido;
-       * 2. Encontrar o endereço do processo na memória secundária
-       * 3. Escolher uma quadro para substituir
-       * 4. Se este quadro estava sendo usada por outro processo B
-       *  4.1 Caso B tenha alterado o quadro: Gravar este quadro na memória secundária na página correspondente de B
-       *  4.2 Inválidar este quadro de memória na tpag de B
-       * 5. Copiar a memória do disco de A para a memória principal
-       * 6. Atualizar a tab_pag de A;
-       * 7. Bloquear o processo pelo tempo que simula as operações de disco
-       * */
-
-
-      int addr;
-      mmu_le(self->mmu, IRQ_END_complemento, &addr, supervisor);
-
-
-      // 1 e 2
-      int addr_mem_sec = proc_get_page_addr(self->p_runningP, addr, TAM_PAGINA);
-      if(addr_mem_sec == -1) {
-        console_printf(self->console, "SO: Matando %i [ERR_END_INV] %i",
-                       self->runningP, addr);
-
-        so_mata_proc(self, self->p_runningP);
-        return  ERR_OK;
-      }
-
-      // 3.
-      // 4.
-      // 5.
-      int quadro_mem = self->quadro_livre++;
-      so_mem_to_mem(self->sec_mem, addr_mem_sec, self->mem, quadro_mem*TAM_PAGINA, TAM_PAGINA);
-
-      // 6.
-      tabpag_t *proc_pag = proc_get_tpag(self->p_runningP);
-      tabpag_define_quadro(proc_pag, addr/TAM_PAGINA, quadro_mem);
-
-      // 7.
-
-      return ERR_OK;
-
-
-      break ;
+      retorno = so_mem_virt_irq(self);
     }
-    //case ERR_PAG_AUSENTE: {
 
-      /* TODO: Como é possível erro de pagina ausente se eu ainda não programei
+      /* NOTE: Como é possível erro de pagina ausente se eu ainda não programei
        * substituição de pag?
        */
       /* ANSWER: Considere que o programa contem as paginas A,B,C dispostas
        * sequencialmente em seu espaco de endereçamento.
-       * A tabela de paginas, um vetor, do programa em dado momento é tab[frame_A],
+       * A tabela de paginas, um vetor, do programa em dado momento é tab: [frame_A],
        * somente A está mapeado.
        * Caso A chame um função em C:
        *  Como a relação página-quadro é definido com base no indice da
-       *  tabela, está será redimensionada para tab[frame_A, -1, frame_C]
+       *  tabela, está será redimensionada para tab: [frame_A, -1, frame_C]
        *  Assim, caso o programa acesse a memória em B ele receberá um ERR_PAG_AUSENTE
        *  */
 
-
-      //break ;
-    //}
   }
 
-
-
-
-  return ERR_CPU_PARADA;
+  return retorno;
 
 }
 
@@ -516,9 +542,12 @@ static err_t so_trata_chamada_sistema(so_t *self)
     case SO_MATA_PROC:
       so_chamada_mata_proc(self);
       break;
+    case SO_ESPERA_PROC:
+      so_wait_proc(self);
+      break ;
     default:
       console_printf(self->console,
-          "SO: chamada de sistema desconhecida (%d)", id_chamada);
+          "SO: P[%i] chamada de sistema desconhecida (%d)", self->runningP, id_chamada);
       return ERR_CPU_PARADA;
   }
   return ERR_OK;
@@ -556,7 +585,7 @@ static void so_chamada_escr(so_t *self)
 }
 
 
-// TODO fica para daqui a pouco
+// TODO Tem que ser agora
 static void so_chamada_cria_proc(so_t *self)
 {
   // ainda sem suporte a processos, carrega programa e passa a executar ele
@@ -845,6 +874,24 @@ static int so_proc_pendencia(so_t *self, int PID_,
   }
 
 
+  // Casos falha de página
+
+  if(state == suspended || state == suspended_create_proc) {
+
+    int t_now = rel_agora(self->relogio), when_wake;
+
+    if(self->sec_req == 0) {
+      when_wake = t_now + (PID_or_device * DELAY_SEC_MEM);
+    } else {
+      when_wake = self->sec_tempo_livre + (PID_or_device * DELAY_SEC_MEM);
+    }
+    self->sec_tempo_livre = when_wake;
+
+
+    PID_or_device = when_wake;
+  }
+
+
   proc_set_state(p, state);
   proc_set_PID_or_device(p, PID_or_device);
   sched_remove(self->scheduler, PID_);
@@ -906,4 +953,75 @@ int so_start_ptable_sched(so_t *self){
   self->scheduler = sched_create(self->relogio, self->log);
 
   return 0;
+}
+
+
+/* Bloqueia um processo até que outro morra
+ * Caso o processo que ele deseja esperar exista*/
+static int so_wait_proc(so_t *self){
+  process_t  *p = ptable_search(self->processTable, self->runningP);
+  cpu_info_t_so  *cpuInfo = proc_get_cpuinfo(p);
+
+  if(!cpuInfo)
+    return -1;
+
+  int PID_ = cpuInfo->X;
+
+  process_t * espera = ptable_search(self->processTable, PID_);
+  if(!espera) {
+    cpuInfo->A = -1;
+  } else {
+    so_proc_pendencia(self, self->runningP, blocked_proc, PID_);
+    cpuInfo->A = 0;
+  }
+
+  return 0;
+}
+
+static err_t  so_mem_virt_irq(so_t *self){
+
+  /* 1. Verificar se o processo A está acessando um endereço válido; <- FEITO
+     * 2. Encontrar o endereço do processo na memória secundária <- FEITO
+     * 3. Escolher uma quadro para substituir
+     * 4. Se este quadro estava sendo usada por outro processo B
+     *  4.1 Caso B tenha alterado o quadro: Gravar este quadro na memória secundária na página correspondente de B
+     *  4.2 Inválidar este quadro de memória na tpag de B
+     * 5. Copiar a memória do disco de A para a memória principal <- FEITO
+     * 6. Atualizar a tab_pag de A; <- FEITO
+     * 7. Bloquear o processo pelo tempo que simula as operações de disco <- FEITO
+     * */
+
+  err_t  err = ERR_OK;
+
+  int addr, acessos = 1;
+  mmu_le(self->mmu, IRQ_END_complemento, &addr, supervisor);
+
+
+  // 1 e 2
+  int addr_mem_sec = proc_get_page_addr(self->p_runningP, addr, TAM_PAGINA);
+
+  // Mata o processo caso ele tente acessar um endereço inválido
+  if(addr_mem_sec == -1) {
+    console_printf(self->console, "SO: Matando %i [ERR_END_INV] %i",
+                   self->runningP, addr);
+
+    so_mata_proc(self, self->p_runningP);
+    return  ERR_OK;
+  }
+
+  // 3.
+  // 4.
+  // 5.
+  int quadro_mem = self->quadro_livre++;
+  so_mem_to_mem(self->sec_mem, addr_mem_sec, self->mem, quadro_mem*TAM_PAGINA, TAM_PAGINA);
+
+  // 6.
+  tabpag_t *proc_pag = proc_get_tpag(self->p_runningP);
+  tabpag_define_quadro(proc_pag, addr/TAM_PAGINA, quadro_mem);
+
+  // 7.
+  so_proc_pendencia(self, self->runningP, suspended, acessos);
+  self->sec_req++;
+
+  return err;
 }

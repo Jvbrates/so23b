@@ -22,6 +22,7 @@ typedef enum { undefined=0,   // useful for dbg
                waiting,
                dead,
                suspended,       // Bloqueado por paginação
+               suspended_create_proc,       // Bloqueado por paginação quando o sistema tentou ler a string X para criar outro processo
                n_states
 } process_state_t;
 

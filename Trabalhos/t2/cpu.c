@@ -465,15 +465,18 @@ bool cpu_interrompe(cpu_t *self, irq_t irq)
 
 static void cpu_desinterrompe(cpu_t *self)
 {
-  int dado;
+
+  //FIXME poe_mem() sobrescreve o valor de self->erro, então este deve ser definido apos todo poe_mem()
+  int dado, erro, complemento;
   pega_mem(self, IRQ_END_PC,          &self->PC);
   pega_mem(self, IRQ_END_A,           &self->A);
   pega_mem(self, IRQ_END_X,           &self->X);
-  pega_mem(self, IRQ_END_erro,        &dado);
-  self->erro = dado;
-  pega_mem(self, IRQ_END_complemento, &self->complemento);
+  pega_mem(self, IRQ_END_erro,        &erro);
+  pega_mem(self, IRQ_END_complemento, &complemento);
   pega_mem(self, IRQ_END_modo,        &dado);
+  self->erro = erro;
   self->modo = dado;
+  self->complemento = complemento;
 }
 
 void cpu_define_chamaC(cpu_t *self, func_chamaC_t funcaoC, void *argC)
