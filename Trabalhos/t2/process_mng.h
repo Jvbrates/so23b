@@ -15,15 +15,15 @@ typedef struct process_t process_t;
 typedef void * cpu_info_t;
 
 typedef enum { undefined=0,   // useful for dbg
-               blocked_read,  // blocked for read
-               blocked_write, // blocked for write
-               blocked_proc,  // blocked for a proc die
-               running,
-               waiting,
-               dead,
-               suspended,       // Bloqueado por paginação
-               suspended_create_proc,       // Bloqueado por paginação quando o sistema tentou ler a string X para criar outro processo
-               n_states
+               blocked_read = 1,              // blocked for read
+               blocked_write = (1<<1),        // blocked for write
+               blocked_proc  = (1<<2),        // blocked for a proc die
+               running       = (1<<3),
+               waiting       = (1<<4),
+               dead          = (1<<5),
+               suspended     = (1<<6),        // Bloqueado por paginação
+               suspended_create_proc = (1<<7),// Bloqueado por paginação quando o sistema tentou ler a string X para criar outro processo
+               n_states = 9
 } process_state_t;
 
 typedef struct {
@@ -46,11 +46,14 @@ void ptable_destruct(process_table_t *processTable);
 //Registra um processo na process_table, o valor do PID é responsabilidade
 // do so.c
 
-// TODO alterar o nome 'start_address'
 void *ptable_add_proc(process_table_t *self, cpu_info_t cpuInfo,
-                    int PID, ret_so_carrega_programa start_address, double priority, double start_time);
+                    int PID, ret_so_carrega_programa more_info, double priority, double start_time);
 
 process_t *ptable_search(process_table_t *self, int PID);
+
+void ptable_search_hthan(process_table_t *self,
+                         process_state_t estado,
+                         int compare, process_t **proc_list);
 
 int proc_delete(process_table_t *self, int PID);
 

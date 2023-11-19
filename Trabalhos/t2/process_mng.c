@@ -11,7 +11,7 @@ struct process_table_t  {
   node_t *first;
 };
 
-static char *nomes_estados[n_states] = {
+static char *nomes_estados[129] = {
     [undefined] = "Indefinido",
     [running] = "Executando",
     [blocked_proc] = "Bloqueado esperando outro processo",
@@ -19,6 +19,7 @@ static char *nomes_estados[n_states] = {
     [blocked_read] = "Bloqueado para leitura",
     [waiting] = "Pronto",
     [suspended] = "Suspenso paginando",
+    [suspended_create_proc] = "Suspenso paginanco durante chamada create proc",
     [dead] = "Morto"
 };
 
@@ -54,9 +55,7 @@ struct process_t {
 
   // Adições para o T2 - Paginação de Memória
 
-  // TODO:
-  // [] Criar
-  // [] Destruir
+
   tabpag_t *tpag;
 
   // É preciso saber onde um processo está alocado na memória secundária
@@ -178,7 +177,7 @@ void *callback_search_block(node_t *node, void *argument){
 
     process_t *p = llist_get_packet(node);
 
-    if(p->processState == arg->state && p->PID_or_device_or_time == arg->dispositivo){
+    if(((p->processState & arg->state) > 0) && (p->PID_or_device_or_time == arg->dispositivo)){
       return node;
     }
 
@@ -196,6 +195,44 @@ process_t *ptable_search_pendencia(process_table_t *self,
                                        &pspa);
 
     return  llist_get_packet(node);
+
+}
+
+//-----------------------------------------------------------------------------|
+
+// Para paginação
+// Vai buscar os processo com base no estado e adicioná-lo a uma lista,
+// o tamanho da lista é problema do so
+
+typedef struct {
+    process_state_t state;
+    int compare;
+    process_t **proc_list;
+    int count;
+} ptable_search_hthan_arg;
+
+void *callback_hthan(node_t *node, void *argument){
+
+    ptable_search_hthan_arg *arg = argument;
+
+    process_t *p = llist_get_packet(node);
+
+    if(((p->processState & arg->state) > 0) && (p->PID_or_device_or_time >= arg->compare)){
+      arg->proc_list[arg->count++] = p;
+    }
+
+    return NULL;
+}
+
+void ptable_search_hthan(process_table_t *self,
+                         process_state_t estado,
+                         int compare, process_t **proc_list){
+
+    ptable_search_hthan_arg arg = {estado, compare, proc_list, 0};
+
+    llist_iterate_nodes(self->first,
+                        callback_hthan,
+                        &arg);
 
 }
 

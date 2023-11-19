@@ -87,8 +87,8 @@ static err_t so_trata_interrupcao(void *argC, int reg_A);
 
 // funções auxiliares
 static ret_so_carrega_programa so_carrega_programa(so_t *self, char *nome_do_executavel);
-static bool so_copia_str_do_processo(so_t *self, int tam, char str[tam],
-                                     int end_virt/*, processo*/);
+static int so_copia_str_do_processo(so_t *self, int tam, char str[tam],
+                                    int end_virt, process_t *p);
 // Cópia de uma memória para outra, from mem1 to mem2
 static int so_mem_to_mem(mem_t *mem1, int mem1_addr, mem_t *mem2, int mem2_addr, int range);
 
@@ -166,8 +166,7 @@ static err_t so_trata_irq_err_cpu(so_t *self);
 static err_t so_trata_irq_relogio(so_t *self);
 static err_t so_trata_irq_desconhecida(so_t *self, int irq);
 static err_t so_trata_chamada_sistema(so_t *self);
-static err_t  so_mem_virt_irq(so_t *self);
-
+static err_t so_mem_virt_irq(so_t *self, process_t *p, bool cria_proc);
 // funções auxiliares para o tratamento de interrupção
 static void so_salva_estado_da_cpu(so_t *self);
 static void so_escalona(so_t *self);
@@ -290,6 +289,8 @@ static err_t so_trata_pendencias(so_t *self)
     if(self->es_pendencias[i][0] > 0 && estado_escr != 0){
       process_t *p = ptable_search_pendencia(self->processTable, blocked_write, i);
 
+
+
       if(p == NULL) {
         console_printf(self->console,
                        "tabela de pendencias e ptable não sincronizadas");
@@ -343,7 +344,47 @@ static err_t so_trata_pendencias(so_t *self)
 
   // Pendencias de page_fault, suspend
   if(self->sec_req){
+    process_t **lista_procs= calloc(self->sec_req, sizeof (process_t *));
 
+    ptable_search_hthan(self->processTable, suspended_create_proc | suspended, rel_agora(self->relogio),
+                                       lista_procs);
+
+
+    // Para toda lista de processos cuja paginação já foi feita
+    for (int i = 0; i < self->sec_req && lista_procs[i] != NULL; ++i) {
+              process_t  *p = lista_procs[i];
+
+
+              // Agora o SO consegue atender a chamada CRIA_PROC
+              if(proc_get_state(p) == suspended_create_proc){
+
+
+                cpu_info_t_so *cpuInfoTSo = proc_get_cpuinfo(p);
+
+                char nome[100];
+
+                bool copy_ret = so_copia_str_do_processo(self, 100, nome,
+                                                         cpuInfoTSo->X,
+                                                         p);
+
+                if(copy_ret) {
+                  if (so_cria_proc(self, nome) != -1) {
+                    cpuInfoTSo->A = PID;
+                  } else {
+                    cpuInfoTSo->A = -1;
+                  }
+                } else {
+                  so_mem_virt_irq(self, p, true); // Sim, ele pode acabar caindo em page fault novamente
+                }
+
+              }
+
+
+              self->sec_req--;
+              proc_set_state(p, waiting);
+              proc_set_PID_or_device(p, 0);
+              sched_add(self->scheduler, p, proc_get_PID(p), QUANTUM);
+    }
   }
 
 
@@ -420,9 +461,6 @@ static err_t so_trata_irq_reset(so_t *self)
 }
 
 
-
-// FIXME: Está função está com muitas responsabilidades,
-//  é melhor quebrá-la em outras funções específicas
 /*IRQ_ERR_CPU:
  * Mata o processo que causou o erro, se possível*/
 static err_t so_trata_irq_err_cpu(so_t *self) // <-----
@@ -468,7 +506,7 @@ static err_t so_trata_irq_err_cpu(so_t *self) // <-----
     case ERR_END_INV: {
       console_printf(self->console, "Processo %i causou erro %s ", self->runningP, err_nome(err));
 
-      retorno = so_mem_virt_irq(self);
+      retorno = so_mem_virt_irq(self, self->p_runningP, false);
     }
 
       /* NOTE: Como é possível erro de pagina ausente se eu ainda não programei
@@ -585,9 +623,10 @@ static void so_chamada_escr(so_t *self)
 }
 
 
-// TODO Tem que ser agora
 static void so_chamada_cria_proc(so_t *self)
 {
+
+  /*
   // ainda sem suporte a processos, carrega programa e passa a executar ele
   // quem chamou o sistema não vai mais ser executado, coitado!
 
@@ -609,6 +648,28 @@ static void so_chamada_cria_proc(so_t *self)
   // deveria escrever -1 (se erro) ou o PID do processo criado (se OK) no reg A
   //   do processo que pediu a criação
   mem_escreve(self->mem, IRQ_END_A, -1);
+
+   */
+
+  process_t *process = self->p_runningP;
+  cpu_info_t_so *cpuInfoTSo = proc_get_cpuinfo(process);
+
+  char nome[100];
+
+  bool copy_ret = so_copia_str_do_processo(self, 100, nome,
+                                           cpuInfoTSo->X,
+                                           process);
+
+  if(copy_ret) {
+    if (so_cria_proc(self, nome) != -1) {
+      cpuInfoTSo->A = PID;
+    } else {
+      cpuInfoTSo->A = -1;
+    }
+  } else {
+    so_mem_virt_irq(self, self->p_runningP, true);
+  }
+
 }
 
 /* Faz as verificações necessárias e chama so_mata_proc*/
@@ -704,7 +765,6 @@ static ret_so_carrega_programa so_carrega_programa(so_t *self, char *nome_do_exe
 }
 
 
-// TODO TRATAR ISTO AQUI MAIS TARDE
 // copia uma string da memória do processo para o vetor str.
 // retorna false se erro (string maior que vetor, valor não ascii na memória,
 //   erro de acesso à memória)
@@ -718,14 +778,25 @@ static ret_so_carrega_programa so_carrega_programa(so_t *self, char *nome_do_exe
 //   receber o processo como argumento
 // Com memória virtual, cada valor do espaço de endereçamento do processo
 //   pode estar em memória principal ou secundária
-static bool so_copia_str_do_processo(so_t *self, int tam, char str[tam],
-                                     int end_virt/*, processo*/)
+
+/* Retorna:
+ *  0 - Tudo ok
+ *  >0 - Erro de paginação, endereço que causou o erro estará em complemento
+ *  <0 - Outro erro, caractere nao ascii ou maior que 100
+ * */
+static int so_copia_str_do_processo(so_t *self, int tam, char str[tam],
+                                     int end_virt, process_t *p)
 {
   for (int indice_str = 0; indice_str < tam; indice_str++) {
     int caractere;
     // não tem memória virtual implementada, posso usar a mmu para traduzir
     //   os endereços e acessar a memória
+    mmu_define_tabpag(self->mmu, proc_get_tpag(p));
+
     if (mmu_le(self->mmu, end_virt + indice_str, &caractere, usuario) != ERR_OK) {
+
+      cpu_info_t_so *cpuInfoTSo = proc_get_cpuinfo(p);
+      cpuInfoTSo->complemento = end_virt + indice_str;
       return false;
     }
     if (caractere < 0 || caractere > 255) {
@@ -841,14 +912,17 @@ static int so_mata_proc(so_t *self, process_t *p){
 
   if(estado == waiting || estado == running) {
     sched_remove(self->scheduler, proc_get_PID(p));
-
-    // FIXME: Isto não deveria estar nos outros if's também?
-    ptable_proc_wait(self->processTable, proc_get_PID(p),self->scheduler, QUANTUM);
   } else if( estado == blocked_read){
     (self->es_pendencias[proc_get_PID_or_device(p)][1])--;
   } else if(estado == blocked_write){
     (self->es_pendencias[proc_get_PID_or_device(p)][0])--;
+  } else if(estado == suspended_create_proc || estado == suspended){
+    self->sec_req--;
   }
+
+  ptable_proc_wait(self->processTable, proc_get_PID(p),self->scheduler, QUANTUM);
+
+
   //ptable_delete(self->processTable, proc_get_PID(p));
 
   return 0;
@@ -978,7 +1052,7 @@ static int so_wait_proc(so_t *self){
   return 0;
 }
 
-static err_t  so_mem_virt_irq(so_t *self){
+static err_t  so_mem_virt_irq(so_t *self, process_t *p, bool cria_proc){
 
   /* 1. Verificar se o processo A está acessando um endereço válido; <- FEITO
      * 2. Encontrar o endereço do processo na memória secundária <- FEITO
@@ -994,7 +1068,9 @@ static err_t  so_mem_virt_irq(so_t *self){
   err_t  err = ERR_OK;
 
   int addr, acessos = 1;
-  mmu_le(self->mmu, IRQ_END_complemento, &addr, supervisor);
+
+  cpu_info_t_so *cpuInfoTSo = proc_get_cpuinfo(p);
+  addr = cpuInfoTSo->complemento;
 
 
   // 1 e 2
@@ -1020,7 +1096,9 @@ static err_t  so_mem_virt_irq(so_t *self){
   tabpag_define_quadro(proc_pag, addr/TAM_PAGINA, quadro_mem);
 
   // 7.
-  so_proc_pendencia(self, self->runningP, suspended, acessos);
+  so_proc_pendencia(self, self->runningP,
+                    (cria_proc == true?suspended_create_proc:suspended),
+                    acessos);
   self->sec_req++;
 
   return err;
