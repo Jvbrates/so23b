@@ -18,6 +18,8 @@ void *llist_get_packet(node_t *);
 
 int llist_get_key(node_t *node);
 
+void llist_set_key(node_t *node, int key);
+
 void *llist_node_search(node_t *first, int key);
 
 int llist_add_node_next(node_t *self, node_t *next);

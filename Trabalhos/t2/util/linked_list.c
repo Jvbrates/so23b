@@ -57,6 +57,12 @@ int llist_get_key(node_t *node){
     return  -1;
 }
 
+void llist_set_key(node_t *node, int key){
+    if(node)
+      node->key  == key;
+
+}
+
 int llist_add_node_next(node_t *self, node_t *next){
 
     node_t  *self_old_next = self->next;
