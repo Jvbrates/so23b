@@ -59,7 +59,7 @@ int llist_get_key(node_t *node){
 
 void llist_set_key(node_t *node, int key){
     if(node)
-      node->key  == key;
+      node->key  = key;
 
 }
 

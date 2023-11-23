@@ -5,7 +5,7 @@
 #include "tabpag.h"
 #include "process_mng.h"
 #include "scheduler_interface.h"
-
+#include "map_tpag.h"
 
 #include <stdlib.h>
 #include <stdbool.h>
@@ -16,6 +16,9 @@
 
 //Velocidade da memória secundária
 #define DELAY_SEC_MEM 20
+
+//espaço de quadros reservados para o SO
+#define OFFSET_MEM 10
 
 #define QUANTUM 10
 #define NUM_ES 4 // 4 terminais
@@ -65,6 +68,7 @@ struct so_t {
   // quando tiver processos, não tem essa tabela aqui, tem que tem uma para
   //   cada processo
   tabpag_t *tabpag;
+  map_tapg_t *mng_tpag; //Manager tabela paginas
 };
 
 
@@ -78,7 +82,7 @@ typedef struct cpu_info_t_so {
 }cpu_info_t_so;
 
 static int PID;
-
+static int controle_zera;
 //---------------------------------------------------------------------------
 
 
@@ -147,9 +151,16 @@ so_t *so_cria(cpu_t *cpu, mem_t *mem, mem_t *sec_mem, mmu_t *mmu,
   self->sec_tempo_livre = 0;
 
   self->quadro_livre = 99 / TAM_PAGINA + 1;
+
+  int num_pages = mem_tam(self->mem)/TAM_PAGINA  - 10;
+
+  self->mng_tpag = map_tpag_create(num_pages);
+
   return self;
 }
 
+
+//FIXME tem que dealocar um monte coisa
 void so_destroi(so_t *self)
 {
   cpu_define_chamaC(self->cpu, NULL, NULL);
@@ -533,12 +544,17 @@ static err_t so_trata_irq_err_cpu(so_t *self) // <-----
 /*IRQ_RELOGIO: Rearma o relógio e atualiza o escalonador*/
 static err_t so_trata_irq_relogio(so_t *self)
 {
+
   // ocorreu uma interrupção do relógio
   // rearma o interruptor do relógio e reinicializa o timer para a próxima interrupção
   rel_escr(self->relogio, 3, 0); // desliga o sinalizador de interrupção
   rel_escr(self->relogio, 2, INTERVALO_INTERRUPCAO);
   console_printf(self->console, "SO: Sched Update");
   sched_update(self->scheduler);
+  if(controle_zera++ % 3 == 0)
+    map_tpag_zera_acessado(self->mng_tpag);
+  map_tpag_dump(self->mng_tpag, self->console);
+
   return ERR_OK;
 }
 
@@ -908,6 +924,7 @@ static int so_mata_proc(so_t *self, process_t *p){
 
   process_state_t estado = proc_get_state(p);
   proc_set_end_time(p, rel_agora(self->relogio));
+  int pid = proc_get_PID(p);
 
   proc_set_state(p, dead);
 
@@ -922,7 +939,7 @@ static int so_mata_proc(so_t *self, process_t *p){
   }
 
   ptable_proc_wait(self->processTable, proc_get_PID(p),self->scheduler, QUANTUM);
-
+  map_tpag_free(self->mng_tpag, pid);
 
   //ptable_delete(self->processTable, proc_get_PID(p));
 
@@ -1087,18 +1104,48 @@ static err_t  so_mem_virt_irq(so_t *self, process_t *p, bool cria_proc){
   }
 
   // 3.
+
+  map_node mp = {
+          self->runningP,
+          proc_get_tpag(self->p_runningP),
+          addr/TAM_PAGINA,
+          0 //Frame nao importa aqui
+  };
+
+  map_node substituido = map_tpag_choose(self->mng_tpag, mp);
+
+
   // 4.
+  if(substituido.PID != 0){
+    bool alterado = tabpag_bit_alteracao(substituido.tpag, substituido.pag);
+    if(alterado){
+      acessos++;
+
+      process_t *p_substituido = ptable_search(self->processTable, substituido.PID);
+
+      // Endereço a ser posto na memoria secundaria
+      int addr_to_put = proc_get_page_addr(p_substituido, substituido.pag*TAM_PAGINA, TAM_PAGINA);
+
+      so_mem_to_mem(self->mem, TAM_PAGINA*(substituido.frame+OFFSET_MEM),
+                   self->sec_mem, addr_to_put, TAM_PAGINA);
+
+    }
+    tabpag_define_quadro(substituido.tpag, substituido.pag, -1);
+  }
+
   // 5.
-  int quadro_mem = self->quadro_livre++;
-  so_mem_to_mem(self->sec_mem, addr_mem_sec, self->mem, quadro_mem*TAM_PAGINA, TAM_PAGINA);
+  so_mem_to_mem(self->sec_mem, addr_mem_sec, self->mem, (substituido.frame+OFFSET_MEM)*TAM_PAGINA, TAM_PAGINA);
 
   // 6.
   tabpag_t *proc_pag = proc_get_tpag(self->p_runningP);
-  tabpag_define_quadro(proc_pag, addr/TAM_PAGINA, quadro_mem);
+  tabpag_define_quadro(proc_pag, addr/TAM_PAGINA, substituido.frame+OFFSET_MEM);
 
   //log
-  console_printf(self->console, "MEMVIRT: p %i. pag %i to frame %i %s", proc_get_PID(p), addr/TAM_PAGINA, quadro_mem,
-                 (cria_proc == true?"suspended_create_proc":"suspended"));
+  console_printf(self->console, "MEMVIRT: p %i. pag %i to frame %i %s, (err)%s", proc_get_PID(p), addr/TAM_PAGINA, OFFSET_MEM+substituido.frame,
+                 (cria_proc == true?"suspended_create_proc":"suspended"),
+                 err_nome(err));
+
+  map_tpag_dump(self->mng_tpag, self->console);
 
 
   // 7.
@@ -1106,6 +1153,12 @@ static err_t  so_mem_virt_irq(so_t *self, process_t *p, bool cria_proc){
                     (cria_proc == true?suspended_create_proc:suspended),
                     acessos);
   self->sec_req++;
+
+
+  // 8.
+  //map_tpag_zera_acessado(self->mng_tpag);
+  //map_tpag_dump(self->mng_tpag, self->console);
+
 
   return err;
 }

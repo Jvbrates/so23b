@@ -11,16 +11,32 @@ struct process_table_t  {
   node_t *first;
 };
 
-static char *nomes_estados[129] = {
-    [undefined] = "Indefinido",
-    [running] = "Executando",
-    [blocked_proc] = "Bloqueado esperando outro processo",
-    [blocked_write] = "Bloqueado para escrita",
-    [blocked_read] = "Bloqueado para leitura",
-    [waiting] = "Pronto",
-    [suspended] = "Suspenso paginando",
-    [suspended_create_proc] = "Suspenso paginanco durante chamada create proc",
-    [dead] = "Morto"
+
+static int decode(process_state_t estado){
+  int valor = (int)estado;
+
+  if(valor == 0)
+    return valor;
+
+  int count = 1;
+
+  while (valor != 1){
+    count++;
+    valor>>=1;
+  }
+  return count;
+}
+
+static char *nomes_estados[10] = {
+    [0] = "Indefinido",
+    [4] = "Executando",
+    [3] = "Bloqueado esperando outro processo",
+    [2] = "Bloqueado para escrita",
+    [1] = "Bloqueado para leitura",
+    [5] = "Pronto",
+    [7] = "Suspenso paginando",
+    [8] = "Suspenso paginanco durante chamada create proc",
+    [6] = "Morto"
 };
 
 struct process_t {
@@ -433,7 +449,7 @@ int proc_get_start_time(process_t *self){
 }
 
 char *estado_nome(process_state_t estado){
-    return nomes_estados[estado];
+    return nomes_estados[decode(estado)];
 }
 
 

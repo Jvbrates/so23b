@@ -4,6 +4,7 @@
 #include "map_tpag.h"
 #include "stdlib.h"
 #include "util/linked_list.h"
+#include <string.h>
 
 struct map_tapg_t {
   int total_frames;
@@ -14,20 +15,13 @@ struct map_tapg_t {
 /* Lista ligada, mais novos a esquerda, mais antigos a direita*/
 
 
-// Isto daqui tem alguma vantagem de desempenho?
-static map_node zeroed = {0, 0, 0};
-
-static int idade;
 
 static map_node *map_node_create(int PID, tabpag_t *tabpag, int pag, int frame){
   map_node *mp = malloc(sizeof(map_node));
 
-  mp->PID = PID;
-  mp->tpag = tabpag;
-  mp->pag = pag;
-  mp->frame = frame;
 
-
+  map_node temp = {PID, tabpag, pag, frame};
+  memcpy(mp, &temp, sizeof(map_node));
 
   return mp;
 }
@@ -38,16 +32,16 @@ static void * deleteMapNode(node_t *node, void *arg){
 
   return NULL;
 }
-
+/* "Static" porque o que é criado com malloc é dito alocação dinâmica*/
 static map_node getStaticCpy(map_node *mp){
   map_node  retorno = {
-
+          mp->PID,
+          mp->tpag,
+          mp->pag,
+          mp->frame
   };
 
-  retorno.frame = mp->frame;
-  retorno.PID = mp->PID;
-  retorno.tpag = mp->tpag;
-  retorno.pag = mp->pag;
+
 
   return retorno;
 
@@ -85,7 +79,7 @@ void *callback_tpag_free(node_t *node, void *arg_){
 }
 
 //-----------------------------------------------------------------------------|
-typedef struct {int pid, pag} linha;
+typedef struct {int pid; int pag;} linha;
 
 static void * dump_cb(node_t *node, void *arg_){
   linha *arg = (linha *)(arg_);
@@ -100,6 +94,18 @@ static void * dump_cb(node_t *node, void *arg_){
 
 //-----------------------------------------------------------------------------|
 
+void *cb_zerabit(node_t *node, void *arg){
+  map_node *mp = llist_get_packet(node);
+
+  if(mp->PID != 0){
+    tabpag_marca_bit_acesso(mp->tpag, mp->pag, false);
+  }
+
+  return NULL;
+
+}
+
+//-----------------------------------------------------------------------------|
 
 // Daqui pra baixo não é static
 
@@ -132,13 +138,13 @@ void map_tpag_destruct(map_tapg_t *self){
 
 map_node map_tpag_choose(map_tapg_t *self, map_node mapNode){
   map_node *most_old = llist_get_packet(self->node);
-
+  llist_set_key(self->node, mapNode.PID);
   map_node ret = getStaticCpy(most_old);
 
   most_old->pag = mapNode.pag;
   most_old->PID = mapNode.PID;
   most_old->tpag = mapNode.tpag;
-  most_old->frame = mapNode.frame;
+  //most_old->frame = mapNode.frame;
 
   self->node = llist_get_previous(self->node);
 
@@ -168,8 +174,13 @@ void map_tpag_dump(map_tapg_t *self, console_t *console){
 
   llist_iterate_nodes(self->node, dump_cb, tabela);
 
-  console_printf(console, "[FRAME][PROCESSO][PAGINA]");
+  console_printf(console, "PAGMNG: [FRAME][PROCESSO][PAGINA]");
   for (int i = 0; i < self->total_frames; ++i) {
-    console_printf(console, "[%i][%i][%i]", i, tabela[i].pid, tabela[i].pag);
+    console_printf(console, "PAGMNG: [%i][%i][%i]", i, tabela[i].pid, tabela[i].pag);
   }
+}
+
+
+void map_tpag_zera_acessado(map_tapg_t *self){
+  llist_iterate_nodes(self->node, cb_zerabit, NULL);
 }

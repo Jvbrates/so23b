@@ -28,36 +28,18 @@ int main(){
   node_t *node3 = llist_create_node_round(&c, 3);
 
 
+  print_node(node1);
 
-
-  teste t = {node1};
-
-  llist_add_node_next(node2, node3);
-  llist_add_node_next(node3, node1);
+  llist_node_unlink(node1);
 
   print_node(node1);
-  print_node(node2);
-  print_node(node3);
 
-
-  llist_node_unlink(node3);
+  llist_add_node_next(node1, node1);
 
   print_node(node1);
-  print_node(node2);
-  print_node(node3);
-
-  llist_add_node_previous(node2, node3);
-
-  print_node(node1);
-  print_node(node2);
-  print_node(node3);
 
 
-  llist_add_node_next(node3, node3);
 
-  print_node(node1);
-  print_node(node2);
-  print_node(node3);
 
   return 0;
 }
