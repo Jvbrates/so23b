@@ -445,7 +445,7 @@ bool cpu_interrompe(cpu_t *self, irq_t irq)
   // poe em modo supervisor, para que o acesso seja feito na memória física
   self->modo = supervisor;
 
-  //FIXME aqui em poe_mem() o retorno de mmu_escreve()
+  //NOTE aqui em poe_mem() o retorno de mmu_escreve()
   // vai sobrescrever self->erro, o que vai atrapalhar o save em IRQ_END_erro
   int erro = self->erro;
 

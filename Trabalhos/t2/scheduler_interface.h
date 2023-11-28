@@ -20,7 +20,7 @@ void sched_destruct(scheduler_t *self);
 int sched_add(scheduler_t *self,
               void *process,
               int PID,
-              int QUANTUM);
+              int QUANTUM_);
 
 void *sched_get(scheduler_t *self);
 

@@ -206,6 +206,8 @@ int sched_remove(scheduler_t *self, int PID){
 
     sched_choose_new(self, -1); //Não é preempção, por isto -1 (ñ há PID -1)
     return 0;
+  } else {
+    exit(-1);
   }
 
   return -1;

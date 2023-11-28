@@ -11,8 +11,7 @@
 #include <stdlib.h>
 
 // constantes
-#define MEM_TAM 300        // tamanho da memória principal
-
+//Movido para so.h
 
 typedef struct {
   mem_t *mem;

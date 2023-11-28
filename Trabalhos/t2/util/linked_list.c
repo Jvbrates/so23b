@@ -164,6 +164,10 @@ node_t *llist_remove_node(node_t **node_holder, int key){
 
 // Deference all the list, at end node_holder will pointer to unallocated memory
 void llist_destruct(node_t **node_holder){
+    if(*node_holder == NULL)
+      return ;
+
+
     node_t *next = (*node_holder)->next;
 
     free(*node_holder);

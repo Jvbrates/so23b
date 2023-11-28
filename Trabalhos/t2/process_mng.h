@@ -85,7 +85,7 @@ int proc_get_PID_or_device(process_t *self);
 void ptable_proc_wait(process_table_t *self,
                       int PID_wait,
                       void *sched,
-                      int QUANTUM);
+                      int QUANTUM_);
 // Getters
 unsigned  int proc_get_waiting_PID(process_t *p);
 cpu_info_t proc_get_cpuinfo(process_t* self);

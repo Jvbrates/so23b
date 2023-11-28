@@ -11,17 +11,7 @@
 #include <stdbool.h>
 #include <string.h>
 
-// intervalo entre interrupções do relógio
-#define INTERVALO_INTERRUPCAO 50   // em instruções executadas
 
-//Velocidade da memória secundária
-#define DELAY_SEC_MEM 20
-
-//espaço de quadros reservados para o SO
-#define OFFSET_MEM 10
-
-#define QUANTUM 10
-#define NUM_ES 4 // 4 terminais
 
 // Não tem processos nem memória virtual, mas é preciso usar a paginação,
 //   pelo menos para implementar relocação, já que os programas estão sendo
@@ -36,20 +26,25 @@
 
 struct so_t {
   cpu_t *cpu;
-  mem_t *mem;
+  mem_t *mem;           // Memória Principal
+  mem_t *sec_mem;       // Memória Secundária
 
-  //memória secundária
-  mem_t *sec_mem;
-  int sec_req; // Numero de requisições ao disco
-  int sec_tempo_livre;
+  /* Como a memória secundária é desnecessariamente grande, os processos estão
+   * sendo gravados de forma linear sem serem apagados ou reaproveitados.
+   * Logo, sec_mem_quadro_livre é só um contador++*/
+  int sec_mem_quadro_livre;       // Proximo quadro livre da memoria secundária
+  int sec_req;          // Numero de requisições ao disco não atendidas
+  int sec_tempo_livre;  // Próximo tempo livre do disco
 
   mmu_t *mmu;
   console_t *console;
   relogio_t *relogio;
-  process_table_t * processTable;
-  scheduler_t * scheduler;
-  int runningP;
-  process_t *p_runningP;
+
+  process_table_t * processTable;  // Administrador Tabela de processos
+  scheduler_t * scheduler;         // Administrador Escalonador
+  int runningP;                    // PID do úlitmo processo em execução
+  process_t *p_runningP;           // Ponteiro do úlitmo processo em execução
+
   /*
    * Para cada pendência/requisição de escrita/leitura em dado dipositivo o valor
    * é incrementado, quando a pendência é atendida, o valor é decrementado.
@@ -57,18 +52,22 @@ struct so_t {
   // [][0] -- Escrita
   // [][1] -- Leitura
   int es_pendencias[NUM_ES][2];
-  metricas *log;
-  int tempo_chamda_anterior;
+
+  metricas *log;                  // Administrador Logs do Sistema
+  int tempo_chamda_anterior;      // Tempo da ultima interrupção, usado para log
 
 
   // quando tiver memória virtual, o controle de memória livre e ocupada
   //   é mais completo que isso
-  int quadro_livre;
-  int sec_mem_quadro_livre;
+
   // quando tiver processos, não tem essa tabela aqui, tem que tem uma para
   //   cada processo
   tabpag_t *tabpag;
-  map_tapg_t *mng_tpag; //Manager tabela paginas
+
+  /* Mapeador tabela de páginas e memória, mapeia e le/altera os bits da
+   *tabela de páginas, mas não altera a memória. Define qual frame deve ser
+   * usado e quando deve gravá-lo.*/
+  map_tapg_t *mng_tpag;
 };
 
 
@@ -81,7 +80,7 @@ typedef struct cpu_info_t_so {
   cpu_modo_t modo;
 }cpu_info_t_so;
 
-static int PID;
+static int PID_COUNTER;
 static int controle_zera;
 //---------------------------------------------------------------------------
 
@@ -150,11 +149,10 @@ so_t *so_cria(cpu_t *cpu, mem_t *mem, mem_t *sec_mem, mmu_t *mmu,
   self->sec_req = 0;
   self->sec_tempo_livre = 0;
 
-  self->quadro_livre = 99 / TAM_PAGINA + 1;
 
-  int num_pages = mem_tam(self->mem)/TAM_PAGINA  - 10;
+  //int num_pages = mem_tam(self->mem)/TAM_PAGINA  - 10;
 
-  self->mng_tpag = map_tpag_create(num_pages);
+  // self->mng_tpag = map_tpag_create(num_pages);
 
   return self;
 }
@@ -163,6 +161,17 @@ so_t *so_cria(cpu_t *cpu, mem_t *mem, mem_t *sec_mem, mmu_t *mmu,
 //FIXME tem que dealocar um monte coisa
 void so_destroi(so_t *self)
 {
+
+  if(self->processTable)
+    ptable_destruct(self->processTable);
+
+  if(self->scheduler)
+    sched_destruct(self->scheduler);
+
+  if(self->mng_tpag)
+    map_tpag_destruct(self->mng_tpag);
+
+
   cpu_define_chamaC(self->cpu, NULL, NULL);
   free(self);
 }
@@ -202,13 +211,7 @@ static void so_chamada_mata_proc(so_t *self);
 // Funções:
 
 
-// função a ser chamada pela CPU quando executa a instrução CHAMAC
-// essa instrução só deve ser executada quando for tratar uma interrupção
-// o primeiro argumento é um ponteiro para o SO, o segundo é a identificação
-//   da interrupção
-// na inicialização do SO é colocada no endereço 10 uma rotina que executa
-//   CHAMAC; quando recebe uma interrupção, a CPU salva os registradores
-//   no endereço 0, e desvia para o endereço 10
+// NOTE [ENTRYPOINT]
 static err_t so_trata_interrupcao(void *argC, int reg_A)
 {
   so_t *self = argC;
@@ -253,7 +256,7 @@ static err_t so_trata_interrupcao(void *argC, int reg_A)
                    rel_agora(self->relogio));
 
 
-    /// FIXME o que ocorre de
+    // FIXME o que ocorre de
   }else {
     console_printf(self->console, "SO: Escolhido %i, prio %f", proc_get_PID(to_run),
                    proc_get_priority(to_run));
@@ -380,7 +383,7 @@ static err_t so_trata_pendencias(so_t *self)
 
                 if(copy_ret) {
                   if (so_cria_proc(self, nome) != -1) {
-                    cpuInfoTSo->A = PID;
+                    cpuInfoTSo->A = PID_COUNTER;
                   } else {
                     cpuInfoTSo->A = -1;
                   }
@@ -391,7 +394,7 @@ static err_t so_trata_pendencias(so_t *self)
 
               }
 
-              console_printf(self->console, "MEMVIRT: Waking up p %i", proc_get_PID(p));
+              console_printf(self->console, "MEMVIRT: Waking up p %i (t %i)", proc_get_PID(p), rel_agora(self->relogio));
               self->sec_req--;
               proc_set_state(p, waiting);
               proc_set_PID_or_device(p, 0);
@@ -446,13 +449,17 @@ static err_t so_trata_irq_reset(so_t *self)
   if(self->scheduler)
     sched_destruct(self->scheduler);
 
+  if(self->mng_tpag)
+    map_tpag_destruct(self->mng_tpag);
+  self->mng_tpag = map_tpag_create((MEM_TAM/TAM_PAGINA  - 10));
+
   so_start_ptable_sched(self);
 
   //Reset tabela de pendências
   memset(self->es_pendencias, 0, sizeof(self->es_pendencias));
 
   //Reset o PID também;
-  PID = 0;
+  PID_COUNTER = 0;
 
   // coloca um programa na memória
   char init_name[100] = "init.maq";
@@ -551,9 +558,9 @@ static err_t so_trata_irq_relogio(so_t *self)
   rel_escr(self->relogio, 2, INTERVALO_INTERRUPCAO);
   console_printf(self->console, "SO: Sched Update");
   sched_update(self->scheduler);
-  if(controle_zera++ % 3 == 0)
+  if(controle_zera++ % CONTROLE_ZERA_T == 0)
     map_tpag_zera_acessado(self->mng_tpag);
-  map_tpag_dump(self->mng_tpag, self->console);
+  map_tpag_dump(self->mng_tpag, self->console, "zerando bit");
 
   return ERR_OK;
 }
@@ -679,7 +686,7 @@ static void so_chamada_cria_proc(so_t *self)
 
   if(copy_ret) {
     if (so_cria_proc(self, nome) != -1) {
-      cpuInfoTSo->A = PID;
+      cpuInfoTSo->A = PID_COUNTER;
     } else {
       cpuInfoTSo->A = -1;
     }
@@ -729,7 +736,8 @@ static void so_chamada_mata_proc(so_t *self)
 
 
 
-static ret_so_carrega_programa so_carrega_programa(so_t *self, char *nome_do_executavel)
+static ret_so_carrega_programa so_carrega_programa(so_t *self,
+                                                   char *nome_do_executavel)
 {
   ret_so_carrega_programa r;
 
@@ -750,15 +758,7 @@ static ret_so_carrega_programa so_carrega_programa(so_t *self, char *nome_do_exe
    r.quadro_ini = self->sec_mem_quadro_livre;
    self->sec_mem_quadro_livre += 1 + r.pagina_fim;
 
-   //Nao mapeia, tudo começará na memória secundária
-   // mapeia as páginas nos quadros
-  /*int quadro = quadro_ini;
-  for (int pagina = pagina_ini; pagina <= pagina_fim; pagina++) {
-    tabpag_define_quadro(self->tabpag, pagina, quadro);
-    quadro++;
-  }
-  self->quadro_livre = quadro;
-*/
+
 
 
    // carrega o programa na memória principal <--- TODO Alterada para carregar na mem secundaria
@@ -772,8 +772,8 @@ static ret_so_carrega_programa so_carrega_programa(so_t *self, char *nome_do_exe
       return r;
     }
 
-    console_printf(self->console,
-                   "Carregando em memória secundária, end virt %d fís %d\n", end_virt, end_fis);
+    //console_printf(self->console,
+    //               "Carregando em memória secundária, end virt %d fís %d\n", end_virt, end_fis);
     end_fis++;
   }
   prog_destroi(prog);
@@ -810,7 +810,8 @@ static int so_copia_str_do_processo(so_t *self, int tam, char str[tam],
     //   os endereços e acessar a memória
     mmu_define_tabpag(self->mmu, proc_get_tpag(p));
 
-    if (mmu_le(self->mmu, end_virt + indice_str, &caractere, usuario) != ERR_OK) {
+    if (mmu_le(self->mmu, end_virt + indice_str, &caractere, usuario) != ERR_OK)
+    {
 
       cpu_info_t_so *cpuInfoTSo = proc_get_cpuinfo(p);
       cpuInfoTSo->complemento = end_virt + indice_str;
@@ -953,18 +954,19 @@ static int so_mata_proc(so_t *self, process_t *p){
  *    Dispositivo que está esperando,
  *    Ou processo que está esperado
  * Remove o processo do escalonador*/
-static int so_proc_pendencia(so_t *self, int PID_,
+static int so_proc_pendencia(so_t *self, int PID_local,
                              process_state_t state, int PID_or_device){
 
-  process_t *p = ptable_search(self->processTable, PID_);
+  process_t *p = ptable_search(self->processTable, PID_local);
+
 
   if(!p) {
     console_printf(self->console,
                    "Processo [%i] existe mas não está na ptable "
-                   , PID_);
+                   , PID_local);
     return -1;
   }
-
+  process_state_t estado_anterior = proc_get_state(p);
 
   // Casos falha de página
 
@@ -986,7 +988,9 @@ static int so_proc_pendencia(so_t *self, int PID_,
 
   proc_set_state(p, state);
   proc_set_PID_or_device(p, PID_or_device);
-  sched_remove(self->scheduler, PID_);
+
+  if(estado_anterior == running || estado_anterior == waiting)
+    sched_remove(self->scheduler, proc_get_PID(p));
 
 
   return ERR_OK;
@@ -1024,7 +1028,7 @@ static int so_registra_proc(so_t *self, ret_so_carrega_programa address){
   mem_le(self->mem, IRQ_END_A, &(cpuInfo->A));
 
 
-  void *p =  ptable_add_proc(self->processTable, cpuInfo, ++PID, address, 0.5,
+  void *p =  ptable_add_proc(self->processTable, cpuInfo, ++PID_COUNTER, address, 0.5,
                             rel_agora(self->relogio));
 
   if (!p) {
@@ -1032,7 +1036,7 @@ static int so_registra_proc(so_t *self, ret_so_carrega_programa address){
     return -1;
   }
 
-  if(sched_add(self->scheduler, p, PID, QUANTUM) != 0)
+  if(sched_add(self->scheduler, p, PID_COUNTER, QUANTUM) != 0)
     console_printf(self->console, "sched: Erro ao adicionar processo");
 
   return 0;
@@ -1140,12 +1144,18 @@ static err_t  so_mem_virt_irq(so_t *self, process_t *p, bool cria_proc){
   tabpag_t *proc_pag = proc_get_tpag(self->p_runningP);
   tabpag_define_quadro(proc_pag, addr/TAM_PAGINA, substituido.frame+OFFSET_MEM);
 
+
+  // NOTE: Posso fazer isso?
+  // Isto evita que seja removido antes do processo acabar
+  tabpag_marca_bit_acesso(proc_pag, addr/TAM_PAGINA, false);
+
+
   //log
   console_printf(self->console, "MEMVIRT: p %i. pag %i to frame %i %s, (err)%s", proc_get_PID(p), addr/TAM_PAGINA, OFFSET_MEM+substituido.frame,
                  (cria_proc == true?"suspended_create_proc":"suspended"),
                  err_nome(err));
 
-  map_tpag_dump(self->mng_tpag, self->console);
+  map_tpag_dump(self->mng_tpag, self->console, "alteracao mapeamento");
 
 
   // 7.
@@ -1153,11 +1163,6 @@ static err_t  so_mem_virt_irq(so_t *self, process_t *p, bool cria_proc){
                     (cria_proc == true?suspended_create_proc:suspended),
                     acessos);
   self->sec_req++;
-
-
-  // 8.
-  //map_tpag_zera_acessado(self->mng_tpag);
-  //map_tpag_dump(self->mng_tpag, self->console);
 
 
   return err;

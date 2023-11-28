@@ -5,6 +5,35 @@
 // o sistema operacional
 
 
+//VARIAVEIS IMPORTANTES!
+
+// intervalo entre interrupções do relógio
+#define INTERVALO_INTERRUPCAO 200   // em instruções executadas
+
+//Velocidade da memória secundária
+#define DELAY_SEC_MEM 10
+
+//espaço de quadros reservados para o SO
+#define OFFSET_MEM 10
+
+#define QUANTUM 10
+#define NUM_ES 4 // 4 terminais
+
+// valor em interrupcoes_do_relogio em que os bits acesso sao gerados
+/* Se você colocar um valor muita baixo vai quebrar o desempenho,
+ * Caso processo "p" seja suspenso ele ira esperar 200(DELAY_SEC_MEM) tempos,
+ * se nesse tempo a pagina requerida ter seu bit acesso zerado, ela poderá
+ * ser removida e entao quando o processo "p" acordar, o mesmo problema
+ * ocorrerá novamente*/
+#define CONTROLE_ZERA_T 5
+/* Leia CONTROLE_ZERA_T*INTERVALO_INTERRUPÇÃO como o tempo para a rotina de zerar os
+ * bits de acesso
+ * */
+
+// constantes
+#define MEM_TAM 30000        // tamanho da memória principal
+
+
 typedef struct so_t so_t;
 
 #include "memoria.h"
@@ -54,14 +83,14 @@ void so_destroi(so_t *self);
 //   processo e para um processo se matar.
 // Cada processo é identificado por um número (pid). O processo criado
 //   automaticamente tem o pid 1, o segundo processo criado tem o
-//   pid 2 etc.
+//   pid 2, etc.
 
-// cria um processo novo, para executar um determinado programa
+// Cria um processo novo, para executar um determinado programa
 // os caracteres que compõem o nome do arquivo que contém o programa
 //   a ser executado pelo novo processo estão na memória do processo
 //   que realiza esta chamada, a partir da posição em X até antes
 //   da posição que contém um valor 0.
-// retorna em A: pid do processo criado, ou código de erro negativo
+// Retorna em A: pid do processo criado, ou código de erro negativo
 #define SO_CRIA_PROC   7
 
 // mata um processo

@@ -47,8 +47,7 @@ int map_tpag_free(map_tapg_t *self, int PID);
 
 
 /* Imprime no console o mapeamento*/
-void map_tpag_dump(map_tapg_t *self, console_t *console);
-
+void map_tpag_dump(map_tapg_t *self, console_t *console, char *msg);
 
 /* Percorre os frames da memória[estrutura que representa os frames] e zera o
  * bit "acessado"*/

@@ -169,12 +169,12 @@ int map_tpag_free(map_tapg_t *self, int PID){
 }
 
 
-void map_tpag_dump(map_tapg_t *self, console_t *console){
+void map_tpag_dump(map_tapg_t *self, console_t *console, char *msg){
   linha tabela[self->total_frames];
 
   llist_iterate_nodes(self->node, dump_cb, tabela);
 
-  console_printf(console, "PAGMNG: [FRAME][PROCESSO][PAGINA]");
+  console_printf(console, "PAGMNG: [FRAME][PROCESSO][PAGINA] (%s)", msg);
   for (int i = 0; i < self->total_frames; ++i) {
     console_printf(console, "PAGMNG: [%i][%i][%i]", i, tabela[i].pid, tabela[i].pag);
   }

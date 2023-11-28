@@ -46,14 +46,14 @@ static void *sched_callback_destruct_packet(node_t *node, void *arg){
 }
 
 static sched_packet *create_packet(int PID,
-                                   int QUANTUM,
+                                   int QUANTUM_,
                                    process_t *process){
 
     sched_packet *schedPacket = calloc(1, sizeof(sched_packet));
 
     schedPacket->PID = PID;
-    schedPacket->quantum = QUANTUM;
-    schedPacket->curr_quantum = QUANTUM;
+    schedPacket->quantum = QUANTUM_;
+    schedPacket->curr_quantum = QUANTUM_;
     schedPacket->proc = process;
 
     return schedPacket;
@@ -84,9 +84,9 @@ void sched_destruct(scheduler_t *self){
 int sched_add(scheduler_t *self,
               void *process,
               int PID,
-              int QUANTUM){
+              int QUANTUM_){
 
-    sched_packet *schedPacket = create_packet(PID, QUANTUM, process);
+    sched_packet *schedPacket = create_packet(PID, QUANTUM_, process);
 
     node_t *node = llist_create_node_round(schedPacket, PID);
 
@@ -157,6 +157,8 @@ int sched_remove(scheduler_t *self, int PID){
       llist_delete_node(node);
 
       return 0;
+    } else {
+      exit(-1);
     }
 
     return -1;

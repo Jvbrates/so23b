@@ -233,7 +233,7 @@ void *callback_hthan(node_t *node, void *argument){
 
     process_t *p = llist_get_packet(node);
 
-    if(((p->processState & arg->state) > 0) && (p->PID_or_device_or_time >= arg->compare)){
+    if(((p->processState & arg->state) > 0) && (p->PID_or_device_or_time <= arg->compare)){
       arg->proc_list[arg->count++] = p;
     }
 
@@ -277,9 +277,9 @@ void *callback_wait_proc(node_t *node, void *argument){
 void ptable_proc_wait(process_table_t *self,
                       int PID_wait,
                       void *sched,
-                      int QUANTUM){
+                      int QUANTUM_){
 
-    arg_wait arg = {(scheduler_t *)sched, PID_wait, QUANTUM} ;
+    arg_wait arg = {(scheduler_t *)sched, PID_wait, QUANTUM_} ;
 
     arg.sched_t = sched;
 
@@ -392,11 +392,11 @@ void *callback_log_states(node_t *node, void *argument) {
 
     process_t *p = llist_get_packet(node);
     if(p->processState != p->previous_state){
-      p->state_count[p->previous_state]++;
+      p->state_count[decode(p->previous_state)]++;
     }
 
 
-    p->time_state_count[p->previous_state]+= lk->tempo_estado;
+    p->time_state_count[decode(p->previous_state)]+= lk->tempo_estado;
     p->previous_state = p->processState;
 
     if(p->processState == dead) {
