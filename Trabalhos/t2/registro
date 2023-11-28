@@ -1708,3 +1708,80 @@ Ciclos ociosos: 0
 Preempções: 4
 Processos: 4
 Tempo de execução: 38607
+----------------------------------------------
+
+
+Informações do Processo [3]
+Número de vezes Bloqueado para leitura: 0 (Tempo total 0)
+Número de vezes Bloqueado para escrita: 16 (Tempo total 1486)
+Número de vezes Bloqueado para escrita: 0 (Tempo total 0)
+Número de vezes Bloqueado esperando outro processo: 134 (Tempo total 3560)
+Número de vezes Bloqueado esperando outro processo: 125 (Tempo total 10048)
+Número de vezes Bloqueado esperando outro processo: 0 (Tempo total 0)
+Número de vezes Bloqueado esperando outro processo: 23 (Tempo total 765)
+Número de vezes Executando: 0 (Tempo total 0)
+Tempo de Retorno: 15859 (2010 - 17869)
+Preempções: 0
+Tempo médio em estado pronto: 0.000000 (0/765)
+----------------------------------------------
+----------------------------------------------
+
+
+Informações do Processo [2]
+Número de vezes Bloqueado para leitura: 0 (Tempo total 0)
+Número de vezes Bloqueado para escrita: 8 (Tempo total 969)
+Número de vezes Bloqueado para escrita: 0 (Tempo total 0)
+Número de vezes Bloqueado esperando outro processo: 110 (Tempo total 8765)
+Número de vezes Bloqueado esperando outro processo: 96 (Tempo total 5053)
+Número de vezes Bloqueado esperando outro processo: 0 (Tempo total 0)
+Número de vezes Bloqueado esperando outro processo: 30 (Tempo total 2030)
+Número de vezes Executando: 0 (Tempo total 0)
+Tempo de Retorno: 16817 (1800 - 18617)
+Preempções: 0
+Tempo médio em estado pronto: 0.000000 (0/2030)
+----------------------------------------------
+----------------------------------------------
+
+
+Informações do Processo [4]
+Número de vezes Bloqueado para leitura: 0 (Tempo total 0)
+Número de vezes Bloqueado para escrita: 122 (Tempo total 19087)
+Número de vezes Bloqueado para escrita: 0 (Tempo total 0)
+Número de vezes Bloqueado esperando outro processo: 241 (Tempo total 5372)
+Número de vezes Bloqueado esperando outro processo: 135 (Tempo total 10627)
+Número de vezes Bloqueado esperando outro processo: 0 (Tempo total 0)
+Número de vezes Bloqueado esperando outro processo: 24 (Tempo total 1118)
+Número de vezes Executando: 0 (Tempo total 0)
+Tempo de Retorno: 36204 (2207 - 38411)
+Preempções: 0
+Tempo médio em estado pronto: 0.000000 (0/1118)
+----------------------------------------------
+----------------------------------------------
+
+
+Informações do Processo [1]
+Número de vezes Bloqueado para leitura: 0 (Tempo total 0)
+Número de vezes Bloqueado para escrita: 0 (Tempo total 0)
+Número de vezes Bloqueado para escrita: 2 (Tempo total 35533)
+Número de vezes Bloqueado esperando outro processo: 24 (Tempo total 717)
+Número de vezes Bloqueado esperando outro processo: 5 (Tempo total 142)
+Número de vezes Bloqueado esperando outro processo: 0 (Tempo total 0)
+Número de vezes Bloqueado esperando outro processo: 20 (Tempo total 3017)
+Número de vezes Executando: 1 (Tempo total 195)
+Tempo de Retorno: 39604 (10 - 39614)
+Preempções: 0
+Tempo médio em estado pronto: 0.000000 (0/3017)
+----------------------------------------------
+
+
+Informações Gerais do SO
+Número de IRQs Reset: 1
+Número de IRQs Erro de execução: 107
+Número de IRQs Chamada de sistema: 462
+Número de IRQs E/S: relógio: 199
+Número de IRQs E/S: teclado: 0
+Número de IRQs E/S: console: 0
+Ciclos ociosos: 0
+Preempções: 4
+Processos: 4
+Tempo de execução: 39805

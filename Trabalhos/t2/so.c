@@ -60,9 +60,6 @@ struct so_t {
   // quando tiver memória virtual, o controle de memória livre e ocupada
   //   é mais completo que isso
 
-  // quando tiver processos, não tem essa tabela aqui, tem que tem uma para
-  //   cada processo
-  tabpag_t *tabpag;
 
   /* Mapeador tabela de páginas e memória, mapeia e le/altera os bits da
    *tabela de páginas, mas não altera a memória. Define qual frame deve ser
@@ -137,10 +134,8 @@ so_t *so_cria(cpu_t *cpu, mem_t *mem, mem_t *sec_mem, mmu_t *mmu,
   // T2 < ----
   self->mmu = mmu;
   self->sec_mem = sec_mem;
-  // inicializa a tabela de páginas global, e entrega ela para a MMU
-  // com processos, essa tabela não existiria, teria uma por processo
-  self->tabpag = tabpag_cria();
-  mmu_define_tabpag(self->mmu, self->tabpag);
+
+  mmu_define_tabpag(self->mmu, NULL);
   // define o primeiro quadro livre de memória como o seguinte àquele que
   //   contém o endereço 99 (as 100 primeiras posições de memória (pelo menos)
   //   não vão ser usadas por programas de usuário)
