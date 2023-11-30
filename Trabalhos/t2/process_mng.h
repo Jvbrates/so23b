@@ -24,7 +24,7 @@ typedef enum { undefined=0,   // useful for dbg
                suspended     = (1<<6),        // Bloqueado por paginação
                suspended_create_proc = (1<<7),// Bloqueado por paginação quando o sistema tentou ler a string X para criar outro processo
                n_states = 9
-} process_state_t;
+}   process_state_t;
 
 typedef struct {
   int end_virt_ini;
@@ -111,7 +111,7 @@ int proc_get_preemp(process_t *self);
 int *proc_get_state_count(process_t *self);
 int *proc_get_timestate_count(process_t *self);
 
-char *estado_nome(process_state_t estado);
+char *estado_nome(int estado);
 
 //T2
 tabpag_t *proc_get_tpag(process_t *self);
@@ -119,6 +119,8 @@ void proc_set_tpag(process_t *self, tabpag_t *tpag);
 int proc_get_quadro_smem(process_t *self);
 int proc_get_size(process_t *self);
 int proc_get_pagina_fim(process_t *self);
+void proc_inc_count_pag(process_t *self);
+int proc_get_count_pag(process_t *self);
 
 /* Retorna o endereço da página correspondete na memória secundária, -1 se não existir (END_INV)*/
 int proc_get_page_addr(process_t *self, int address, int tam_pag);

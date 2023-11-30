@@ -29,14 +29,14 @@ static int decode(process_state_t estado){
 
 static char *nomes_estados[10] = {
     [0] = "Indefinido",
-    [4] = "Executando",
-    [3] = "Bloqueado esperando outro processo",
+    [1] = "Bloqueado  para leitura",
     [2] = "Bloqueado para escrita",
-    [1] = "Bloqueado para leitura",
+    [3] = "Bloqueado esperando outro processo",
+    [4] = "Executando",
     [5] = "Pronto",
+    [6] = "Morto",
     [7] = "Suspenso paginando",
-    [8] = "Suspenso paginanco durante chamada create proc",
-    [6] = "Morto"
+    [8] = "Suspenso paginando durante chamada create proc",
 };
 
 struct process_t {
@@ -82,6 +82,8 @@ struct process_t {
   int size;
   int pagina_fim;
 
+  // Numero de paginacoes
+  int count_pag;
 };
 
 
@@ -112,6 +114,9 @@ process_t *proc_create(cpu_info_t cpuInfo,
   p->size = start_address.end_virt_fim - start_address.end_virt_ini;
   p->pagina_fim = start_address.pagina_fim; // TODO Acho que não é necessario guardar isto
   p->tpag = tabpag_cria();
+
+
+  p->count_pag = 0;
   return p;
 }
 
@@ -391,7 +396,9 @@ void *callback_log_states(node_t *node, void *argument) {
     log_kill *lk = (log_kill *)argument;
 
     process_t *p = llist_get_packet(node);
-    if(p->processState != p->previous_state){
+    if(p->processState != p->previous_state
+        || p->previous_state == suspended
+        || p->previous_state == suspended_create_proc){
       p->state_count[decode(p->previous_state)]++;
     }
 
@@ -448,8 +455,8 @@ int proc_get_start_time(process_t *self){
     return -1;
 }
 
-char *estado_nome(process_state_t estado){
-    return nomes_estados[decode(estado)];
+char *estado_nome(int estado){
+    return nomes_estados[estado];
 }
 
 
@@ -482,4 +489,13 @@ int proc_get_page_addr(process_t *self, int address, int tam_pag){
 
     return (self->quadro_sec_mem * tam_pag)+(pag * tam_pag);
 
+}
+
+
+void proc_inc_count_pag(process_t *self){
+    self->count_pag++;
+}
+
+int proc_get_count_pag(process_t *self){
+    return self->count_pag;
 }

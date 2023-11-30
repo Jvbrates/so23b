@@ -26,12 +26,12 @@
  * ser removida e entao quando o processo "p" acordar, o mesmo problema
  * ocorrerá novamente*/
 #define CONTROLE_ZERA_T 5
-/* Leia CONTROLE_ZERA_T*INTERVALO_INTERRUPÇÃO como o tempo para a rotina de zerar os
- * bits de acesso
+/* Leia CONTROLE_ZERA_T*INTERVALO_INTERRUPÇÃO como o tempo para a rotina de
+ * zerar os * bits de acesso
  * */
 
 // constantes
-#define MEM_TAM 600        // tamanho da memória principal
+#define MEM_TAM 1000        // tamanho da memória principal
 
 
 typedef struct so_t so_t;

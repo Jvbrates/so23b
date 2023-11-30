@@ -2,10 +2,43 @@ CC = gcc
 CFLAGS = -Wall -Werror -g -Wno-unused-function
 LDLIBS = -lcurses
 
+
 OBJS = cpu.o es.o memoria.o relogio.o console.o instrucao.o err.o util/linked_list.o \
-			 main.o programa.o controle.o so.o irq.o  process_mng.o round_robin2.o tabpag.o \
-			 mmu.o util/metricas.o pagmng_FIFO2.o
+			 main.o programa.o controle.o so.o irq.o  process_mng.o tabpag.o \
+			 mmu.o util/metricas.o
 OBJS_MONT = instrucao.o err.o montador.o
+
+
+
+ifndef sched
+	sched = 0
+endif
+
+ifeq ($(sched), 0)
+	OBJS += round_robin.o
+endif
+
+ifeq ($(sched), 1)
+	OBJS += round_robin2.o
+endif
+
+
+
+ifndef pag_mng
+	pag_mng = 0
+endif
+
+ifeq ($(pag_mng), 0)
+	OBJS += pagmng_FIFO.o
+endif
+
+ifeq ($(pag_mng), 1)
+	OBJS += pagmng_FIFO2.o
+endif
+
+
+
+
 #MAQS = trata_irq.maq init.maq ex1.maq ex2.maq ex3.maq ex4.maq ex5.maq ex6.maq
 MAQS = init.maq ex1.maq ex2.maq ex3.maq ex4.maq ex5.maq ex6.maq p1.maq p2.maq p3.maq
 TARGETS = main montador ${MAQS}

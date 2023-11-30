@@ -122,8 +122,7 @@ so_t *so_cria(cpu_t *cpu, mem_t *mem, mem_t *sec_mem, mmu_t *mmu,
   cpu_define_chamaC(self->cpu, so_trata_interrupcao, self);
   // coloca o tratador de interrupção na memória
 
-  mem_escreve(self->mem, 10, CHAMAC);
-  mem_escreve(self->mem, 11, RETI);
+
 
   // programa a interrupção do relógio
   rel_escr(self->relogio, 2, INTERVALO_INTERRUPCAO);
@@ -148,6 +147,13 @@ so_t *so_cria(cpu_t *cpu, mem_t *mem, mem_t *sec_mem, mmu_t *mmu,
   //int num_pages = mem_tam(self->mem)/TAM_PAGINA  - 10;
 
   // self->mng_tpag = map_tpag_create(num_pages);
+
+  //mem_escreve(self->mem, 10, CHAMAC);
+  mmu_escreve(self->mmu, 10, CHAMAC, supervisor);
+
+  //mem_escreve(self->mem, 11, RETI);
+  mmu_escreve(self->mmu, 11, RETI, supervisor);
+
 
   return self;
 }
@@ -258,6 +264,7 @@ static err_t so_trata_interrupcao(void *argC, int reg_A)
 
 
     mmu_define_tabpag(self->mmu, proc_get_tpag(to_run)); // <-----
+    proc_set_state(to_run, running);
   }
 
 
@@ -468,9 +475,13 @@ static err_t so_trata_irq_reset(so_t *self)
   //   para os seus registradores quando executar a instrução RETI
 
   // altera o PC para o endereço de carga (deve ter sido o endereço virtual 0)
-  mem_escreve(self->mem, IRQ_END_PC, ender);
+  //mem_escreve(self->mem, IRQ_END_PC, ender);
+  mmu_escreve(self->mmu, IRQ_END_PC, ender, supervisor);
+  
   // passa o processador para modo usuário
-  mem_escreve(self->mem, IRQ_END_modo, usuario);
+  // mem_escreve(self->mem, IRQ_END_modo, usuario);
+  mmu_escreve(self->mmu, IRQ_END_modo, usuario, supervisor);
+  
   return ERR_OK;
 }
 
@@ -553,6 +564,7 @@ static err_t so_trata_irq_relogio(so_t *self)
   rel_escr(self->relogio, 2, INTERVALO_INTERRUPCAO);
   console_printf(self->console, "SO: Sched Update");
   sched_update(self->scheduler);
+
   if(controle_zera++ % CONTROLE_ZERA_T == 0)
     map_tpag_zera_acessado(self->mng_tpag);
   map_tpag_dump(self->mng_tpag, self->console, "zerando bit");
@@ -644,32 +656,7 @@ static void so_chamada_escr(so_t *self)
 
 static void so_chamada_cria_proc(so_t *self)
 {
-
-  /*
-  // ainda sem suporte a processos, carrega programa e passa a executar ele
-  // quem chamou o sistema não vai mais ser executado, coitado!
-
-  // em X está o endereço onde está o nome do arquivo
-  int ender_proc;
-  // deveria ler o X do descritor do processo criador
-  if (mem_le(self->mem, IRQ_END_X, &ender_proc) == ERR_OK) {
-    char nome[100];
-    if (so_copia_str_do_processo(self, 100, nome, ender_proc)) {
-      ret_so_carrega_programa ender_carga = so_carrega_programa(self, nome);
-      // o endereço de carga é endereço virtual, deve ser 0
-      if (ender_carga.end_virt_ini >= 0) {
-        // deveria escrever no PC do descritor do processo criado
-        mem_escreve(self->mem, IRQ_END_PC, ender_carga.end_virt_ini);
-        return;
-      }
-    }
-  }
-  // deveria escrever -1 (se erro) ou o PID do processo criado (se OK) no reg A
-  //   do processo que pediu a criação
-  mem_escreve(self->mem, IRQ_END_A, -1);
-
-   */
-
+  
   process_t *process = self->p_runningP;
   cpu_info_t_so *cpuInfoTSo = proc_get_cpuinfo(process);
 
@@ -873,8 +860,8 @@ static err_t process_recover(so_t *self, process_t *process){
   if(!process) {
     if (ptable_is_empty(self->processTable)) { // Sem processos, parando...
       err = ERR_CPU_PARADA;
-      mem_escreve(self->mem, IRQ_END_erro, ERR_CPU_PARADA);
-      mem_escreve(self->mem, IRQ_END_modo, supervisor);
+      mmu_escreve(self->mmu, IRQ_END_erro, ERR_CPU_PARADA, supervisor);
+      mmu_escreve(self->mmu, IRQ_END_modo, supervisor, supervisor);
       self->runningP = 0;
       self->p_runningP = NULL;
       log_exectime(self->log, rel_agora(self->relogio));
@@ -882,9 +869,9 @@ static err_t process_recover(so_t *self, process_t *process){
 
     } else { // Tabela de processo bloqueada
 
-      mem_escreve(self->mem, IRQ_END_erro, ERR_CPU_PARADA);
-      mem_escreve(self->mem, IRQ_END_modo, usuario);
-      mem_escreve(self->mem, IRQ_END_A, IRQ_ERR_CPU);
+      mmu_escreve(self->mmu, IRQ_END_erro, ERR_CPU_PARADA, supervisor);
+      mmu_escreve(self->mmu, IRQ_END_modo, usuario, supervisor);
+      mmu_escreve(self->mmu, IRQ_END_A, IRQ_ERR_CPU, supervisor);
 
 
       self->runningP = 0;
@@ -896,12 +883,12 @@ static err_t process_recover(so_t *self, process_t *process){
     process_t  *p = process;
     struct cpu_info_t_so  *cpuInfo = proc_get_cpuinfo(p);
 
-    mem_escreve(self->mem, IRQ_END_A, (cpuInfo->A));
-    mem_escreve(self->mem, IRQ_END_X, (cpuInfo->X));
-    mem_escreve(self->mem, IRQ_END_complemento, (cpuInfo->complemento));
-    mem_escreve(self->mem, IRQ_END_PC, (cpuInfo->PC));
-    mem_escreve(self->mem, IRQ_END_modo, (cpuInfo->modo));
-    mem_escreve(self->mem, IRQ_END_erro, ERR_OK);
+    mmu_escreve(self->mmu, IRQ_END_A, (cpuInfo->A), supervisor);
+    mmu_escreve(self->mmu, IRQ_END_X, (cpuInfo->X), supervisor);
+    mmu_escreve(self->mmu, IRQ_END_complemento, (cpuInfo->complemento), supervisor);
+    mmu_escreve(self->mmu, IRQ_END_PC, (cpuInfo->PC), supervisor);
+    mmu_escreve(self->mmu, IRQ_END_modo, (cpuInfo->modo), supervisor);
+    mmu_escreve(self->mmu, IRQ_END_erro, ERR_OK, supervisor);
     proc_set_state(p, running);
     self->runningP = proc_get_PID(process);
 
@@ -977,6 +964,9 @@ static int so_proc_pendencia(so_t *self, int PID_local,
     self->sec_tempo_livre = when_wake;
 
     console_printf(self->console, "MEMVIRT: p %i waiting %i",proc_get_PID(p), when_wake);
+    proc_inc_count_pag(p);
+
+
     PID_or_device = when_wake;
   }
 
