@@ -111,7 +111,9 @@ void *sched_update(scheduler_t *self){
       proc_incr_preemp(schedPacket->proc);
       schedPacket->curr_quantum = schedPacket->quantum;
       // Como é lista circular não haverá NULL, espera-se isto;
-      self->first = llist_get_next(self->first);
+      /* FIXME [self->first = llist_get_next(self->first);] Está pegando o mais
+      * novo */
+      self->first = llist_get_previous(self->first);
     }
 
     return schedPacket->proc;
@@ -140,7 +142,9 @@ void *sched_get_update(scheduler_t *self){
       //log_preemp(self->log);
       schedPacket->curr_quantum = schedPacket->quantum;
       // Como é lista circular não haverá NULL, espera-se isto;
-      self->first = llist_get_next(self->first);
+      /* FIXME [self->first = llist_get_next(self->first);] Está pegando o mais
+      * novo */
+      self->first = llist_get_previous(self->first);
     }
     return schedPacket->proc;
 }
