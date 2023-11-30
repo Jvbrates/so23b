@@ -1,3 +1,5 @@
 **/*.o
 **/*.d
 **/*.idea
+**/registro
+**/log_*

@@ -477,7 +477,7 @@ static err_t process_recover(so_t *self, process_t *process){
       mem_escreve(self->mem, IRQ_END_modo, supervisor);
       self->runningP = 0;
       self->p_runningP = NULL;
-      log_exectime(self->log, rel_agora(self->relogio));
+      log_exectimechamada(self->log, rel_agora(self->relogio));
       log_save_tofile(self->log);
 
     } else { // Tabela de processo bloqueada

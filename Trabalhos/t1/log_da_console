@@ -518,6 +518,2328 @@ SO: Escolhido 4, prio 0.500000
 SO: recebi IRQ 2 (Chamada de sistema, 4)
 SO: chamada de sistema 2
 SO: Escolhido 3, prio 0.500000
-F
+SO: recebi IRQ 2 (Chamada de sistema, 3)
+SO: chamada de sistema 2
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Escolhido 3, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 3)
+SO: Sched Update
+SO: Escolhido 3, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 3)
+SO: chamada de sistema 2
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Escolhido 3, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 3)
+SO: chamada de sistema 2
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 4)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Escolhido 3, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 3)
+SO: chamada de sistema 2
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Escolhido 3, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 3)
+SO: Sched Update
+SO: Escolhido 3, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 3)
+SO: chamada de sistema 2
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Escolhido 3, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 3)
+SO: chamada de sistema 2
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 4)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Escolhido 3, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 3)
+SO: chamada de sistema 2
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Escolhido 3, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 3)
+SO: Sched Update
+SO: Escolhido 3, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 3)
+SO: chamada de sistema 2
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Escolhido 3, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 3)
+SO: chamada de sistema 2
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Escolhido 3, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 3)
+SO: Sched Update
+SO: Escolhido 3, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 3)
+SO: chamada de sistema 2
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Escolhido 3, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 3)
+SO: chamada de sistema 2
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 4)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Escolhido 3, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 3)
+SO: chamada de sistema 2
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Escolhido 3, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 3)
+SO: Sched Update
+SO: Escolhido 3, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 3)
+SO: chamada de sistema 2
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Escolhido 3, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 3)
+SO: chamada de sistema 2
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 4)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Escolhido 3, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 3)
+SO: chamada de sistema 2
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 4)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Escolhido 3, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 3)
+SO: chamada de sistema 2
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 4)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Escolhido 3, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 3)
+SO: chamada de sistema 2
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Escolhido 3, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 3)
+SO: Sched Update
+SO: Escolhido 3, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 3)
+SO: chamada de sistema 2
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 4)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Escolhido 3, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 3)
+SO: chamada de sistema 2
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 4)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Escolhido 3, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 3)
+SO: chamada de sistema 2
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Escolhido 3, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 3)
+SO: Sched Update
+SO: Escolhido 3, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 3)
+SO: chamada de sistema 2
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Escolhido 3, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 3)
+SO: chamada de sistema 2
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 4)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Escolhido 3, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 3)
+SO: Sched Update
+SO: Escolhido 3, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 3)
+SO: chamada de sistema 2
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Escolhido 3, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 3)
+SO: Sched Update
+SO: Escolhido 3, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 3)
+SO: chamada de sistema 2
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Escolhido 3, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 3)
+SO: Sched Update
+SO: Escolhido 3, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 3)
+SO: chamada de sistema 2
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Escolhido 3, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 3)
+SO: chamada de sistema 2
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 4)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Escolhido 3, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 3)
+SO: Sched Update
+SO: Escolhido 3, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 3)
+SO: Sched Update
+SO: Escolhido 3, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 3)
+SO: Sched Update
+SO: Escolhido 3, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 3)
+SO: Sched Update
+SO: Escolhido 3, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 3)
+SO: Sched Update
+SO: Escolhido 3, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 3)
+SO: chamada de sistema 2
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Escolhido 3, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 3)
+SO: Sched Update
+SO: Escolhido 3, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 3)
+SO: chamada de sistema 2
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 4)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Escolhido 3, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 3)
+SO: chamada de sistema 2
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 2)
+SO: chamada de sistema 2
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 2)
+SO: chamada de sistema 2
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 2)
+SO: chamada de sistema 2
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 2)
+SO: chamada de sistema 2
+SO: Escolhido 3, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 3)
+SO: Sched Update
+SO: Escolhido 3, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 3)
+SO: Sched Update
+SO: Escolhido 3, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 3)
+SO: Sched Update
+SO: Escolhido 3, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 3)
+SO: Sched Update
+SO: Escolhido 3, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 3)
+SO: Sched Update
+SO: Escolhido 3, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 3)
+SO: chamada de sistema 2
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 4)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Escolhido 3, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 3)
+SO: chamada de sistema 2
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 4)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 2)
+SO: chamada de sistema 2
+SO: Escolhido 3, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 3)
+SO: chamada de sistema 2
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 2)
+SO: chamada de sistema 2
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 2)
+SO: chamada de sistema 2
+SO: Escolhido 3, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 3)
+SO: Sched Update
+SO: Escolhido 3, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 3)
+SO: Sched Update
+SO: Escolhido 3, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 3)
+SO: Sched Update
+SO: Escolhido 3, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 3)
+SO: Sched Update
+SO: Escolhido 3, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 3)
+SO: chamada de sistema 2
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 4)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Escolhido 3, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 3)
+SO: chamada de sistema 2
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 4)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 2)
+SO: chamada de sistema 2
+SO: Escolhido 3, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 3)
+SO: Sched Update
+SO: Escolhido 3, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 3)
+SO: chamada de sistema 2
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 2)
+SO: chamada de sistema 2
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 2)
+SO: chamada de sistema 2
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 2)
+SO: chamada de sistema 2
+SO: Escolhido 3, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 3)
+SO: Sched Update
+SO: Escolhido 3, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 3)
+SO: Sched Update
+SO: Escolhido 3, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 3)
+SO: Sched Update
+SO: Escolhido 3, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 3)
+SO: Sched Update
+SO: Escolhido 3, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 3)
+SO: chamada de sistema 2
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 4)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Escolhido 3, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 3)
+SO: Sched Update
+SO: Escolhido 3, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 3)
+SO: chamada de sistema 2
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 2)
+SO: chamada de sistema 2
+SO: Escolhido 3, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 3)
+SO: Sched Update
+SO: Escolhido 3, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 3)
+SO: chamada de sistema 2
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 2)
+SO: chamada de sistema 2
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 2)
+SO: chamada de sistema 2
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 4)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 2)
+SO: chamada de sistema 2
+SO: Escolhido 3, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 3)
+SO: chamada de sistema 2
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 2)
+SO: chamada de sistema 2
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 4)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 2)
+SO: chamada de sistema 2
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 2)
+SO: chamada de sistema 2
+SO: Escolhido 3, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 3)
+SO: Sched Update
+SO: Escolhido 3, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 3)
+SO: Sched Update
+SO: Escolhido 3, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 3)
+SO: Sched Update
+SO: Escolhido 3, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 3)
+SO: Sched Update
+SO: Escolhido 3, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 3)
+SO: Sched Update
+SO: Escolhido 3, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 3)
+SO: chamada de sistema 2
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 4)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Escolhido 3, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 3)
+SO: chamada de sistema 2
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 4)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 2)
+SO: chamada de sistema 2
+SO: Escolhido 3, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 3)
+SO: chamada de sistema 2
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 2)
+SO: chamada de sistema 2
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 2)
+SO: chamada de sistema 2
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 2)
+SO: chamada de sistema 2
+SO: Escolhido 3, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 3)
+SO: chamada de sistema 2
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 2)
+SO: chamada de sistema 2
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 2)
+SO: chamada de sistema 2
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 4)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Escolhido 3, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 3)
+SO: Sched Update
+SO: Escolhido 3, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 3)
+SO: Sched Update
+SO: Escolhido 3, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 3)
+SO: Sched Update
+SO: Escolhido 3, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 3)
+SO: Sched Update
+SO: Escolhido 3, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 3)
+SO: chamada de sistema 2
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 4)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Escolhido 3, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 3)
+SO: chamada de sistema 2
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 2)
+SO: chamada de sistema 2
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 2)
+SO: chamada de sistema 2
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 2)
+SO: chamada de sistema 2
+SO: Escolhido 3, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 3)
+SO: Sched Update
+SO: Escolhido 3, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 3)
+SO: chamada de sistema 2
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 4)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 2)
+SO: chamada de sistema 2
+SO: Escolhido 3, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 3)
+SO: Sched Update
+SO: Escolhido 3, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 3)
+SO: chamada de sistema 2
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 2)
+SO: chamada de sistema 2
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 2)
+SO: chamada de sistema 2
+SO: Escolhido 3, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 3)
+SO: Sched Update
+SO: Escolhido 3, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 3)
+SO: Sched Update
+SO: Escolhido 3, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 3)
+SO: Sched Update
+SO: Escolhido 3, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 3)
+SO: Sched Update
+SO: Escolhido 3, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 3)
+SO: chamada de sistema 2
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 4)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Escolhido 3, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 3)
+SO: chamada de sistema 2
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 4)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 2)
+SO: chamada de sistema 2
+SO: Escolhido 3, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 3)
+SO: Sched Update
+SO: Escolhido 3, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 3)
+SO: chamada de sistema 2
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 2)
+SO: chamada de sistema 2
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 2)
+SO: chamada de sistema 2
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 2)
+SO: chamada de sistema 2
+SO: Escolhido 3, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 3)
+SO: chamada de sistema 2
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 4)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 2)
+SO: chamada de sistema 2
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 2)
+SO: chamada de sistema 2
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 2)
+SO: chamada de sistema 2
+SO: Escolhido 3, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 3)
+SO: Sched Update
+SO: Escolhido 3, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 3)
+SO: Sched Update
+SO: Escolhido 3, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 3)
+SO: Sched Update
+SO: Escolhido 3, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 3)
+SO: Sched Update
+SO: Escolhido 3, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 3)
+SO: chamada de sistema 2
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 4)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 4)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Escolhido 3, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 3)
+SO: chamada de sistema 2
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 2)
+SO: chamada de sistema 2
+SO: Escolhido 3, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 3)
+SO: chamada de sistema 2
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 2)
+SO: chamada de sistema 2
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 2)
+SO: chamada de sistema 2
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 2)
+SO: chamada de sistema 2
+SO: Escolhido 3, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 3)
+SO: Sched Update
+SO: Escolhido 3, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 3)
+SO: chamada de sistema 2
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 2)
+SO: chamada de sistema 2
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 2)
+SO: chamada de sistema 2
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 4)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 2)
+SO: chamada de sistema 2
+SO: Escolhido 3, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 3)
+SO: chamada de sistema 2
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 2)
+SO: chamada de sistema 2
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 2)
+SO: chamada de sistema 2
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 2)
+SO: chamada de sistema 2
+SO: Escolhido 3, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 3)
+SO: Sched Update
+SO: Escolhido 3, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 3)
+SO: chamada de sistema 8
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 2)
+SO: chamada de sistema 2
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 2)
+SO: chamada de sistema 2
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 2)
+SO: chamada de sistema 2
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 2)
+SO: chamada de sistema 2
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 2)
+SO: chamada de sistema 2
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 4)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 2)
+SO: chamada de sistema 2
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 2)
+SO: chamada de sistema 2
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 4)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 2)
+SO: chamada de sistema 2
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 2)
+SO: chamada de sistema 2
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 2)
+SO: chamada de sistema 2
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 2)
+SO: chamada de sistema 2
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 2)
+SO: chamada de sistema 2
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 2)
+SO: chamada de sistema 2
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 2)
+SO: chamada de sistema 2
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 2)
+SO: chamada de sistema 2
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 2)
+SO: chamada de sistema 2
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 4)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 2)
+SO: chamada de sistema 2
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 2)
+SO: chamada de sistema 2
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 4)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 2)
+SO: chamada de sistema 2
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 2)
+SO: chamada de sistema 2
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 2)
+SO: chamada de sistema 2
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 2)
+SO: chamada de sistema 2
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 2)
+SO: chamada de sistema 2
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 2)
+SO: chamada de sistema 2
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 2)
+SO: chamada de sistema 2
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 4)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 2)
+SO: chamada de sistema 2
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 2)
+SO: chamada de sistema 2
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 2)
+SO: chamada de sistema 2
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 2)
+SO: chamada de sistema 2
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 2)
+SO: chamada de sistema 2
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 2)
+SO: chamada de sistema 2
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 4)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 4)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 4)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 2)
+SO: chamada de sistema 2
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 2)
+SO: chamada de sistema 2
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 4)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Nada para escalonar no momento, REL: 11833
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 2)
+SO: chamada de sistema 2
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 4)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Nada para escalonar no momento, REL: 11940
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 2)
+SO: chamada de sistema 2
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Nada para escalonar no momento, REL: 12002
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Nada para escalonar no momento, REL: 12017
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 4)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 4)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 2)
+SO: chamada de sistema 2
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 4)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 2)
+SO: chamada de sistema 2
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 2)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 2)
+SO: chamada de sistema 2
+SO: Nada para escalonar no momento, REL: 16075
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 2)
+SO: chamada de sistema 2
+SO: Nada para escalonar no momento, REL: 16152
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Nada para escalonar no momento, REL: 16167
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 2)
+SO: chamada de sistema 2
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 4)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Nada para escalonar no momento, REL: 16287
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 2)
+SO: chamada de sistema 2
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Nada para escalonar no momento, REL: 16354
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Nada para escalonar no momento, REL: 16367
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Escolhido 2, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 2)
+SO: chamada de sistema 8
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Escolhido 1, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 1)
+SO: chamada de sistema 9
+SO: Escolhido 1, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 1)
+SO: chamada de sistema 9
+SO: Nada para escalonar no momento, REL: 16457
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Nada para escalonar no momento, REL: 16467
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 4)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Nada para escalonar no momento, REL: 16571
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Nada para escalonar no momento, REL: 16636
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Nada para escalonar no momento, REL: 16667
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Nada para escalonar no momento, REL: 16733
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Nada para escalonar no momento, REL: 16767
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 4)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Nada para escalonar no momento, REL: 16871
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Nada para escalonar no momento, REL: 16936
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Nada para escalonar no momento, REL: 16967
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Nada para escalonar no momento, REL: 17033
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Nada para escalonar no momento, REL: 17067
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 4)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Nada para escalonar no momento, REL: 17171
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Nada para escalonar no momento, REL: 17236
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Nada para escalonar no momento, REL: 17267
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Nada para escalonar no momento, REL: 17333
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Nada para escalonar no momento, REL: 17367
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 4)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Nada para escalonar no momento, REL: 17471
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Nada para escalonar no momento, REL: 17536
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Nada para escalonar no momento, REL: 17567
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Nada para escalonar no momento, REL: 17633
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Nada para escalonar no momento, REL: 17667
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 4)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Nada para escalonar no momento, REL: 17771
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Nada para escalonar no momento, REL: 17836
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Nada para escalonar no momento, REL: 17867
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Nada para escalonar no momento, REL: 17933
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Nada para escalonar no momento, REL: 17967
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 4)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Nada para escalonar no momento, REL: 18071
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Nada para escalonar no momento, REL: 18136
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Nada para escalonar no momento, REL: 18167
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Nada para escalonar no momento, REL: 18233
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Nada para escalonar no momento, REL: 18267
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 4)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Nada para escalonar no momento, REL: 18371
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Nada para escalonar no momento, REL: 18436
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Nada para escalonar no momento, REL: 18467
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Nada para escalonar no momento, REL: 18533
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Nada para escalonar no momento, REL: 18567
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 4)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Nada para escalonar no momento, REL: 18671
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Nada para escalonar no momento, REL: 18736
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Nada para escalonar no momento, REL: 18767
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Nada para escalonar no momento, REL: 18833
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Nada para escalonar no momento, REL: 18867
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 4)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Nada para escalonar no momento, REL: 18971
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Nada para escalonar no momento, REL: 19036
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Nada para escalonar no momento, REL: 19067
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Nada para escalonar no momento, REL: 19133
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Nada para escalonar no momento, REL: 19167
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 4)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Nada para escalonar no momento, REL: 19271
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Nada para escalonar no momento, REL: 19336
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Nada para escalonar no momento, REL: 19367
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Nada para escalonar no momento, REL: 19433
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Nada para escalonar no momento, REL: 19467
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 4)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Nada para escalonar no momento, REL: 19571
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Nada para escalonar no momento, REL: 19636
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Nada para escalonar no momento, REL: 19667
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Nada para escalonar no momento, REL: 19733
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Nada para escalonar no momento, REL: 19767
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 4)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Nada para escalonar no momento, REL: 19871
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Nada para escalonar no momento, REL: 19936
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Nada para escalonar no momento, REL: 19967
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Nada para escalonar no momento, REL: 20033
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Nada para escalonar no momento, REL: 20067
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 4)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Nada para escalonar no momento, REL: 20171
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Nada para escalonar no momento, REL: 20236
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Nada para escalonar no momento, REL: 20267
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Nada para escalonar no momento, REL: 20333
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Nada para escalonar no momento, REL: 20367
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 4)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Nada para escalonar no momento, REL: 20471
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Nada para escalonar no momento, REL: 20536
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Nada para escalonar no momento, REL: 20567
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Nada para escalonar no momento, REL: 20633
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Nada para escalonar no momento, REL: 20667
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 4)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Nada para escalonar no momento, REL: 20771
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Nada para escalonar no momento, REL: 20836
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Nada para escalonar no momento, REL: 20867
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Nada para escalonar no momento, REL: 20933
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Nada para escalonar no momento, REL: 20967
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 4)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Nada para escalonar no momento, REL: 21071
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Nada para escalonar no momento, REL: 21136
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Nada para escalonar no momento, REL: 21167
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Nada para escalonar no momento, REL: 21233
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Nada para escalonar no momento, REL: 21267
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 4)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Nada para escalonar no momento, REL: 21371
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Nada para escalonar no momento, REL: 21436
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Nada para escalonar no momento, REL: 21467
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Nada para escalonar no momento, REL: 21533
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Nada para escalonar no momento, REL: 21567
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 4)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Nada para escalonar no momento, REL: 21671
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Nada para escalonar no momento, REL: 21736
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Nada para escalonar no momento, REL: 21767
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Nada para escalonar no momento, REL: 21833
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Nada para escalonar no momento, REL: 21867
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 4)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Nada para escalonar no momento, REL: 21971
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Nada para escalonar no momento, REL: 22036
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Nada para escalonar no momento, REL: 22067
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Nada para escalonar no momento, REL: 22133
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Nada para escalonar no momento, REL: 22167
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 4)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Nada para escalonar no momento, REL: 22271
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Nada para escalonar no momento, REL: 22336
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Nada para escalonar no momento, REL: 22367
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Nada para escalonar no momento, REL: 22433
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Nada para escalonar no momento, REL: 22467
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 4)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Nada para escalonar no momento, REL: 22571
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Nada para escalonar no momento, REL: 22636
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Nada para escalonar no momento, REL: 22667
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Nada para escalonar no momento, REL: 22733
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Nada para escalonar no momento, REL: 22767
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 4)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Nada para escalonar no momento, REL: 22871
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Nada para escalonar no momento, REL: 22936
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Nada para escalonar no momento, REL: 22967
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Nada para escalonar no momento, REL: 23033
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Nada para escalonar no momento, REL: 23067
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 4)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Nada para escalonar no momento, REL: 23171
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Nada para escalonar no momento, REL: 23236
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Nada para escalonar no momento, REL: 23267
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Nada para escalonar no momento, REL: 23333
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Nada para escalonar no momento, REL: 23367
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 4)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Nada para escalonar no momento, REL: 23471
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Nada para escalonar no momento, REL: 23536
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Nada para escalonar no momento, REL: 23567
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Nada para escalonar no momento, REL: 23633
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Nada para escalonar no momento, REL: 23667
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 2
+SO: Nada para escalonar no momento, REL: 23735
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Nada para escalonar no momento, REL: 23767
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Escolhido 4, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 4)
+SO: chamada de sistema 8
+SO: Escolhido 1, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 1)
+SO: chamada de sistema 2
+SO: Escolhido 1, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 1)
+SO: chamada de sistema 2
+SO: Escolhido 1, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 1)
+SO: Sched Update
+SO: Escolhido 1, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 1)
+SO: chamada de sistema 2
+SO: Escolhido 1, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 1)
+SO: chamada de sistema 2
+SO: Escolhido 1, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 1)
+SO: chamada de sistema 2
+SO: Escolhido 1, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 1)
+SO: Sched Update
+SO: Escolhido 1, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 1)
+SO: chamada de sistema 2
+SO: Escolhido 1, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 1)
+SO: chamada de sistema 2
+SO: Escolhido 1, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 1)
+SO: chamada de sistema 2
+SO: Escolhido 1, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 1)
+SO: chamada de sistema 2
+SO: Escolhido 1, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 1)
+SO: Sched Update
+SO: Escolhido 1, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 1)
+SO: chamada de sistema 2
+SO: Escolhido 1, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 1)
+SO: chamada de sistema 2
+SO: Escolhido 1, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 1)
+SO: chamada de sistema 2
+SO: Escolhido 1, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 1)
+SO: Sched Update
+SO: Escolhido 1, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 1)
+SO: chamada de sistema 2
+SO: Escolhido 1, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 1)
+SO: chamada de sistema 2
+SO: Escolhido 1, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 1)
+SO: chamada de sistema 2
+SO: Escolhido 1, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 1)
+SO: Sched Update
+SO: Escolhido 1, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 1)
+SO: chamada de sistema 2
+SO: Escolhido 1, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 1)
+SO: chamada de sistema 2
+SO: Escolhido 1, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 1)
+SO: chamada de sistema 2
+SO: Escolhido 1, prio 0.500000
+SO: recebi IRQ 3 (E/S: relógio, 1)
+SO: Sched Update
+SO: Escolhido 1, prio 0.500000
+SO: recebi IRQ 2 (Chamada de sistema, 1)
+SO: chamada de sistema 8
+SO: Nada para escalonar no momento, REL: 24123
+SO: recebi IRQ 3 (E/S: relógio, 0)
+SO: Sched Update
+SO: Nada para escalonar no momento, REL: 24167
+F[
 Fim da execução.
-relógio: 2024
+relógio: 30351

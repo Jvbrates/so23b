@@ -396,15 +396,19 @@ void *callback_log_states(node_t *node, void *argument) {
     log_kill *lk = (log_kill *)argument;
 
     process_t *p = llist_get_packet(node);
-    if(p->processState != p->previous_state
-        || p->previous_state == suspended
-        || p->previous_state == suspended_create_proc){
-      p->state_count[decode(p->previous_state)]++;
-    }
+
+    /*NOTE: A ideia é remover a contagem dos estados daqui, primeiramente será
+    * testado se removendo estes trechos de código, não há efeitos colaterais
+    * indesejados. ANSWER: Não quebrou Nada*/
+   // if(p->processState != p->previous_state
+     //   || p->previous_state == suspended
+       // || p->previous_state == suspended_create_proc){
+      //p->state_count[decode(p->previous_state)]++;
+    //}
 
 
-    p->time_state_count[decode(p->previous_state)]+= lk->tempo_estado;
-    p->previous_state = p->processState;
+    // p->time_state_count[decode(p->previous_state)]+= lk->tempo_estado;
+    //p->previous_state = p->processState;
 
     if(p->processState == dead) {
       log_save_proc_tofile(p, lk->log);
