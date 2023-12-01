@@ -90,9 +90,10 @@ void ptable_proc_wait(process_table_t *self,
 unsigned  int proc_get_waiting_PID(process_t *p);
 cpu_info_t proc_get_cpuinfo(process_t* self);
 process_state_t proc_get_state(process_t* self);
+process_state_t proc_get_prev_state(process_t* self);
 int proc_get_PID(process_t* self);
-int proc_set_state(process_t *self, process_state_t processState);
-
+//int proc_set_state(process_t *self, process_state_t processState);
+int proc_set_state(process_t *self, process_state_t processState, int time);
 /* Como a prioridade deve manter-se ao longo da existência de um processo,
  * deve ser mantido com a tabela de processos e nao com o escalonador
  */
@@ -103,7 +104,6 @@ void proc_set_priority(process_t *self, double priority);
 void proc_incr_preemp(process_t *self);
 
 void proc_set_end_time(process_t*self, int time);
-
 
 int proc_get_start_time(process_t *self);
 int proc_get_end_time(process_t *self);
@@ -119,9 +119,7 @@ void proc_set_tpag(process_t *self, tabpag_t *tpag);
 int proc_get_quadro_smem(process_t *self);
 int proc_get_size(process_t *self);
 int proc_get_pagina_fim(process_t *self);
-void proc_inc_count_pag(process_t *self);
-int proc_get_count_pag(process_t *self);
-
+int decode(process_state_t estado);
 /* Retorna o endereço da página correspondete na memória secundária, -1 se não existir (END_INV)*/
 int proc_get_page_addr(process_t *self, int address, int tam_pag);
 

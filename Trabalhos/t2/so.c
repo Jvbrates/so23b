@@ -264,7 +264,7 @@ static err_t so_trata_interrupcao(void *argC, int reg_A)
 
 
     mmu_define_tabpag(self->mmu, proc_get_tpag(to_run)); // <-----
-    proc_set_state(to_run, running);
+    proc_set_state(to_run, running, rel_agora(self->relogio));
   }
 
 
@@ -274,6 +274,7 @@ static err_t so_trata_interrupcao(void *argC, int reg_A)
   // Log
   //Tempo que cada processo ficou no estado anterior a este;
   int tempo_estado = rel_agora(self->relogio) - self->tempo_chamda_anterior;
+
   ptable_log_states(self->processTable, tempo_estado, self->log);
   self->tempo_chamda_anterior = rel_agora(self->relogio);
 
@@ -281,15 +282,7 @@ static err_t so_trata_interrupcao(void *argC, int reg_A)
   return err;
 }
 
-static void so_salva_estado_da_cpu(so_t *self)
-{
-  // se não houver processo corrente, não faz nada
-  // salva os registradores que compõem o estado da cpu no descritor do
-  //   processo corrente
-  // mem_le(self->mem, IRQ_END_A, endereco onde vai o A no descritor);
-  // mem_le(self->mem, IRQ_END_X, endereco onde vai o X no descritor);
-  // etc
-}
+
 static err_t so_trata_pendencias(so_t *self)
 {
   err_t erro = ERR_OK;
@@ -323,7 +316,7 @@ static err_t so_trata_pendencias(so_t *self)
 
       (self->es_pendencias[i][0])--;
 
-      proc_set_state(p, waiting);
+      proc_set_state(p, waiting,rel_agora(self->relogio));
 
       sched_add(self->scheduler, p, proc_get_PID(p), QUANTUM);
 
@@ -349,7 +342,7 @@ static err_t so_trata_pendencias(so_t *self)
 
       self->es_pendencias[i][1]--;
 
-      proc_set_state(p, waiting);
+      proc_set_state(p, waiting,rel_agora(self->relogio));
       proc_set_PID_or_device(p, 0);
 
       sched_add(self->scheduler, p, proc_get_PID(p), QUANTUM);
@@ -362,8 +355,8 @@ static err_t so_trata_pendencias(so_t *self)
   if(self->sec_req){
     process_t **lista_procs= calloc(self->sec_req, sizeof (process_t *));
 
-    ptable_search_hthan(self->processTable, suspended_create_proc | suspended, rel_agora(self->relogio),
-                                       lista_procs);
+    ptable_search_hthan(self->processTable, suspended_create_proc | suspended,
+                        rel_agora(self->relogio), lista_procs);
 
 
     // Para toda lista de processos cuja paginação já foi feita
@@ -390,15 +383,16 @@ static err_t so_trata_pendencias(so_t *self)
                     cpuInfoTSo->A = -1;
                   }
                 } else {
-                  so_mem_virt_irq(self, p, true); // Sim, ele pode acabar caindo em page fault novamente
-                  continue ;
+                    so_mem_virt_irq(self, p, true); // Sim, ele pode acabar caindo em page fault novamente
+                    console_printf(self->console, "AGAIN PAGE FAULT");
+                    continue ;
                 }
 
               }
 
               console_printf(self->console, "MEMVIRT: Waking up p %i (t %i)", proc_get_PID(p), rel_agora(self->relogio));
               self->sec_req--;
-              proc_set_state(p, waiting);
+              proc_set_state(p, waiting,rel_agora(self->relogio));
               proc_set_PID_or_device(p, 0);
               sched_add(self->scheduler, p, proc_get_PID(p), QUANTUM);
     }
@@ -407,17 +401,7 @@ static err_t so_trata_pendencias(so_t *self)
 
   return erro;
 }
-static void so_escalona(so_t *self)
-{
-  // escolhe o próximo processo a executar, que passa a ser o processo
-  //   corrente; pode continuar sendo o mesmo de antes ou não
-}
-static void so_despacha(so_t *self)
-{
-  // se não houver processo corrente, coloca ERR_CPU_PARADA em IRQ_END_erro
-  // se houver processo corrente, coloca todo o estado desse processo em
-  //   IRQ_END_*
-}
+
 
 static err_t so_trata_irq(so_t *self, int irq)
 {
@@ -889,7 +873,7 @@ static err_t process_recover(so_t *self, process_t *process){
     mmu_escreve(self->mmu, IRQ_END_PC, (cpuInfo->PC), supervisor);
     mmu_escreve(self->mmu, IRQ_END_modo, (cpuInfo->modo), supervisor);
     mmu_escreve(self->mmu, IRQ_END_erro, ERR_OK, supervisor);
-    proc_set_state(p, running);
+    proc_set_state(p, running,rel_agora(self->relogio));
     self->runningP = proc_get_PID(process);
 
   }
@@ -909,7 +893,7 @@ static int so_mata_proc(so_t *self, process_t *p){
   proc_set_end_time(p, rel_agora(self->relogio));
   int pid = proc_get_PID(p);
 
-  proc_set_state(p, dead);
+  proc_set_state(p, dead,rel_agora(self->relogio));
 
   if(estado == waiting || estado == running) {
     sched_remove(self->scheduler, proc_get_PID(p));
@@ -955,23 +939,19 @@ static int so_proc_pendencia(so_t *self, int PID_local,
   if(state == suspended || state == suspended_create_proc) {
 
     int t_now = rel_agora(self->relogio), when_wake;
-
-    if(self->sec_req == 0) {
-      when_wake = t_now + (PID_or_device * DELAY_SEC_MEM);
-    } else {
-      when_wake = self->sec_tempo_livre + (PID_or_device * DELAY_SEC_MEM);
-    }
+    int aux =  t_now + (PID_or_device * DELAY_SEC_MEM);
+    int aux2 = self->sec_tempo_livre + (PID_or_device * DELAY_SEC_MEM);
+    when_wake = aux2>aux?aux2:aux;
     self->sec_tempo_livre = when_wake;
 
-    console_printf(self->console, "MEMVIRT: p %i waiting %i",proc_get_PID(p), when_wake);
-    proc_inc_count_pag(p);
-
+    console_printf(self->console, "MEMVIRT: process %i suspended until %i",
+                   proc_get_PID(p), when_wake);
 
     PID_or_device = when_wake;
   }
 
 
-  proc_set_state(p, state);
+  proc_set_state(p, state,rel_agora(self->relogio));
   proc_set_PID_or_device(p, PID_or_device);
 
   if(estado_anterior == running || estado_anterior == waiting)
@@ -1136,7 +1116,8 @@ static err_t  so_mem_virt_irq(so_t *self, process_t *p, bool cria_proc){
 
 
   //log
-  console_printf(self->console, "MEMVIRT: p %i. pag %i to frame %i %s, (err)%s", proc_get_PID(p), addr/TAM_PAGINA, OFFSET_MEM+substituido.frame,
+  console_printf(self->console, "MEMVIRT: p %i. pag %i to frame %i %s, (err)%s",
+                 proc_get_PID(p), addr/TAM_PAGINA, OFFSET_MEM+substituido.frame,
                  (cria_proc == true?"suspended_create_proc":"suspended"),
                  err_nome(err));
 

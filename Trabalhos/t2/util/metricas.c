@@ -80,23 +80,20 @@ void log_save_proc_tofile(void *proc, metricas *m){
   int preemps = proc_get_preemp(c_proc);
 
   fprintf(file, "----------------------------------------------\n");
-  fprintf(file, "\n\nInformações do Processo [%i]\n", proc_get_PID(c_proc));
+  fprintf(file, "Informações do Processo %i:\n", proc_get_PID(c_proc));
 
 
-  //Numero de cada state
+  //Número de cada state
   for (int i = 1; i < n_states; ++i) {
     char *teste = estado_nome(i);
     fprintf(file, "Número de vezes %s: %i (Tempo total %i)\n", teste, state[i], t_state[i]);
   }
 
-
-
-  fprintf(file, "Número de Falhas de Página: %i", proc_get_count_pag(c_proc));
   fprintf(file, "Tempo de Retorno: %i (%i - %i)\n", end - start, start, end);
   fprintf(file, "Preempções: %i\n", preemps);
-  fprintf(file, "Tempo médio em estado pronto: %f (%i/%i)\n", ((double )t_state[waiting])/
-                                                       ((double)state[waiting]),
-          t_state[waiting], state[waiting]);
+  fprintf(file, "Tempo médio em estado pronto: %f (%i/%i)\n", ((double )t_state[decode(waiting)])/
+                                                       ((double)state[decode(waiting)]),
+          t_state[decode(waiting)], state[decode(waiting)]);
   ;
   fprintf(file, "----------------------------------------------\n");
   if(file != NULL)

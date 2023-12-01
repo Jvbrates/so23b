@@ -31,7 +31,7 @@
  * */
 
 // constantes
-#define MEM_TAM 1000        // tamanho da memória principal
+#define MEM_TAM 560        // tamanho da memória principal
 
 
 typedef struct so_t so_t;

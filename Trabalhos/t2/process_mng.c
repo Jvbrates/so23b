@@ -12,7 +12,7 @@ struct process_table_t  {
 };
 
 
-static int decode(process_state_t estado){
+int decode(process_state_t estado){
   int valor = (int)estado;
 
   if(valor == 0)
@@ -51,14 +51,15 @@ struct process_t {
 
   //LOG infos
   process_state_t previous_state;
+  int time_previous_state;
 
   //Calcular o tempo de retorno
   int start_time;
   int end_time;
 
   //Calcular o numero de entradas em cada processo e tempo total em cada um
-  int state_count[n_states];
-  int time_state_count[n_states];
+  int state_count[n_states]; // Numero de entradas em cada estado
+  int time_state_count[n_states]; // Tempo em cada estado
 
 
   // Tempo médio em running;
@@ -82,8 +83,6 @@ struct process_t {
   int size;
   int pagina_fim;
 
-  // Numero de paginacoes
-  int count_pag;
 };
 
 
@@ -100,11 +99,13 @@ process_t *proc_create(cpu_info_t cpuInfo,
   p->PID = PID;
   p->start_address = start_address.end_virt_ini; // T2
   p->processState = waiting; //Tod0 processo criado inicia esperando
+
   p->priority = priority;
 
   //LOG
   p->start_time = start_time;
   p->previous_state = undefined;
+  p->time_previous_state = start_time;
   p->preemp  = 0;
   p->end_time = 0;
 
@@ -115,8 +116,6 @@ process_t *proc_create(cpu_info_t cpuInfo,
   p->pagina_fim = start_address.pagina_fim; // TODO Acho que não é necessario guardar isto
   p->tpag = tabpag_cria();
 
-
-  p->count_pag = 0;
   return p;
 }
 
@@ -334,7 +333,21 @@ int proc_set_cpuinfo(process_t *self, cpu_info_t cpuInfo){
     return 0;
 }
 
-int proc_set_state(process_t *self, process_state_t processState){
+int proc_set_state(process_t *self, process_state_t processState, int time){
+    /*if(self->time_previous_state != time) {
+
+      self->time_state_count[decode(self->previous_state)] +=
+              (time - self->time_previous_state);
+
+      if (processState != self->processState) {
+        self->state_count[decode(self->previous_state)]++;
+        self->previous_state = self->processState;
+      }
+
+      self->time_previous_state = time;
+    }*/
+    //self->previous_state = self->processState;
+
     self->processState = processState;
     return 0;
 }
@@ -397,18 +410,14 @@ void *callback_log_states(node_t *node, void *argument) {
 
     process_t *p = llist_get_packet(node);
 
-    /*NOTE: A ideia é remover a contagem dos estados daqui, primeiramente será
-    * testado se removendo estes trechos de código, não há efeitos colaterais
-    * indesejados. ANSWER: Não quebrou Nada*/
-   // if(p->processState != p->previous_state
-     //   || p->previous_state == suspended
-       // || p->previous_state == suspended_create_proc){
-      //p->state_count[decode(p->previous_state)]++;
-    //}
+   if(p->processState != p->previous_state){
+      p->state_count[decode(p->processState)]++;
+   }
 
 
-    // p->time_state_count[decode(p->previous_state)]+= lk->tempo_estado;
-    //p->previous_state = p->processState;
+
+    p->time_state_count[decode(p->previous_state)]+= lk->tempo_estado;
+    p->previous_state = p->processState;
 
     if(p->processState == dead) {
       log_save_proc_tofile(p, lk->log);
@@ -495,11 +504,6 @@ int proc_get_page_addr(process_t *self, int address, int tam_pag){
 
 }
 
-
-void proc_inc_count_pag(process_t *self){
-    self->count_pag++;
-}
-
-int proc_get_count_pag(process_t *self){
-    return self->count_pag;
+process_state_t proc_get_prev_state(process_t* self){
+    return self->previous_state;
 }
