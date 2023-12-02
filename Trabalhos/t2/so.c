@@ -110,7 +110,7 @@ so_t *so_cria(cpu_t *cpu, mem_t *mem, mem_t *sec_mem, mmu_t *mmu,
 
   if(self->log)
     free(self->log);
-  self->log = log_init("registro\0");
+  self->log = log_init("relatorio\0");
 
   self->cpu = cpu;
   self->mem = mem;
@@ -159,7 +159,6 @@ so_t *so_cria(cpu_t *cpu, mem_t *mem, mem_t *sec_mem, mmu_t *mmu,
 }
 
 
-//FIXME tem que dealocar um monte coisa
 void so_destroi(so_t *self)
 {
 
@@ -171,6 +170,9 @@ void so_destroi(so_t *self)
 
   if(self->mng_tpag)
     map_tpag_destruct(self->mng_tpag);
+
+  if(self->log)
+    free(self->log);
 
 
   cpu_define_chamaC(self->cpu, NULL, NULL);
@@ -256,8 +258,6 @@ static err_t so_trata_interrupcao(void *argC, int reg_A)
     console_printf(self->console, "SO: Nada para escalonar no momento, REL: %i",
                    rel_agora(self->relogio));
 
-
-    // FIXME o que ocorre de
   }else {
     console_printf(self->console, "SO: Escolhido %i, prio %f", proc_get_PID(to_run),
                    proc_get_priority(to_run));
@@ -475,10 +475,6 @@ static err_t so_trata_irq_reset(so_t *self)
 static err_t so_trata_irq_err_cpu(so_t *self) // <-----
 {
 
-  // Ocorreu um erro interno na CPU
-  // O erro está codificado em IRQ_END_erro
-  // Em geral, causa a morte do processo que causou o erro
-  // Ainda não temos processos, causa a parada da CPU
   int err_int;
   mem_le(self->mem, IRQ_END_erro, &err_int);
   err_t err = err_int, retorno = ERR_CPU_PARADA;
@@ -503,8 +499,6 @@ static err_t so_trata_irq_err_cpu(so_t *self) // <-----
         console_printf(self->console, "SO: Aparentemente todos os processos "
                                       "estavam bloqueados uma execução atrás",
                        err_nome(err));
-
-        log_ocioso(self->log);
 
         return ERR_OK;
       }
@@ -552,6 +546,14 @@ static err_t so_trata_irq_relogio(so_t *self)
   if(controle_zera++ % CONTROLE_ZERA_T == 0)
     map_tpag_zera_acessado(self->mng_tpag);
   map_tpag_dump(self->mng_tpag, self->console, "zerando bit");
+
+
+  /* Caso ocorra uma interrupção de relógio e não há processo rodando, houve
+  * um periodo ocioso */
+  if(self->runningP == 0) {
+    int time = rel_agora(self->relogio) - self->tempo_chamda_anterior;
+    log_ocioso(self->log, time);
+  }
 
   return ERR_OK;
 }

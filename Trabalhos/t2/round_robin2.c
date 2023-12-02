@@ -168,6 +168,8 @@ void *sched_update(scheduler_t *self){
   schedPacket->curr_quantum++;
   if(schedPacket->curr_quantum >= schedPacket->quantum){ //preempção
     log_preemp(self->log);
+    proc_incr_preemp(schedPacket->proc);
+
     schedPacket->curr_quantum = 1;
 
     //Atualizar prioridade

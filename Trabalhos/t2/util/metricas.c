@@ -9,6 +9,7 @@
 struct metricas{
   int procs;
   int ocioso;
+  int tempo_ocioso;
   int irq_count[N_IRQ];
   int preemps;
   int exec_time;
@@ -37,7 +38,8 @@ void log_save_tofile(metricas *m){
   }
 
 
-  fprintf(file, "Ciclos ociosos: %i\n", m->ocioso);
+  fprintf(file, "Vezes ocioso: %i\n", m->ocioso);
+  fprintf(file, "Tempo total ocioso: %i\n", m->tempo_ocioso);
   fprintf(file, "Preempções: %i\n", m->preemps);
   fprintf(file, "Processos: %i\n", m->procs);
   fprintf(file, "Tempo de execução: %i\n", m->exec_time);
@@ -47,7 +49,7 @@ void log_save_tofile(metricas *m){
     fclose(file);
 }
 
-void log_irq(metricas *m, irq_t irq){
+  void log_irq(metricas *m, irq_t irq){
   m->irq_count[irq]++;
 }
 
@@ -55,7 +57,8 @@ void log_proc(metricas *m){
   m->procs++;
 }
 
-void log_ocioso(metricas *m){
+void log_ocioso(metricas *m, int time){
+  m->tempo_ocioso += time;
   m->ocioso++;
 }
 
