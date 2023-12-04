@@ -263,6 +263,7 @@ static err_t so_trata_interrupcao(void *argC, int reg_A)
                    proc_get_priority(to_run));
 
 
+    proc_set_last_exec_time(to_run, rel_agora(self->relogio));
     mmu_define_tabpag(self->mmu, proc_get_tpag(to_run)); // <-----
     proc_set_state(to_run, running, rel_agora(self->relogio));
   }

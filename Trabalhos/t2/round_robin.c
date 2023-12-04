@@ -151,7 +151,7 @@ void *sched_get_update(scheduler_t *self){
 
 int sched_remove(scheduler_t *self, int PID){
 
-    node_t  *node = llist_remove_node(&(self->first), PID);
+    node_t  *node = llist_remove_node_prev(&(self->first), PID);
 
     if(node){
       sched_packet *schedPacket = llist_get_packet(node);

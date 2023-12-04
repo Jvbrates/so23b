@@ -74,8 +74,9 @@ static void sched_update_prio(sched_packet *self, int time_now){
     if(!self)
       return ;
 
-    double prio =  proc_get_priority(self->proc) + ((time_now - self->t_start)/
-                                                    self->curr_quantum);
+    double prio =  proc_get_priority(self->proc) +
+                  ((time_now - proc_get_last_exec_time(self->proc))/
+                                                   self->curr_quantum);
     proc_set_priority(self->proc, prio);
 
 }
@@ -164,22 +165,21 @@ void *sched_update(scheduler_t *self){
 
   sched_packet *schedPacket = llist_get_packet(self->first);
 
-  // Incrementa
-  schedPacket->curr_quantum++;
-  if(schedPacket->curr_quantum >= schedPacket->quantum){ //preempção
+  schedPacket->curr_quantum--;
+  if(schedPacket->curr_quantum >= 0){ //preempção
     log_preemp(self->log);
     proc_incr_preemp(schedPacket->proc);
 
-    schedPacket->curr_quantum = 1;
-
     //Atualizar prioridade
+    schedPacket->curr_quantum = 1;
     sched_update_prio(llist_get_packet(self->first), rel_agora(self->relogio));
+    schedPacket->curr_quantum = schedPacket->quantum;
+
 
     //Decidir qual será o próximo processo
     sched_choose_new(self, llist_get_key(self->first));
 
   }
-
   return schedPacket->proc;
 }
 

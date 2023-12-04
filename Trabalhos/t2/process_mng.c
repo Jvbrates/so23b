@@ -47,7 +47,7 @@ struct process_t {
   process_state_t processState;
   int PID_or_device_or_time; // 'time' referente ao tempo de espera do disco
   double priority;// round_robin_prio
-
+  int last_exec_time;
 
   //LOG infos
   process_state_t previous_state;
@@ -320,12 +320,10 @@ process_state_t proc_get_state(process_t* self){
 
 int proc_get_PID(process_t* self){
     return self->PID;
-    return 0;
 }
 
 int proc_get_start_address(process_t* self){
     return self->start_address;
-    return 0;
 }
 
 int proc_set_cpuinfo(process_t *self, cpu_info_t cpuInfo){
@@ -392,6 +390,24 @@ void proc_incr_preemp(process_t *self){
     if(self)
       self->preemp++;
 }
+
+int proc_get_last_exec_time(process_t *self){
+    if(self){
+      return self->last_exec_time;
+    }
+    return -1;
+}
+
+
+void proc_set_last_exec_time(process_t *self, int time){
+    if(self){
+      self->last_exec_time = time;
+    }
+}
+
+
+
+
 
 //-----------------------------------------------------------------------------
 

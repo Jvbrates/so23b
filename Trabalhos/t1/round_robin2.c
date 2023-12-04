@@ -74,7 +74,8 @@ static void sched_update_prio(sched_packet *self, int time_now){
     if(!self)
       return ;
 
-    double prio =  proc_get_priority(self->proc) + ((time_now - proc_get_last_exec_time(self->proc))/
+    double prio =  proc_get_priority(self->proc) +
+                  ((time_now - proc_get_last_exec_time(self->proc))/
                                                     self->curr_quantum);
     proc_set_priority(self->proc, prio);
 

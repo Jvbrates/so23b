@@ -32,6 +32,8 @@ node_t *llist_add_node(node_t **node_holder, node_t *node);
 
 node_t *llist_remove_node(node_t **node_holder, int key);
 
+node_t *llist_remove_node_prev(node_t **node_holder, int key);
+
 void llist_delete_node(node_t *node);
 
 void llist_destruct(node_t **node_holder);

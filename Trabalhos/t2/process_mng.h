@@ -111,6 +111,12 @@ int proc_get_preemp(process_t *self);
 int *proc_get_state_count(process_t *self);
 int *proc_get_timestate_count(process_t *self);
 
+
+int proc_get_last_exec_time(process_t *self);
+void proc_set_last_exec_time(process_t *self, int time);
+
+
+
 char *estado_nome(int estado);
 
 //T2
