@@ -18,7 +18,7 @@ void log_save_proc_tofile(void *proc, metricas *self);
 
 void log_irq(metricas *m, irq_t irq);
 
-void log_ocioso(metricas *m);
+void log_ocioso(metricas *m, int time);
 
 void log_proc(metricas *m);
 

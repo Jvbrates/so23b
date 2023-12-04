@@ -49,6 +49,7 @@ struct process_t {
 
   //Numero de preempções | incrementado pelo escalonador
   int preemp;
+  int last_exec_time; // Tempo da ultiima vez que foi escolhido para executar
 
 
 };
@@ -371,6 +372,20 @@ int proc_get_start_time(process_t *self){
     if(self)
       return self->start_time;
     return -1;
+}
+
+int proc_get_last_exec_time(process_t *self){
+    if(self){
+      return self->last_exec_time;
+    }
+    return -1;
+}
+
+
+void proc_set_last_exec_time(process_t *self, int time){
+    if(self){
+      self->last_exec_time = time;
+    }
 }
 
 char *estado_nome(process_state_t estado){

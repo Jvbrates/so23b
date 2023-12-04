@@ -9,6 +9,7 @@
 struct metricas{
   int procs;
   int ocioso;
+  int tempo_ocioso;
   int irq_count[N_IRQ];
   int preemps;
   int exec_time;
@@ -37,8 +38,8 @@ void log_save_tofile(metricas *m){
   }
 
 
-
-  fprintf(file, "Ciclos ociosos: %i\n", m->ocioso);
+  fprintf(file, "Vezes ocioso: %i\n", m->ocioso);
+  fprintf(file, "Tempo total ocioso: %i\n", m->tempo_ocioso);
   fprintf(file, "Preempções: %i\n", m->preemps);
   fprintf(file, "Processos: %i\n", m->procs);
   fprintf(file, "Tempo de execução: %i\n", m->exec_time);
@@ -56,7 +57,8 @@ void log_proc(metricas *m){
   m->procs++;
 }
 
-void log_ocioso(metricas *m){
+void log_ocioso(metricas *m, int time){
+  m->tempo_ocioso += time;
   m->ocioso++;
 }
 
@@ -81,20 +83,19 @@ void log_save_proc_tofile(void *proc, metricas *m){
   int preemps = proc_get_preemp(c_proc);
 
   fprintf(file, "----------------------------------------------\n");
-  fprintf(file, "\n\nInformações do Processo [%i]\n", proc_get_PID(c_proc));
+  fprintf(file, "Informações do Processo %i:\n", proc_get_PID(c_proc));
 
-  //Numero de cada state
+
+  //Número de cada state
   for (int i = 1; i < n_states; ++i) {
-    fprintf(file, "Número de vezes %s: %i (Tempo total %i)\n", estado_nome(i), state[i], t_state[i]);
+    char *teste = estado_nome(i);
+    fprintf(file, "Número de vezes %s: %i (Tempo total %i)\n", teste, state[i], t_state[i]);
   }
-
-
-
 
   fprintf(file, "Tempo de Retorno: %i (%i - %i)\n", end - start, start, end);
   fprintf(file, "Preempções: %i\n", preemps);
   fprintf(file, "Tempo médio em estado pronto: %f (%i/%i)\n", ((double )t_state[waiting])/
-                                                       ((double)state[waiting]),
+                                                                      ((double)state[waiting]),
           t_state[waiting], state[waiting]);
   ;
   fprintf(file, "----------------------------------------------\n");

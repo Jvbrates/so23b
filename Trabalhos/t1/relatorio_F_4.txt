@@ -1,0 +1,62 @@
+----------------------------------------------
+Informações do Processo 3:
+Número de vezes Bloqueado para leitura: 0 (Tempo total 0)
+Número de vezes Bloqueado para escrita: 0 (Tempo total 0)
+Número de vezes Bloqueado esperando outro processo: 0 (Tempo total 0)
+Número de vezes Executando: 109 (Tempo total 5094)
+Número de vezes Pronto: 109 (Tempo total 8502)
+Número de vezes Morto: 0 (Tempo total 0)
+Tempo de Retorno: 13596 (370 - 13966)
+Preempções: 8
+Tempo médio em estado pronto: 78.000000 (8502/109)
+----------------------------------------------
+----------------------------------------------
+Informações do Processo 2:
+Número de vezes Bloqueado para leitura: 0 (Tempo total 0)
+Número de vezes Bloqueado para escrita: 6 (Tempo total 469)
+Número de vezes Bloqueado esperando outro processo: 0 (Tempo total 0)
+Número de vezes Executando: 89 (Tempo total 12159)
+Número de vezes Pronto: 84 (Tempo total 2975)
+Número de vezes Morto: 0 (Tempo total 0)
+Tempo de Retorno: 15603 (363 - 15966)
+Preempções: 41
+Tempo médio em estado pronto: 35.416667 (2975/84)
+----------------------------------------------
+----------------------------------------------
+Informações do Processo 4:
+Número de vezes Bloqueado para leitura: 0 (Tempo total 0)
+Número de vezes Bloqueado para escrita: 93 (Tempo total 6418)
+Número de vezes Bloqueado esperando outro processo: 0 (Tempo total 0)
+Número de vezes Executando: 217 (Tempo total 5419)
+Número de vezes Pronto: 130 (Tempo total 12452)
+Número de vezes Morto: 0 (Tempo total 0)
+Tempo de Retorno: 24289 (377 - 24666)
+Preempções: 0
+Tempo médio em estado pronto: 95.784615 (12452/130)
+----------------------------------------------
+----------------------------------------------
+Informações do Processo 1:
+Número de vezes Bloqueado para leitura: 0 (Tempo total 0)
+Número de vezes Bloqueado para escrita: 0 (Tempo total 0)
+Número de vezes Bloqueado esperando outro processo: 2 (Tempo total 24251)
+Número de vezes Executando: 3 (Tempo total 680)
+Número de vezes Pronto: 1 (Tempo total 19)
+Número de vezes Morto: 0 (Tempo total 0)
+Tempo de Retorno: 24950 (10 - 24960)
+Preempções: 0
+Tempo médio em estado pronto: 19.000000 (19/1)
+----------------------------------------------
+
+
+Informações Gerais do SO
+Número de IRQs Reset: 1
+Número de IRQs Erro de execução: 0
+Número de IRQs Chamada de sistema: 462
+Número de IRQs E/S: relógio: 500
+Número de IRQs E/S: teclado: 0
+Número de IRQs E/S: console: 0
+Vezes ocioso: 155
+Tempo total ocioso: 6419
+Preempções: 49
+Processos: 4
+Tempo de execução: 25004

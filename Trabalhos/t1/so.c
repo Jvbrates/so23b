@@ -143,8 +143,12 @@ static err_t so_trata_interrupcao(void *argC, int reg_A)
     console_printf(self->console, "SO: Nada para escalonar no momento, REL: %i",
                    rel_agora(self->relogio));
   }else {
-    console_printf(self->console, "SO: Escolhido %i, prio %f", proc_get_PID(to_run),
-                   proc_get_priority(to_run));
+    console_printf(self->console, "SCHED P pr t: %i, %f, %i"
+                   , proc_get_PID(to_run),
+                   proc_get_priority(to_run),
+                   rel_agora(self->relogio));
+
+    proc_set_last_exec_time(to_run, rel_agora(self->relogio));
   }
   // 5 - Recupera processo, se existir um;
   process_recover(self, to_run);
@@ -226,9 +230,6 @@ static err_t so_trata_irq_err_cpu(so_t *self)
       console_printf(self->console, "SO: Aparentemente todos os processos "
                                     "estavam bloqueados uma execução atrás",
                      err_nome(err));
-
-      log_ocioso(self->log);
-
       return ERR_OK;
 
     }
@@ -248,6 +249,14 @@ static err_t so_trata_irq_relogio(so_t *self)
   rel_escr(self->relogio, 2, INTERVALO_INTERRUPCAO);
   console_printf(self->console, "SO: Sched Update");
   sched_update(self->scheduler);
+
+  /* Caso ocorra uma interrupção de relógio e não há processo rodando, houve
+  * um periodo ocioso */
+  if(self->runningP == 0) {
+    int time = rel_agora(self->relogio) - self->tempo_chamda_anterior;
+    log_ocioso(self->log, time);
+  }
+
   return ERR_OK;
 }
 
@@ -477,7 +486,7 @@ static err_t process_recover(so_t *self, process_t *process){
       mem_escreve(self->mem, IRQ_END_modo, supervisor);
       self->runningP = 0;
       self->p_runningP = NULL;
-      log_exectimechamada(self->log, rel_agora(self->relogio));
+      log_exectime(self->log, rel_agora(self->relogio));
       log_save_tofile(self->log);
 
     } else { // Tabela de processo bloqueada
@@ -721,7 +730,7 @@ so_t *so_cria(cpu_t *cpu, mem_t *mem, console_t *console, relogio_t *relogio)
 
   if(self->log)
     free(self->log);
-  self->log = log_init("registro\0");
+  self->log = log_init("relatorio.txt\0");
 
   self->cpu = cpu;
   self->mem = mem;

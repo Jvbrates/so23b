@@ -111,7 +111,7 @@ void *sched_update(scheduler_t *self){
       proc_incr_preemp(schedPacket->proc);
       schedPacket->curr_quantum = schedPacket->quantum;
       // Como é lista circular não haverá NULL, espera-se isto;
-      self->first = llist_get_next(self->first);
+      self->first = llist_get_previous(self->first);
     }
 
     return schedPacket->proc;
@@ -137,17 +137,17 @@ void *sched_get_update(scheduler_t *self){
     // Consome quantum
     schedPacket->curr_quantum--;
     if(schedPacket->curr_quantum <= 0){
-      //log_preemp(self->log);
+      log_preemp(self->log);
       schedPacket->curr_quantum = schedPacket->quantum;
       // Como é lista circular não haverá NULL, espera-se isto;
-      self->first = llist_get_next(self->first);
+      self->first = llist_get_previous(self->first);
     }
     return schedPacket->proc;
 }
 
 int sched_remove(scheduler_t *self, int PID){
 
-    node_t  *node = llist_remove_node(&(self->first), PID);
+    node_t  *node = llist_remove_node_prev(&(self->first), PID);
 
     if(node){
       sched_packet *schedPacket = llist_get_packet(node);

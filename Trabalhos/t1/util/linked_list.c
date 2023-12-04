@@ -156,6 +156,29 @@ node_t *llist_remove_node(node_t **node_holder, int key){
     // from string
 }
 
+
+node_t *llist_remove_node_prev(node_t **node_holder, int key){
+    node_t *s = llist_iterate_nodes(*node_holder, llist_callback_search_key, &key);
+
+    if(!s)
+      return NULL;
+    if(*node_holder == s) { // Case the holder pointer to node that will be removed
+      if (s->previous == s) { // Case has one node in round list
+        *node_holder = NULL;
+      } else {
+        *node_holder = s->previous;
+      }
+    }
+    llist_node_unlink(s);
+
+    return s; // Note that this function no deference the node, just remove it
+             // from string
+}
+
+
+
+
+
 // Deference all the list, at end node_holder will pointer to unallocated memory
 void llist_destruct(node_t **node_holder){
     node_t *next = (*node_holder)->next;
