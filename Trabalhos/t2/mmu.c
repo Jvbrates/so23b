@@ -1,6 +1,6 @@
 #include "mmu.h"
 #include <stdlib.h>
-
+#include "constants.h"
 // tipo de dados opaco para representar uma MMU
 struct mmu_t {
   mem_t *mem;

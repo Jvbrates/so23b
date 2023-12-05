@@ -9,8 +9,6 @@
 #include "err.h"
 #include <stdbool.h>
 
-// tamanho de uma página, em palavras de memória
-#define TAM_PAGINA 10
 
 // tipo opaco que representa a tabela de páginas
 typedef struct tabpag_t tabpag_t;

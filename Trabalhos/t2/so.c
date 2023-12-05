@@ -1,4 +1,5 @@
 #include "so.h"
+#include "constants.h"
 #include "irq.h"
 #include "programa.h"
 #include "instrucao.h"
@@ -110,7 +111,7 @@ so_t *so_cria(cpu_t *cpu, mem_t *mem, mem_t *sec_mem, mmu_t *mmu,
 
   if(self->log)
     free(self->log);
-  self->log = log_init("relatorio\0");
+  self->log = log_init("relatorio.txt\0");
 
   self->cpu = cpu;
   self->mem = mem;
@@ -438,7 +439,7 @@ static err_t so_trata_irq_reset(so_t *self)
 
   if(self->mng_tpag)
     map_tpag_destruct(self->mng_tpag);
-  self->mng_tpag = map_tpag_create((MEM_TAM/TAM_PAGINA  - 10));
+  self->mng_tpag = map_tpag_create((MEM_TAM/TAM_PAGINA  - OFFSET_MEM));
 
   so_start_ptable_sched(self);
 
@@ -878,6 +879,7 @@ static err_t process_recover(so_t *self, process_t *process){
     mmu_escreve(self->mmu, IRQ_END_erro, ERR_OK, supervisor);
     proc_set_state(p, running,rel_agora(self->relogio));
     self->runningP = proc_get_PID(process);
+    self->p_runningP = p;
 
   }
   return err;
@@ -1064,22 +1066,22 @@ static err_t  so_mem_virt_irq(so_t *self, process_t *p, bool cria_proc){
 
 
   // 1 e 2
-  int addr_mem_sec = proc_get_page_addr(self->p_runningP, addr, TAM_PAGINA);
+  int addr_mem_sec = proc_get_page_addr(p, addr, TAM_PAGINA);
 
   // Mata o processo caso ele tente acessar um endereço inválido
   if(addr_mem_sec == -1) {
     console_printf(self->console, "MEMVIRT: Matando %i [ERR_END_INV] %i",
-                   self->runningP, addr);
+                   proc_get_PID(p), addr);
 
-    so_mata_proc(self, self->p_runningP);
+    so_mata_proc(self, p);
     return  ERR_OK;
   }
 
   // 3.
 
   map_node mp = {
-          self->runningP,
-          proc_get_tpag(self->p_runningP),
+          proc_get_PID(p),
+          proc_get_tpag(p),
           addr/TAM_PAGINA,
           0 //Frame nao importa aqui
   };
@@ -1109,7 +1111,7 @@ static err_t  so_mem_virt_irq(so_t *self, process_t *p, bool cria_proc){
   so_mem_to_mem(self->sec_mem, addr_mem_sec, self->mem, (substituido.frame+OFFSET_MEM)*TAM_PAGINA, TAM_PAGINA);
 
   // 6.
-  tabpag_t *proc_pag = proc_get_tpag(self->p_runningP);
+  tabpag_t *proc_pag = proc_get_tpag(p);
   tabpag_define_quadro(proc_pag, addr/TAM_PAGINA, substituido.frame+OFFSET_MEM);
 
 
@@ -1128,7 +1130,7 @@ static err_t  so_mem_virt_irq(so_t *self, process_t *p, bool cria_proc){
 
 
   // 7.
-  so_proc_pendencia(self, self->runningP,
+  so_proc_pendencia(self, proc_get_PID(p),
                     (cria_proc == true?suspended_create_proc:suspended),
                     acessos);
   self->sec_req++;

@@ -391,8 +391,8 @@ void cpu_executa_1(cpu_t *self)
 
   int opcode;
   //FIXME
-  // Pega opcode está retornando ERR_INS_INV mas isto não está gerando interrupção,
-  // o que deveria ocorrer
+  // Pega opcode está retornando ERR_INS_INV, mas isto não está gerando
+  // interrupção, o que deveria ocorrer
   bool dbg = pega_opcode(self, &opcode);
   if (!dbg) {
     if (self->erro != ERR_END_INV && self->erro != ERR_PAG_AUSENTE )

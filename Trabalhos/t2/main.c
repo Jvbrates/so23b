@@ -6,6 +6,7 @@
 #include "relogio.h"
 #include "console.h"
 #include "so.h"
+#include "constants.h"
 
 #include <stdio.h>
 #include <stdlib.h>

@@ -1,5 +1,6 @@
 #include "tabpag.h"
 #include "err.h"
+#include "constants.h"
 #include <stdlib.h>
 #include <assert.h>
 

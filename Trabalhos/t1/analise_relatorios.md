@@ -14,8 +14,8 @@ Os registros estão nos arquivos:
   asm com ordens de execução trocadas.
 
 ---
-Compreenede-se a diferença entre programa e processo, entretando para 
-facilitar a escrita e letura deste texto, será usado o nome dos programas 
+Compreende-se a diferença entre programa e processo, entretanto para 
+facilitar a escrita e leitura deste texto, será usado o nome dos programas 
 para referir-se aos processos.
 - p1.asm: Bastante CPU, pouca E/S (PID 2)
 - p2.asm: Média CPU, média E/S (PID 3)
@@ -23,13 +23,13 @@ para referir-se aos processos.
 
 ---
 ## Algoritmo FIFO:
-Análisando tanto o relatório gerado pela CPU, quanto rodando o programa em 
+Analisando tanto o relatório gerado pela CPU, quanto rodando o programa em 
 si, percebe-se que o algoritmo tem um comportamento relativamente simples de 
-pŕever, coincidindo com a simplicidade do algoritmo. Os três algoritmos que 
-executam concorrentemente (não paralelamente) têm uma evolução linear.   
+prever, coincidindo com a simplicidade do algoritmo. Os três algoritmos que 
+executam concorrentemente (não paralelamente) têm uma evolução linear.  
 Aos 
-olhos do usuário, no momento incial onde os programas escrevem suas 
-caracteristícas (ex.: "bastante CPU pouca E/S"") os programas executam "ao 
+olhos do usuário, no momento inicial onde os programas escrevem suas 
+características (ex.: "bastante CPU pouca E/S"") os programas executam "ao 
 mesmo tempo". No momento seguinte este comportamento muda e varia conforme o 
 valor definido para o quantum.
 
@@ -39,15 +39,15 @@ execução.
 Para um valor de 4 quantuns, ocorrem mais preempções e obtêm-se um 
 tempo de execução total menor, em relação a 10 quantuns. Também é 
 interessante notar nesta configuração, que o tempo médio de execução entre 
-os processos está melhor distribuido e a ordem em que os processos terminam 
+os processos está melhor distribuído e a ordem em que os processos terminam 
 é p2.asm, p1.asm e p3.asm.  
-Para 10 quantuns, há um número menor de preeempções. Enquanto para 4 
+Para 10 quantuns, há um número menor de preempções. Enquanto para 4 
 quantuns houveram 49 preempções distribuídas entre p1.asm e p2.asm, nesta 
 configuração houveram 14 preempções, somente em p1.asm. Assim, alterando a 
 ordem em que os programas foram finalizados, para o número de quantuns maior 
 a ordem foi p1.asm, p2.asm e p3.asm.  
 A variação do valor de quantum também é perceptível ao usuário, para 4 Q
-(quantuns) a tela ficou parada poucas vezes, se restringindo ao  final onde somente p1.asm executava.
+(quantuns) a tela ficou parada poucas vezes, quando p1.asm executava.
 Já para 10 Q, mais vezes o sistema parecia estar "parado", sendo isto 
 referente ao maior tempo que p1.asm tinha para executar, obviamente o 
 processo p1.asm pode evoluir mais rapidamente.
@@ -77,5 +77,5 @@ execução p2.asm e p1.asm "roubassem" a CPU o valor de prioridade
 permaneceria mais próximo na média da execução. Foi feito o teste para isto:  
 ![img.png](img.png)  
 Como esperado, está mudança trouxe um desempenho melhor(Tempo de execução: 
-19261), mas além do esperado o desempenho foi melhor que todas as demais 
+19261), mas além do esperado o desempenho foi melhor que as demais 
 configurações testadas.

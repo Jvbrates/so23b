@@ -1,0 +1,70 @@
+----------------------------------------------
+Informações do Processo 3:
+Número de vezes Bloqueado  para leitura: 0 (Tempo total 0)
+Número de vezes Bloqueado para escrita: 3 (Tempo total 203)
+Número de vezes Bloqueado esperando outro processo: 0 (Tempo total 0)
+Número de vezes Executando: 147 (Tempo total 5024)
+Número de vezes Pronto: 138 (Tempo total 8490)
+Número de vezes Morto: 1 (Tempo total 0)
+Número de vezes Suspenso paginando: 40 (Tempo total 2096)
+Número de vezes Suspenso paginando durante chamada create proc: 0 (Tempo total 0)
+Tempo de Retorno: 15813 (856 - 16669)
+Preempções: 7
+Tempo médio em estado pronto: 61.521739 (8490/138)
+----------------------------------------------
+----------------------------------------------
+Informações do Processo 2:
+Número de vezes Bloqueado  para leitura: 0 (Tempo total 0)
+Número de vezes Bloqueado para escrita: 8 (Tempo total 516)
+Número de vezes Bloqueado esperando outro processo: 0 (Tempo total 0)
+Número de vezes Executando: 122 (Tempo total 11993)
+Número de vezes Pronto: 107 (Tempo total 2536)
+Número de vezes Morto: 1 (Tempo total 0)
+Número de vezes Suspenso paginando: 40 (Tempo total 2273)
+Número de vezes Suspenso paginando durante chamada create proc: 0 (Tempo total 0)
+Tempo de Retorno: 17318 (752 - 18070)
+Preempções: 41
+Tempo médio em estado pronto: 23.700935 (2536/107)
+----------------------------------------------
+----------------------------------------------
+Informações do Processo 4:
+Número de vezes Bloqueado  para leitura: 0 (Tempo total 0)
+Número de vezes Bloqueado para escrita: 94 (Tempo total 6562)
+Número de vezes Bloqueado esperando outro processo: 0 (Tempo total 0)
+Número de vezes Executando: 260 (Tempo total 5548)
+Número de vezes Pronto: 138 (Tempo total 11445)
+Número de vezes Morto: 1 (Tempo total 0)
+Número de vezes Suspenso paginando: 51 (Tempo total 2450)
+Número de vezes Suspenso paginando durante chamada create proc: 0 (Tempo total 0)
+Tempo de Retorno: 26005 (909 - 26914)
+Preempções: 0
+Tempo médio em estado pronto: 82.934783 (11445/138)
+----------------------------------------------
+----------------------------------------------
+Informações do Processo 1:
+Número de vezes Bloqueado  para leitura: 0 (Tempo total 0)
+Número de vezes Bloqueado para escrita: 0 (Tempo total 0)
+Número de vezes Bloqueado esperando outro processo: 2 (Tempo total 25798)
+Número de vezes Executando: 25 (Tempo total 739)
+Número de vezes Pronto: 3 (Tempo total 27)
+Número de vezes Morto: 1 (Tempo total 0)
+Número de vezes Suspenso paginando: 21 (Tempo total 850)
+Número de vezes Suspenso paginando durante chamada create proc: 1 (Tempo total 45)
+Tempo de Retorno: 27459 (10 - 27469)
+Preempções: 0
+Tempo médio em estado pronto: 9.000000 (27/3)
+----------------------------------------------
+
+
+Informações Gerais do SO
+Número de IRQs Reset: 1
+Número de IRQs Erro de execução: 152
+Número de IRQs Chamada de sistema: 462
+Número de IRQs E/S: relógio: 550
+Número de IRQs E/S: teclado: 0
+Número de IRQs E/S: console: 0
+Vezes ocioso: 213
+Tempo total ocioso: 8485
+Preempções: 48
+Processos: 4
+Tempo de execução: 27510
